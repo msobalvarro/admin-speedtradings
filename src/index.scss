@@ -1,0 +1,80 @@
+@import "./utils/constants.scss";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: rgb(0, 0, 0);
+  background: linear-gradient(
+    238deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(25, 24, 24, 1) 52%,
+    rgba(21, 61, 70, 1) 100%
+  );
+
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: normal;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+input,
+button,
+a {
+  outline: none;
+
+  &.text-input {
+    background-color: #1d1d1d;
+    border: 2px solid #000;
+    border-radius: 3px;
+    color: #FFF;
+    padding: 8px;
+    transition: $transition;
+
+    &:focus {
+      box-shadow: $animationShadow;
+    }
+  }
+
+  &.button {
+    background-color: #9ed3da;
+    border: none;
+    border-radius: 25px;
+    color: #2d2d2d;
+    text-transform: uppercase;
+    padding: 8px 15px;
+    font-weight: normal;
+    font-size: 14px;
+    text-decoration: none;
+    transition: $transition;
+
+    &:hover {
+      box-shadow: $animationShadow;
+      cursor: default;
+    }
+
+    &:active {
+      opacity: 0.5;
+    }
+  }
+
+  &.link {
+    color: $colorSecondary;
+    text-decoration: none;
+  }
+}
+
+#root {
+  height: 100vh;
+  width: 100%;
+}
