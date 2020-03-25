@@ -1,35 +1,60 @@
 @import "../../utils/constants.scss";
 
 div.container-login {
+  align-items: center;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  width: 100%;
+  animation: fadeEffect 1s;
+
+  div.form-control {
     align-items: center;
+    // border: 2px solid #FFF;
     display: flex;
-    height: 100vh;
-    justify-content: center;
-    width: 100%;
+    flex-direction: column;
+    width: 512px;
 
+    h2 {
+      color: $colorSecondary;
+      font-weight: normal;
+      margin: 10px 0;
+    }
 
-    div.form-control {
-        align-items: center;
-        // border: 2px solid #FFF;
+    img.img-logo {
+      max-width: 80%;
+    }
+
+    form {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+
+      div.row {
+        margin: 10px 0;
         display: flex;
         flex-direction: column;
-        width: 512px;
+        width: 70%;
+        span {
+          color: #fff;
+          margin-bottom: 5px;
 
-
-        img.img-logo {
-            max-width: 80%;
+          &.error {
+            color: $colorRed;
+          }
         }
 
-        div.row {
-            margin: 10px 0;
-            display: flex;
-            flex-direction: column;
-            width: 70%;
-
-            span {
-                color: #FFF;
-                margin-bottom: 5px;
-            }
+        .password-forgot {
+          align-self: flex-end;
+          font-size: 12px;
+          margin-top: 10px;
         }
+
+        .register {
+          align-self: center;
+        }
+      }
     }
+  }
 }
