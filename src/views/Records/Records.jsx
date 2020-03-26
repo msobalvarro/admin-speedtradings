@@ -29,6 +29,7 @@ const Records = () => {
     const [loader, setLoader] = useState(true)
     const [loaderPetition, setLoaderPetition] = useState(false)
 
+    // Ejecuta peticiones al servidor para obtener todos los datos de las tablas
     const ConfigurateComponent = async () => {
         setLoader(true)
         try {
@@ -69,6 +70,8 @@ const Records = () => {
         ConfigurateComponent()
     }, [])
 
+    // Componente que representa un articulo de la lista
+    // de solicitudes de registro
     const itemRequest = (item, index) => {
         return (
             <div className="row" key={index} onClick={e => openDetailsRequest(item.id)}>
@@ -85,9 +88,11 @@ const Records = () => {
         )
     }
 
+    // Componente que representa un articulo de la lista
+    // Registos
     const itemRecord = (item, index) => {
         return (
-            <div className="row" key={index}>
+            <div className="row" key={index} onClick={e => openDetailsRecord(item.id_user)}>
                 <span>{moment(item.start_date).format('MMM. D, YYYY')}</span>
                 <span className="name">{item.name}</span>
                 <span>{item.country}</span>
@@ -102,9 +107,9 @@ const Records = () => {
         )
     }
 
+    // Funcion que abre detalles al hacer la peticion de
+    // detalles de solitud
     const openDetailsRequest = async (id = 0) => {
-        console.log(id)
-
         // Open modal
         setShowRequest(true)
 
@@ -130,14 +135,17 @@ const Records = () => {
                 })
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+            setShowRequest(false)
         } finally {
             setLoaderPetition(false)
         }
     }
 
+    // Funciion que abre ventana de detalles de registros aceptados
+    // Ejecuta una peticion para obtener los datos por id
     const openDetailsRecord = async (id = 0) => {
         // Open modal
-        setShowRequest(true)
+        setShowRecord(true)
 
         try {
             // Show loader
@@ -150,6 +158,8 @@ const Records = () => {
                 }
             })
                 .then(({ data }) => {
+                    console.log(data)
+
                     if (data.error) {
                         throw data.message
                     } else {
@@ -158,11 +168,13 @@ const Records = () => {
                 })
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+            setShowRecord(false)
         } finally {
             setLoaderPetition(false)
         }
     }
 
+    // Abre modal para confirmar rechazo de solicitud de registro
     const confirmDecline = (id = 0) => {
         Swal.fire({
             title: 'Rechazar',
@@ -398,14 +410,119 @@ const Records = () => {
             {
                 showRecord &&
                 <Modal onClose={e => setShowRecord(false)}>
-                    {
-                        loaderPetition &&
-                        <ActivityIndicator size={48} />
-                    }
-                    <h2>Detalles</h2>
+                    <div className="content-modal request">
+
+                        {
+                            loaderPetition &&
+                            <ActivityIndicator size={48} />
+                        }
+
+                        {
+                            !loaderPetition &&
+                            <>
+                                <div className="content-col">
+                                    <div className="col">
+                                        <h2>Detalles</h2>
+                                        <div className="row">
+                                            <span className="name">Nombre</span>
+                                            <span className="value">{dataRecord.name}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Correo</span>
+                                            <span className="value">{dataRecord.email}</span>
+                                        </div>
+
+
+                                        <div className="row">
+                                            <span className="name">Pais</span>
+                                            <span className="value">{dataRecord.country}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Telefono</span>
+                                            <span className="value">{dataRecord.phone}</span>
+                                        </div>
+
+                                        <div className="row color">
+                                            <span className="name">Sponsor</span>
+                                            {
+                                                dataRecord.email_sponsor !== null &&
+                                                < span className="value">{dataRecord.email_sponsor}</span>
+                                            }
+
+                                            {
+                                                dataRecord.email_sponsor === null &&
+                                                < span className="value">
+                                                    <i>SIN SPONSOR</i>
+                                                </span>
+                                            }
+                                        </div>
+
+                                    </div>
+
+                                    <div className="col">
+                                        <div className="rows border-bottom">
+                                            <div className="header">
+                                                <span className="status"></span>
+                                                <h2>Plan en Bitcoin</h2>
+                                            </div>
+
+                                            <div className="row">
+                                                <span className="name">Monto Actual</span>
+                                                <span className="value">{dataRecord.amount_btc} BTC</span>
+                                                {
+                                                    dataRecord.amount_btc !== null
+                                                    ? <span className="value">{dataRecord.amount_btc}</span>
+                                                    : <span className="value"> <i>SIN MONTO</i> </span>
+                                                }
+                                            </div>
+
+                                            <div className="row">
+                                                <span className="name">Wallet</span>
+                                                <span className="value">{dataRecord.wallet_btc}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="rows border-bottom">
+                                            <div className="header">
+                                                <span className="status"></span>
+                                                <h2>Plan en Ethereum</h2>
+                                            </div>
+
+                                            <div className="row">
+                                                <span className="name">Monto Actual</span>
+                                                {
+                                                    dataRecord.amount_eth !== null
+                                                    ? <span className="value">{dataRecord.amount_eth}</span>
+                                                    : <span className="value"> <i>SIN MONTO</i> </span>
+                                                }
+                                            </div>
+
+                                            <div className="row">
+                                                <span className="name">Wallet</span>
+                                                <span className="value">{dataRecord.wallet_eth}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div className="buttons">
+                                    <button className="button large" onClick={e => setShowRecord(false)}>
+                                        cerrar
+                                    </button>
+
+                                    <button className="button large secondary">
+                                        Aprobar
+                                    </button>
+                                </div>
+                            </>
+                        }
+                    </div>
                 </Modal>
             }
-        </div>
+        </div >
     )
 }
 

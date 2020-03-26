@@ -18,6 +18,7 @@ export const WithDecimals = (number = 0) => number.toString().replace(/\B(?=(\d{
 
 export const Round = (number = 0) => Math.round(number * 100) / 100
 
+/**Config Axios for petition automatic */
 export const Petition = Axios.create({
     baseURL: urlServer,
     // headers: {
