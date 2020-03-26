@@ -14,6 +14,18 @@ div.container-records {
       margin-top: 25px;
       width: 45%;
 
+      &.empty {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        img {
+          width: 256px;
+          margin-bottom: 10px;
+        }
+      }
+
       h2.title {
         color: $colorSecondary;
         margin-bottom: 15px;
@@ -28,7 +40,7 @@ div.container-records {
 
       .table {
         display: flex;
-        flex-direction: column;
+        flex-direction: column;        
 
         &.request {
           .row {
@@ -109,5 +121,52 @@ div.container-records {
         }
       }
     }
+  }
+
+
+  .content-modal {
+
+    .content-col {
+      display: flex;
+
+      .col {
+        width: 50%;
+
+        &:last-child {
+          text-align: right;
+        }
+
+        &.empty {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          opacity:  0.3;
+
+          h2 {
+            font-style: oblique;
+          }
+        }
+
+        h2 {
+          color: $colorYellow;
+          margin-bottom: 10px;
+          font-weight: normal;
+        }
+
+        .row {
+          display: flex;
+          flex-direction: column;
+          margin: 20px 0;
+
+          .name {
+            font-size: 0.7em;
+          }
+
+          .value {
+            font-size: 1.3em;
+          }
+        }
+      }
+    }    
   }
 }

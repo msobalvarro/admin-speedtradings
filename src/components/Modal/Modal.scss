@@ -1,0 +1,33 @@
+@import "../../utils/constants.scss";
+
+.modal {
+    animation: fadeEffect 0.5s;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    position: fixed;
+    width: 100vw;
+    
+    .background-modal {
+        background-color: rgba($color: #000000, $alpha: 0.5);
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 100;
+    }
+
+    .container {
+        background-color: $colorMain;
+        box-shadow: rgba($color: #000000, $alpha: 0.6) 0px 10px 10px 1px;
+        border-radius: 10px;
+        min-height: 256px;
+        padding: 20px;
+        width: 718px;
+        z-index: 200;
+    }
+}
