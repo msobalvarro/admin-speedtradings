@@ -11,9 +11,8 @@ import Astronaut from '../../static/images/astronaut.png'
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
 import Modal from "../../components/Modal/Modal"
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
-import Swal from "sweetalert2"
+import Swal from "sweetalert2/src/sweetalert2.js"
 import moment from "moment"
-
 
 const Records = () => {
     const { token } = useSelector(({ globalStorage }) => globalStorage)
@@ -31,7 +30,7 @@ const Records = () => {
     const [loaderPetition, setLoaderPetition] = useState(false)
 
     const ConfigurateComponent = async () => {
-
+        setLoader(true)
         try {
             await Petition.get('/admin/request/', {
                 headers: {
@@ -164,6 +163,62 @@ const Records = () => {
         }
     }
 
+    const confirmDecline = (id = 0) => {
+        Swal.fire({
+            title: 'Rechazar',
+            text: "¿Esta seguro que quiere ejecutar esta Accion? No se podra revertir",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Si, Rechazar!'
+        }).then(async (result) => {
+            if (result.value) {
+                setLoaderPetition(true)
+
+                await Petition.delete('/admin/request/decline', {
+                    data: { id },
+                    headers: {
+                        "x-auth-token": token
+                    }
+                }).then(({ status, data }) => {
+                    if (data.error) {
+                        Swal.fire('Se ha producido un error', data.message, 'error')
+                    } else {
+                        if (status === 200) {
+                            setShowRequest(false)
+
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Solicitud Rechazada',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+
+                            ConfigurateComponent()
+                        } else {
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Se ha producido un error',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
+                    }
+
+                }).catch(reason => {
+                    Swal.fire('Se ha producido un error', reason.toString(), 'error')
+                })
+
+
+                setLoaderPetition(false)
+            }
+        })
+    }
+
     return (
         <div className="container-records">
             <NavigationBar />
@@ -244,77 +299,97 @@ const Records = () => {
                 showRequest &&
                 <Modal onClose={e => setShowRequest(false)}>
                     <div className="content-modal request">
-                        <div className="content-col">
-                            <div className="col">
-                                <h2>Detalles de solicitud</h2>
-
-                                <div className="row">
-                                    <span className="name">Nombre</span>
-                                    <span className="value">{dataRequest.name}</span>
-                                </div>
-
-                                <div className="row">
-                                    <span className="name">Correo</span>
-                                    <span className="value">{dataRequest.email}</span>
-                                </div>
-
-                                <div className="row">
-                                    <span className="name">Hash de transaccion</span>
-                                    <span className="value">{dataRequest.hash}</span>
-                                </div>
-
-                                <div className="row">
-                                    <span className="name">Monto</span>
-                                    <span className="value">
-                                        {dataRequest.amount} {dataRequest.id_currency === 1 && 'BTC'} {dataRequest.id_currency === 2 && 'ETH'}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className={`col${dataRequest.sponsor_username === null ? ' empty' : ''}`}>
-                                {
-                                    dataRequest.sponsor_username === null &&
-                                    <>
-                                        <h2>
-                                            Sin Sponsor
-                                        </h2>
-                                    </>
-                                }
-
-                                {
-                                    dataRequest.sponsor_username !== null &&
-                                    <>
-                                        <h2>Sponsor</h2>
+                        {
+                            loaderPetition &&
+                            <ActivityIndicator size={48} />
+                        }
+                        {
+                            !loaderPetition &&
+                            <>
+                                <div className="content-col">
+                                    <div className="col">
+                                        <h2>Detalles de solicitud</h2>
 
                                         <div className="row">
                                             <span className="name">Nombre</span>
-                                            <span className="value">{dataRequest.sponsor_name}</span>
+                                            <span className="value">{dataRequest.name}</span>
                                         </div>
 
                                         <div className="row">
-                                            <span className="name">Correo Electronico</span>
-                                            <span className="value">{dataRequest.sponsor_email}</span>
+                                            <span className="name">Correo</span>
+                                            <span className="value">{dataRequest.email}</span>
                                         </div>
 
                                         <div className="row">
-                                            <span className="name">Correo Electronico</span>
-                                            <span className="value">{dataRequest.sponsor_email}</span>
+                                            <span className="name">Hash de transaccion</span>
+                                            <span className="value">{dataRequest.hash}</span>
                                         </div>
 
                                         <div className="row">
-                                            <span className="name">
-                                                Wallet en {dataRequest.id_currency === 1 && 'BTC'} {dataRequest.id_currency === 2 && 'ETH'}
-                                            </span>
-
+                                            <span className="name">Monto</span>
                                             <span className="value">
-                                                {dataRequest.id_currency === 1 && dataRequest.sponsor_wallet_btc}
-                                                {dataRequest.id_currency === 2 && dataRequest.sponsor_wallet_eth}
+                                                {dataRequest.amount} {dataRequest.id_currency === 1 && 'BTC'} {dataRequest.id_currency === 2 && 'ETH'}
                                             </span>
                                         </div>
-                                    </>
-                                }
-                            </div>
-                        </div>
+                                    </div>
+
+                                    <div className={`col${dataRequest.sponsor_username === null ? ' empty' : ''}`}>
+                                        {
+                                            dataRequest.sponsor_username === null &&
+                                            <>
+                                                <h2>
+                                                    Sin Sponsor
+                                            </h2>
+                                            </>
+                                        }
+
+                                        {
+                                            dataRequest.sponsor_username !== null &&
+                                            <>
+                                                <h2>Sponsor</h2>
+
+                                                <div className="row">
+                                                    <span className="name">Nombre</span>
+                                                    <span className="value">{dataRequest.sponsor_name}</span>
+                                                </div>
+
+                                                <div className="row">
+                                                    <span className="name">Correo Electronico</span>
+                                                    <span className="value">{dataRequest.sponsor_email}</span>
+                                                </div>
+
+                                                <div className="row">
+                                                    <span className="name">Correo Electronico</span>
+                                                    <span className="value">{dataRequest.sponsor_email}</span>
+                                                </div>
+
+                                                <div className="row">
+                                                    <span className="name">
+                                                        Wallet en {dataRequest.id_currency === 1 && 'BTC'} {dataRequest.id_currency === 2 && 'ETH'}
+                                                    </span>
+
+                                                    <span className="value">
+                                                        {dataRequest.id_currency === 1 && dataRequest.sponsor_wallet_btc}
+                                                        {dataRequest.id_currency === 2 && dataRequest.sponsor_wallet_eth}
+                                                    </span>
+                                                </div>
+                                            </>
+                                        }
+                                    </div>
+                                </div>
+
+
+                                <div className="buttons">
+                                    <button className="button large" onClick={e => confirmDecline(dataRequest.id)}>
+                                        Rechazar
+                                </button>
+
+                                    <button className="button large secondary">
+                                        Aprobar
+                                </button>
+                                </div>
+                            </>
+                        }
 
                     </div>
                 </Modal>

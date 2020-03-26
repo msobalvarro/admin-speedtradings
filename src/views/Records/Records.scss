@@ -167,6 +167,12 @@ div.container-records {
           }
         }
       }
-    }    
+    }
+    
+    .buttons {
+      display: flex;
+      margin-top: 15px;
+      justify-content: space-evenly;
+    }
   }
 }

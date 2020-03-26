@@ -1,6 +1,5 @@
 import jwt from "jwt-simple"
 import Axios from "axios"
-import { Dispatch } from "redux"
 
 // Constanst
 const keySecret = "testDevelop"
