@@ -10,6 +10,7 @@ import { DELETESTORAGE, SETSTORAGE } from '../store/ActionTypes'
 
 // Import Views
 import Login from './Login/Login'
+import Records from './Records/Records'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -41,8 +42,15 @@ const App = () => {
     <HashRouter>
       <Switch>
         {
-          loged &&
+          !loged &&
           <Route component={Login} />
+        }
+
+        {
+          loged &&
+          <>
+            <Route path="/" exact component={Records} />
+          </>
         }
       </Switch>
     </HashRouter>

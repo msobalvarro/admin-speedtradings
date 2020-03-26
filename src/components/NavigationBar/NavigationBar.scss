@@ -1,0 +1,36 @@
+@import "../../utils/constants.scss";
+
+nav.navigation-bar {
+    align-items: center;
+    // background-color: red;
+    display: flex;
+    justify-content: space-between;
+    // margin-top: 25px;
+    padding: 0 25px;
+    width: 100%;
+
+    img.brand-logo {
+        max-width: 128px;
+    }
+
+    div.content-links {
+        display: flex;
+
+        a {
+            text-decoration: none;
+            margin: 0 15px;
+            color: #FFF;
+            font-size: 16px;
+
+            transition: $transition;
+
+            &:hover {
+                color: $colorSecondary;
+            }
+
+            &.active {
+                color: $colorSecondary;
+            }
+        }
+    }
+}

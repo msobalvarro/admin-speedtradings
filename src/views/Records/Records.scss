@@ -1,0 +1,113 @@
+@import "../../utils/constants.scss";
+
+div.container-records {
+  .content {
+    display: flex;
+    justify-content: space-between;
+
+    .collection {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 20px;
+      min-height: 512px;
+      margin: 0 25px;
+      margin-top: 25px;
+      width: 45%;
+
+      h2.title {
+        color: $colorSecondary;
+        margin-bottom: 15px;
+        font-weight: normal;
+      }
+
+      &:last-child {
+        h2.title {
+          text-align: right;
+        }
+      }
+
+      .table {
+        display: flex;
+        flex-direction: column;
+
+        &.request {
+          .row {
+            span {
+              width: 33%;
+
+              &:nth-child(1) {
+                text-align: left;
+              }
+
+              &:nth-child(2) {
+                text-align: center;
+              }
+
+              &:nth-child(3) {
+                text-align: right;
+              }
+            }
+          }
+        }
+
+        &.records {
+          .row {
+            span {
+              width: 25%;
+              overflow:hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+
+              &:nth-child(1) {
+                text-align: left;
+              }
+
+              &:nth-child(2) {
+                text-align: center;
+              }
+
+              &:nth-child(3) {
+                text-align: center;
+              }
+
+              &:nth-child(4) {
+                text-align: right;
+              }
+            }
+          }
+        }
+
+        .header {
+          border-bottom: 2px solid $colorSecondary;
+          color: $colorSecondary;
+          display: flex;
+          justify-content: space-between;
+          padding: 10px 0;
+        }
+
+        .row {
+          border-bottom: 1px solid #fff;
+          display: flex;
+          justify-content: space-between;
+          padding: 10px 0;
+          transition: $transition;
+
+          span {
+            &.name {
+              text-transform: capitalize;
+            }
+
+            i {
+              opacity: 0.5;
+            }
+          }
+
+          &:hover {
+            background-color: rgba($color: #fff, $alpha: 0.1);
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}
