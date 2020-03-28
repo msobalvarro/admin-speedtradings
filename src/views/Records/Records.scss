@@ -1,6 +1,51 @@
 @import "../../utils/constants.scss";
 
 div.container-records {
+  .header-content {
+    margin-top: 25px;
+    align-items: center;
+    display: flex;
+    padding: 0 25px;
+    justify-content: space-between;
+
+    .row {
+      display: flex;
+      flex-direction: column;
+      span {
+        font-size: 12px;
+        margin-bottom: 5px;
+      }
+    }
+
+    .trading {
+      display: flex;
+      align-items: center;
+
+      span.message {
+        color: $colorYellow;
+        font-size: 12px;
+        margin-right: 10px;
+        opacity: 0.8;
+      }
+
+      select {
+        margin: 0 10px;
+      }
+
+      input {
+        text-align: center;
+        width: 64px;
+        -moz-appearance: textfield;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+      }
+    }
+  }
+
   .content {
     display: flex;
     justify-content: space-between;
@@ -40,7 +85,7 @@ div.container-records {
 
       .table {
         display: flex;
-        flex-direction: column;        
+        flex-direction: column;
 
         &.request {
           .row {
@@ -66,7 +111,7 @@ div.container-records {
           .row {
             span {
               width: 25%;
-              overflow:hidden;
+              overflow: hidden;
               white-space: nowrap;
               text-overflow: ellipsis;
 
@@ -123,14 +168,31 @@ div.container-records {
     }
   }
 
-
   .content-modal {
-
     .content-col {
       display: flex;
 
       .col {
         width: 50%;
+
+        .header {
+          align-items: center;
+          display: flex;
+          justify-content: space-between;
+          span {
+            border-radius: 25px;
+            color: $colorMain;
+            padding: 5px 10px;
+
+            &.active {
+              background-color: $colorYellow;
+            }
+
+            &.inactive {
+              background-color: gray;
+            }
+          }
+        }
 
         &:last-child {
           text-align: right;
@@ -140,7 +202,7 @@ div.container-records {
           display: flex;
           justify-content: center;
           align-items: center;
-          opacity:  0.3;
+          opacity: 0.3;
 
           h2 {
             font-style: oblique;
@@ -149,7 +211,6 @@ div.container-records {
 
         h2 {
           color: $colorYellow;
-          margin-bottom: 10px;
           font-weight: normal;
         }
 
@@ -172,7 +233,7 @@ div.container-records {
         }
       }
     }
-    
+
     .buttons {
       display: flex;
       margin-top: 15px;

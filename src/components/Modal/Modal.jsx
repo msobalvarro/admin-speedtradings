@@ -7,6 +7,12 @@ const Modal = ({ children, onClose = () => { } }) => {
     useEffect(() => {
         document.body.style.overflow = "hidden"
 
+        document.onkeyup = (key) => {
+            if (key.code === "Escape") {
+                onClose()
+            }
+        }
+
         return () => {
             document.body.style.overflow = "auto"
         }

@@ -14,7 +14,7 @@ import Records from './Records/Records'
 
 const App = () => {
   const dispatch = useDispatch()
-  useSelector(({ globalStorage }) => console.log(globalStorage))
+  // useSelector(({ globalStorage }) => console.log(globalStorage))
   const [loged, setLogin] = useState(false)
 
   useEffect(() => {
