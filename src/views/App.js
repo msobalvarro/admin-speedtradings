@@ -11,6 +11,7 @@ import { DELETESTORAGE, SETSTORAGE } from '../store/ActionTypes'
 // Import Views
 import Login from './Login/Login'
 import Records from './Records/Records'
+import Report from './Report/Report'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -50,6 +51,7 @@ const App = () => {
           loged &&
           <>
             <Route path="/" exact component={Records} />
+            <Route path="/reports" exact component={Report} />
           </>
         }
       </Switch>

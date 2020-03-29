@@ -1,0 +1,70 @@
+@import "../../utils/constants.scss";
+
+div.container-report {
+  .content {
+    padding: 0 25px;
+    margin: 25px 0;
+    width: 100%;
+
+    .header {
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+
+      select, input {
+        width: 250px;
+        font-size: 1.2em;
+      }
+    }
+
+    .table {
+      background-color: rgba($color: #fff, $alpha: 0.2);
+      border-radius: 10px;
+      padding: 10px;
+
+      .header {
+        color: $colorSecondary;
+        border-bottom: 2px solid $colorSecondary;
+        font-size: 1.2em;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 5px;
+        width: 100%;
+      }
+
+      .row {
+        border-bottom: 1px solid #fff;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 5px;
+        width: 100%;
+
+        span:nth-child(2) {
+          text-align: center;
+          width: 33%;
+        }
+      }
+
+      .footer {
+        color: $colorYellow;
+        font-size: 1.5em;
+        text-align: right;
+        padding: 10px 0;
+        margin-top: 20px;
+        width: 100%;
+      }
+    }
+
+    .empty {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      img {
+        width: 256px;
+        margin-bottom: 25px;
+      }
+    }
+  }
+}

@@ -328,6 +328,10 @@ const Records = () => {
                 throw "El porcentaje del trading no es valido"
             }
 
+            if (cryptoCurrency === "default") {
+                throw "Seleccione una moneda"
+            }
+
             // Verificamos si el trading en esa moneda ya se hizo
             if (!dataTrading.crypto.includes(cryptoCurrency)) {
 
@@ -338,8 +342,6 @@ const Records = () => {
                         "x-auth-token": token
                     }
                 }).then(({ status, data }) => {
-                    console.log(status)
-
                     if (data.error) {
                         throw data.message
                     }
@@ -374,6 +376,8 @@ const Records = () => {
                             `,
                             "success"
                         )
+
+                        setPercentage('')
                     }
 
                 }).catch(reason => {
