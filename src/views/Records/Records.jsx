@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import Validator from "validator"
+import jwt from "jwt-simple"
 
-import { Petition } from "../../utils/constanst"
+import { Petition, keySecret } from "../../utils/constanst"
+import moment from "moment"
 
 // Import styles and assets
 import "./Records.scss"
@@ -13,7 +15,6 @@ import ActivityIndicator from "../../components/ActivityIndicator/Activityindica
 import Modal from "../../components/Modal/Modal"
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import Swal from "sweetalert2"
-import moment from "moment"
 
 const Records = () => {
     const { token } = useSelector(({ globalStorage }) => globalStorage)
@@ -37,6 +38,7 @@ const Records = () => {
     // Estado para renderizar los preloader/loader al hacer una peticion
     const [loader, setLoader] = useState(true)
     const [loaderPetition, setLoaderPetition] = useState(false)
+    const [loaderTrading, setLoaderTrading] = useState(false)
 
     // Estados para los componentes de ejecutar trading
     const [percentage, setPercentage] = useState('')
@@ -87,11 +89,15 @@ const Records = () => {
         const _data = localStorage.getItem('@trading')
 
         if (_data) {
-            const jsonTrading = JSON.parse(_data)
+            const jsonTrading = jwt.decode(_data, keySecret)
 
-            setDataTrading(jsonTrading)
+            if (jsonTrading.day !== moment().get('day')) {
+                localStorage.removeItem('@trading')
 
-            console.log(jsonTrading)
+                setDataTrading({ crypto: [], day: 0 })
+            } else {
+                setDataTrading(jsonTrading)
+            }
         }
     }
 
@@ -132,6 +138,7 @@ const Records = () => {
         if (
             item.name.length > 0 && item.name.toLowerCase().search(filter) > -1 ||
             item.country.length > 0 && item.country.toLowerCase().search(filter) > -1
+            // allRecord.id_user
         ) {
             return (
                 <div className="row" key={index} onClick={e => openDetailsRecord(item.id_user)}>
@@ -167,12 +174,9 @@ const Records = () => {
                 }
             })
                 .then(({ data }) => {
-                    console.log(data)
-
                     if (data.error) {
                         throw data.message
                     } else {
-                        // console.log(data)
                         setDataRequest(data)
                     }
                 })
@@ -201,8 +205,6 @@ const Records = () => {
                 }
             })
                 .then(({ data }) => {
-                    console.log(data)
-
                     if (data.error) {
                         throw data.message
                     } else {
@@ -283,8 +285,6 @@ const Records = () => {
                 "x-auth-token": token
             }
         }).then(({ status, data }) => {
-            console.log(data)
-
             if (data.error) {
                 Swal.fire('Se ha producido un error', data.message, 'error')
             } else {
@@ -319,21 +319,80 @@ const Records = () => {
         setLoaderPetition(false)
     }
 
-    const applyTrading = () => {
+    // Metodo para aplicar trading
+    const applyTrading = async () => {
         try {
+            setLoaderTrading(true)
+
             if (!Validator.isNumeric(percentage)) {
                 throw "El porcentaje del trading no es valido"
             }
 
-            const data = {
-                crypto: [cryptoCurrency],
-                day: moment().get('day')
+            // Verificamos si el trading en esa moneda ya se hizo
+            if (!dataTrading.crypto.includes(cryptoCurrency)) {
+
+                const dataSend = { percentage, id_currency: Number(cryptoCurrency) }
+
+                await Petition.post('/admin/trading', dataSend, {
+                    headers: {
+                        "x-auth-token": token
+                    }
+                }).then(({ status, data }) => {
+                    console.log(status)
+
+                    if (data.error) {
+                        throw data.message
+                    }
+
+                    if (status === 200 && data.response === "success") {
+                        // debugger
+
+                        // Copiamos el arreglo de las cryptos procesadas
+                        const arr = dataTrading.crypto
+                        arr.push(cryptoCurrency)
+
+                        // creamos un objeto exacto al que esta en el estado
+                        const data = {
+                            crypto: arr,
+                            day: moment().get('day')
+                        }
+
+                        // Modificamos con los nuevos datos
+                        setDataTrading(data)
+
+                        // lo agregamos al localstorare codificado
+                        localStorage.setItem('@trading', jwt.encode(data, keySecret))
+
+
+                        Swal.fire(
+                            `Trading procesado`,
+                            `
+                            Todos los planes de inversion en 
+                            ${cryptoCurrency === "1" ? 'BTC' : ''}
+                            ${cryptoCurrency === "2" ? 'ETH' : ''}
+                            fueron reportados
+                            `,
+                            "success"
+                        )
+                    }
+
+                }).catch(reason => {
+                    throw reason
+                })
+
+            } else {
+                Swal.fire(
+                    `${cryptoCurrency === '1' ? 'Bitcoin' : ''} ${cryptoCurrency === '2' ? 'Ethereum' : ''}`,
+                    "Esta moneda ya se proceso, elija una diferente",
+                    "warning"
+                )
             }
 
-            localStorage.setItem('@trading', JSON.stringify(data))
 
         } catch (error) {
-            Swal.fire("Un momento", error, 'warning')
+            Swal.fire("Ha ocurrido un error", error, 'warning')
+        } finally {
+            setLoaderTrading(false)
         }
 
 
@@ -379,7 +438,7 @@ const Records = () => {
 
                     </select>
 
-                    <button className="button secondary" onClick={applyTrading}>Aplicar Trading</button>
+                    <button className="button secondary" disabled={dataTrading.crypto.length === 2} onClick={applyTrading}>Aplicar Trading</button>
                 </div>
 
 
@@ -648,7 +707,7 @@ const Records = () => {
                                                 <span className="name">Monto Actual</span>
                                                 {
                                                     dataRecord.amount_eth !== null
-                                                        ? <span className="value">{dataRecord.amount_eth}</span>
+                                                        ? <span className="value">{dataRecord.amount_eth} ETH</span>
                                                         : <span className="value"> <i>SIN MONTO</i> </span>
                                                 }
                                             </div>

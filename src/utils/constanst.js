@@ -2,8 +2,8 @@ import jwt from "jwt-simple"
 import Axios from "axios"
 
 // Constanst
-const keySecret = "testDevelop"
 const keyStorage = "@storage"
+export const keySecret = "testDevelop"
 
 export const urlServer = "http://localhost:8080"
 
