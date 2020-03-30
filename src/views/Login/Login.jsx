@@ -54,7 +54,7 @@ const Login = () => {
     }
 
     try {
-      await Petition.post(`/login`, data)
+      await Petition.post(`/admin-login`, data)
         .then(response => {
           if (response.data.error) {
             Swal.fire('Error al auntenticar', response.data.message, 'warning')
