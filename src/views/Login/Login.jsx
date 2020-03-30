@@ -118,9 +118,9 @@ const Login = () => {
             </button>
           </div>
 
-          <div className="row">
+          {/* <div className="row">
             <Link className="link register" to="/register">Registarse</Link>
-          </div>
+          </div> */}
         </form>
 
       </div>
