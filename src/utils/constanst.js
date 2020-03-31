@@ -25,6 +25,9 @@ export const Petition = Axios.create({
     // headers: {
     //     "content-type": "application/x-www-form-urlencoded"
     // },
+    headers: {
+        "withCredentials": true
+    },
     validateStatus: (status) => {
         if (status === 401) {
             LogOut()
