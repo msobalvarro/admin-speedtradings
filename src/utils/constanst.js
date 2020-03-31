@@ -22,9 +22,6 @@ export const Round = (number = 0) => Math.round(number * 100) / 100
 /**Config Axios for petition automatic */
 export const Petition = Axios.create({
     baseURL: urlServer,
-    // headers: {
-    //     "content-type": "application/x-www-form-urlencoded"
-    // },
     validateStatus: (status) => {
         if (status === 401) {
             LogOut()
