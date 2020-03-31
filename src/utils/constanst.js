@@ -5,7 +5,7 @@ import Axios from "axios"
 const keyStorage = "@storage"
 export const keySecret = "testDevelop"
 
-export const urlServer = "https://backend-speedtradings.herokuapp.com"
+export const urlServer = "https://ardent-medley-272823.appspot.com"
 // export const urlServer = "http://localhost:8080"
 
 /**
@@ -22,6 +22,9 @@ export const Round = (number = 0) => Math.round(number * 100) / 100
 /**Config Axios for petition automatic */
 export const Petition = Axios.create({
     baseURL: urlServer,
+    headers: {
+        "Content-Type": "application/json"
+    },
     validateStatus: (status) => {
         if (status === 401) {
             LogOut()
