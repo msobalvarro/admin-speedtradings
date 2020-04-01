@@ -5,7 +5,7 @@ import Axios from "axios"
 const keyStorage = "@storage"
 export const keySecret = "testDevelop"
 
-export const urlServer = "https://backend-speedtradings.herokuapp.com"
+export const urlServer = "https://ardent-medley-272823.appspot.com"
 // export const urlServer = "http://localhost:8080"
 
 /**
