@@ -91,6 +91,9 @@ div.container-records {
           .row {
             span {
               width: 33%;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
 
               &:nth-child(1) {
                 text-align: left;
@@ -171,9 +174,10 @@ div.container-records {
   .content-modal {
     .content-col {
       display: flex;
+      justify-content: space-between;
 
       .col {
-        width: 50%;
+        width: 45%;
 
         .header {
           align-items: center;
@@ -225,6 +229,24 @@ div.container-records {
 
           .value {
             font-size: 1.3em;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            &.copy:hover {
+              position: relative;
+              cursor: pointer;
+
+              &::before {
+                border-radius: 3px;
+                content: "Toca para copiar";
+                font-size: 10px;
+                background: #c53c1a;
+                right: 0%;
+                position: absolute;
+                padding: 5px;
+              }
+            }
           }
 
           i {

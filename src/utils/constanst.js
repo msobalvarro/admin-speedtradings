@@ -1,5 +1,6 @@
 import jwt from "jwt-simple"
 import Axios from "axios"
+import Swal from "sweetalert2"
 
 // Constanst
 const keyStorage = "@storage"
@@ -18,6 +19,17 @@ export const urlServer = "https://ardent-medley-272823.appspot.com"
 export const WithDecimals = (number = 0) => number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 
 export const Round = (number = 0) => Math.round(number * 100) / 100
+
+/**Copy string */
+export const copyData = (str = "") => {
+    navigator.clipboard.writeText(str).catch(_ => {
+        return false
+    })
+
+
+    Swal.fire('Direccion Wallet copiada', '', 'success')
+}
+
 
 /**Config Axios for petition automatic */
 export const Petition = Axios.create({
