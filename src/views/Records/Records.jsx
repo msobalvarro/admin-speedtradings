@@ -3,7 +3,7 @@ import { useSelector } from "react-redux"
 import Validator from "validator"
 import jwt from "jwt-simple"
 
-import { Petition, keySecret } from "../../utils/constanst"
+import { Petition, keySecret, copyData } from "../../utils/constanst"
 import moment from "moment"
 
 // Import styles and assets
@@ -177,6 +177,7 @@ const Records = () => {
                     if (data.error) {
                         throw data.message
                     } else {
+                        console.log(data)
                         setDataRequest(data)
                     }
                 })
@@ -548,7 +549,7 @@ const Records = () => {
 
                                         <div className="row">
                                             <span className="name">Hash de transaccion</span>
-                                            <span className="value">{dataRequest.hash}</span>
+                                            <span className="value copy" onClick={_ => copyData(dataRequest.hash)}>{dataRequest.hash}</span>
                                         </div>
 
                                         <div className="row">
@@ -585,8 +586,8 @@ const Records = () => {
                                                 </div>
 
                                                 <div className="row">
-                                                    <span className="name">Correo Electronico</span>
-                                                    <span className="value">{dataRequest.sponsor_email}</span>
+                                                    <span className="name">Comision</span>
+                                                    <span className="value">{dataRequest.amount * 0.05}</span>
                                                 </div>
 
                                                 <div className="row">
@@ -594,7 +595,9 @@ const Records = () => {
                                                         Wallet en {dataRequest.id_currency === 1 && 'BTC'} {dataRequest.id_currency === 2 && 'ETH'}
                                                     </span>
 
-                                                    <span className="value">
+                                                    <span className="value copy" onClick={_ => {
+                                                        copyData(dataRequest.id_currency === 1 ? dataRequest.sponsor_wallet_btc : dataRequest.sponsor_wallet_eth)
+                                                    }}>
                                                         {dataRequest.id_currency === 1 && dataRequest.sponsor_wallet_btc}
                                                         {dataRequest.id_currency === 2 && dataRequest.sponsor_wallet_eth}
                                                     </span>
@@ -695,7 +698,7 @@ const Records = () => {
 
                                             <div className="row">
                                                 <span className="name">Wallet</span>
-                                                <span className="value">{dataRecord.wallet_btc}</span>
+                                                <span className="value copy" onClick={_ => copyData(dataRecord.wallet_btc)}>{dataRecord.wallet_btc}</span>
                                             </div>
                                         </div>
 
@@ -718,7 +721,7 @@ const Records = () => {
 
                                             <div className="row">
                                                 <span className="name">Wallet</span>
-                                                <span className="value">{dataRecord.wallet_eth}</span>
+                                                <span className="value copy" onClick={_ => copyData(dataRecord.wallet_eth)}>{dataRecord.wallet_eth}</span>
                                             </div>
                                         </div>
                                     </div>
