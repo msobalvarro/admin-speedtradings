@@ -6,8 +6,8 @@ import Swal from "sweetalert2"
 const keyStorage = "@storage"
 export const keySecret = "testDevelop"
 
-export const urlServer = "https://ardent-medley-272823.appspot.com"
-// export const urlServer = "http://localhost:8080"
+// export const urlServer = "https://ardent-medley-272823.appspot.com"
+export const urlServer = "http://localhost:8080"
 
 /**
  * Format number with decimal miles separator

@@ -71,8 +71,13 @@ div.container-records {
         }
       }
 
+      .separator {
+        margin: 25px 0;
+        // border-bottom: 1px solid #FFF;
+      }
+
       h2.title {
-        color: $colorSecondary;
+        color: $colorYellow;
         margin-bottom: 15px;
         font-weight: normal;
       }
