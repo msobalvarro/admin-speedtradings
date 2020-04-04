@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import Validator from "validator"
 import jwt from "jwt-simple"
+import io from "socket.io-client"
 
-import { Petition, keySecret, copyData } from "../../utils/constanst"
+import { Petition, keySecret, copyData, urlServer } from "../../utils/constanst"
 import moment from "moment"
 
 // Import styles and assets
@@ -23,16 +24,19 @@ const Records = () => {
     const [filter, setFilter] = useState('')
 
     // Estado que guarda la coleccion para renderizar las listas de registros y solicitudes
+    const [allUpgrades, setUpgrades] = useState([])
     const [allRequest, setRequests] = useState([])
     const [allRecord, setRecords] = useState([])
 
     // Estado que guarda el detalle de los registros
     const [dataRequest, setDataRequest] = useState({})
+    const [dataUpgrade, setDataUpgrade] = useState({})
     const [dataRecord, setDataRecord] = useState({})
 
     // Estados que manejan el renderizado de las ventanas modales
     // para ver los detalles de cada registro:
     const [showRequest, setShowRequest] = useState(false)
+    const [showUpgrade, setShowUpgrade] = useState(false)
     const [showRecord, setShowRecord] = useState(false)
 
     // Estado para renderizar los preloader/loader al hacer una peticion
@@ -47,34 +51,72 @@ const Records = () => {
     // Estado que guarda la configuracion diaria del trading
     const [dataTrading, setDataTrading] = useState({ crypto: [], day: 0 })
 
+    // Obtiene todas las solicitudes
+    const getAllRequest = () => {
+        Petition.get('/admin/request/', {
+            headers: {
+                "x-auth-token": token
+            }
+        }).then(({ data }) => {
+            if (data.error) {
+                Swal.fire('Ha ocurrido un error', data.message, 'error')
+            } else {
+                setRequests(data)
+            }
+        })
+    }
+
+    // Obtiene todos los registros
+    const getAllRecords = () => {
+        Petition.get('/admin/records/', {
+            headers: {
+                "x-auth-token": token
+            }
+        }).then(({ data }) => {
+            if (data.error) {
+                Swal.fire('Ha ocurrido un error', data.message, 'error')
+            } else {
+                setRecords(data)
+            }
+        })
+    }
+
+    const getAllUpgrades = () => {
+        Petition.get('/admin/upgrades', {
+            headers: {
+                "x-auth-token": token
+            }
+        }).then(({ data }) => {
+            if (data.error) {
+                Swal.fire('Ha ocurrido un error', data.message, 'error')
+            } else {
+                setUpgrades(data)
+            }
+        })
+    }
+
+    // Configura y esta a la esucha del servidor con soket
+    const ConfigurateSoket = () => {
+        const socket = io.connect("http://localhost")
+
+        // socket.
+
+        socket.on('new', (args) => {
+            console.log(args)
+        })
+
+        socket.emit('my other event', { my: 'data' })
+    }
+
     // Ejecuta peticiones al servidor para obtener todos los datos de las tablas
     const ConfigurateComponent = async () => {
         setLoader(true)
         try {
-            await Petition.get('/admin/request/', {
-                headers: {
-                    "x-auth-token": token
-                }
-            }).then(({ data }) => {
-                if (data.error) {
-                    throw data.message
-                } else {
-                    setRequests(data)
-                }
-            })
+            await getAllRequest()
 
+            await getAllRecords()
 
-            await Petition.get('/admin/records/', {
-                headers: {
-                    "x-auth-token": token
-                }
-            }).then(({ data }) => {
-                if (data.error) {
-                    throw data.message
-                } else {
-                    setRecords(data)
-                }
-            })
+            await getAllUpgrades()
 
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error.toString(), 'error')
@@ -105,6 +147,8 @@ const Records = () => {
         ConfigurateComponent()
 
         configurateTrading()
+
+        // ConfigurateSoket()
     }, [])
 
     // Componente que representa un articulo de la lista
@@ -117,6 +161,30 @@ const Records = () => {
         ) {
             return (
                 <div className="row" key={index} onClick={_ => openDetailsRequest(item.id)}>
+                    <span className="name">{item.name}</span>
+                    <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
+                    <span>
+                        {
+                            item.sponsor_email !== null
+                                ? item.sponsor_email
+                                : <i>Sin sponsor</i>
+                        }
+                    </span>
+                </div>
+            )
+        }
+    }
+
+    // Componente que representa un articulo de la lista
+    // de solicitudes de Upgrade
+    const itemUpgrade = (item, index) => {
+        if (
+            item.name.length > 0 && item.name.toLowerCase().search(filter) > -1 ||
+            item.amount.length > 0 && item.amount.toLowerCase().search(filter) > -1 ||
+            item.sponsor_email !== null && item.sponsor_email.toLowerCase().search(filter) > -1
+        ) {
+            return (
+                <div className="row" key={index} onClick={_ => openDetailsUpgrade(item.id)}>
                     <span className="name">{item.name}</span>
                     <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
                     <span>
@@ -184,6 +252,40 @@ const Records = () => {
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error.toString(), 'error')
             setShowRequest(false)
+        } finally {
+            setLoaderPetition(false)
+        }
+    }
+
+    // Funcion que abre detalles al hacer la peticion de
+    // detalles de solitud upgrade
+    const openDetailsUpgrade = async (id = 0) => {
+        // Open modal
+        setShowUpgrade(true)
+
+        try {
+            // Show loader
+            setLoaderPetition(true)
+
+            // get data for petition
+            await Petition.post('/admin/upgrades/id', { id }, {
+                headers: {
+                    "x-auth-token": token
+                }
+            })
+                .then(({ data }) => {
+                    console.log(data)
+
+                    if (data.error) {
+                        throw data.message
+                    } else {
+                        console.log(data)
+                        setDataUpgrade(data)
+                    }
+                })
+        } catch (error) {
+            Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+            setShowUpgrade(false)
         } finally {
             setLoaderPetition(false)
         }
@@ -277,6 +379,62 @@ const Records = () => {
         })
     }
 
+    const confirmDeclineUpgrade = (id = 0) => {
+        Swal.fire({
+            title: 'Rechazar',
+            text: "¿Esta seguro que quiere ejecutar esta Accion? No se podra revertir",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Si, Rechazar!'
+        }).then(async (result) => {
+            if (result.value) {
+                setLoaderPetition(true)
+
+                await Petition.delete('/admin/upgrades/decline', {
+                    data: { id },
+                    headers: {
+                        "x-auth-token": token
+                    }
+                }).then(({ status, data }) => {
+                    if (data.error) {
+                        Swal.fire('Se ha producido un error', data.message, 'error')
+                    } else {
+                        if (status === 200) {
+                            setShowUpgrade(false)
+
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Upgrade Rechazada',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+
+                            ConfigurateComponent()
+                        } else {
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'error',
+                                title: 'Se ha producido un error',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
+                    }
+
+                }).catch(reason => {
+                    Swal.fire('Se ha producido un error', reason.toString(), 'error')
+                })
+
+
+                setLoaderPetition(false)
+            }
+        })
+    }
+
     // Abre modal para confirmar rechazo de solicitud de registro
     const AcceptRequest = async (id = 0) => {
         setLoaderPetition(true)
@@ -291,6 +449,49 @@ const Records = () => {
             } else {
                 if (status === 200) {
                     setShowRequest(false)
+
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Solicitud Aceptada',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+
+                    ConfigurateComponent()
+                } else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Se ha producido un error',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            }
+
+        }).catch(reason => {
+            Swal.fire('Se ha producido un error', reason.toString(), 'error')
+        })
+
+
+        setLoaderPetition(false)
+    }
+
+    // Abre modal para confirmar solicitud de Upgrade
+    const AcceptUpgrade = async (id = 0) => {
+        setLoaderPetition(true)
+
+        await Petition.post('/admin/upgrades/accept', { id }, {
+            headers: {
+                "x-auth-token": token
+            }
+        }).then(({ status, data }) => {
+            if (data.error) {
+                Swal.fire('Se ha producido un error', data.message, 'error')
+            } else {
+                if (status === 200) {
+                    setShowUpgrade(false)
 
                     Swal.fire({
                         position: 'top-end',
@@ -457,7 +658,7 @@ const Records = () => {
                     }
 
                     {
-                        (allRequest.length === 0 && !loader) &&
+                        (allRequest.length === 0 && allUpgrades.length === 0 && !loader) &&
                         <>
                             <img src={Astronaut} alt="empty" />
                             <h2 className="title">No hay Solicitudes</h2>
@@ -483,6 +684,32 @@ const Records = () => {
                             </div>
                         </>
                     }
+
+                    {/* <hr /> */}
+
+                    {
+                        allUpgrades.length > 0 &&
+                        <>
+                            <div className="separator" />
+
+                            <h2 className="title">Solicitudes de UPGRADES</h2>
+
+
+                            <div className="table request">
+                                <div className="header">
+                                    <span>Nombre</span>
+                                    <span>Monto</span>
+                                    <span>Sponsor</span>
+                                </div>
+
+                                {
+                                    allUpgrades.map(itemUpgrade)
+                                }
+                            </div>
+
+                        </>
+                    }
+
                 </div>
 
                 <div className={`collection${allRecord.length === 0 ? ' empty' : ''}`}>
@@ -524,7 +751,7 @@ const Records = () => {
 
             {
                 showRequest &&
-                <Modal onClose={e => setShowRequest(false)}>
+                <Modal onClose={_ => setShowRequest(false)}>
                     <div className="content-modal request">
                         {
                             loaderPetition &&
@@ -625,6 +852,115 @@ const Records = () => {
             }
 
             {
+                showUpgrade &&
+                <Modal onClose={_ => setShowUpgrade(false)}>
+                    <div className="content-modal request">
+                        {
+                            loaderPetition &&
+                            <ActivityIndicator size={48} />
+                        }
+                        {
+                            !loaderPetition &&
+                            <>
+                                <div className="content-col">
+                                    <div className="col">
+                                        <h2>Detalles de solicitud</h2>
+
+                                        <div className="row">
+                                            <span className="name">Nombre</span>
+                                            <span className="value">{dataUpgrade.name}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Correo</span>
+                                            <span className="value">{dataUpgrade.email}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Hash de transaccion</span>
+                                            <span className="value copy" onClick={_ => copyData(dataUpgrade.hash)}>{dataUpgrade.hash}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Monto Actual</span>
+                                            <span className="value">
+                                                {dataUpgrade.current_amount} {dataUpgrade.id_currency === 1 && 'BTC'} {dataUpgrade.id_currency === 2 && 'ETH'}
+                                            </span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Monto a Sumar</span>
+                                            <span className="value">
+                                                {dataUpgrade.amount_requested} {dataUpgrade.id_currency === 1 && 'BTC'} {dataUpgrade.id_currency === 2 && 'ETH'}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className={`col${dataUpgrade.id_sponsor === null ? ' empty' : ''}`}>
+                                        {
+                                            dataUpgrade.id_sponsor === null &&
+                                            <>
+                                                <h2>
+                                                    Sin Sponsor
+                                            </h2>
+                                            </>
+                                        }
+
+                                        {
+                                            dataUpgrade.id_sponsor !== null &&
+                                            <>
+                                                <h2>Sponsor</h2>
+
+                                                <div className="row">
+                                                    <span className="name">Nombre</span>
+                                                    <span className="value">{dataUpgrade.sponsor_name}</span>
+                                                </div>
+
+                                                <div className="row">
+                                                    <span className="name">Correo Electronico</span>
+                                                    <span className="value">{dataUpgrade.sponsor_email}</span>
+                                                </div>
+
+                                                <div className="row">
+                                                    <span className="name">Comision por Upgrade</span>
+                                                    <span className="value">{dataUpgrade.amount_requested * 0.05}</span>
+                                                </div>
+
+                                                <div className="row">
+                                                    <span className="name">
+                                                        Wallet en {dataUpgrade.id_currency === 1 && 'BTC'} {dataUpgrade.id_currency === 2 && 'ETH'}
+                                                    </span>
+
+                                                    <span className="value copy" onClick={_ => {
+                                                        copyData(dataUpgrade.id_currency === 1 ? dataUpgrade.sponsor_wallet_btc : dataUpgrade.sponsor_wallet_eth)
+                                                    }}>
+                                                        {dataUpgrade.id_currency === 1 && dataUpgrade.sponsor_wallet_btc}
+                                                        {dataUpgrade.id_currency === 2 && dataUpgrade.sponsor_wallet_eth}
+                                                    </span>
+                                                </div>
+                                            </>
+                                        }
+                                    </div>
+                                </div>
+
+
+                                <div className="buttons">
+                                    <button className="button large" onClick={_ => confirmDeclineUpgrade(dataUpgrade.id)}>
+                                        Rechazar
+                                    </button>
+
+                                    <button className="button large secondary" onClick={_ => AcceptUpgrade(dataUpgrade.id)}>
+                                        Aprobar
+                                </button>
+                                </div>
+                            </>
+                        }
+
+                    </div>
+                </Modal>
+            }
+
+            {
                 showRecord &&
                 <Modal onClose={e => setShowRecord(false)}>
                     <div className="content-modal request">
@@ -675,6 +1011,14 @@ const Records = () => {
                                                 </span>
                                             }
                                         </div>
+
+                                        {/* {
+                                            dataRecord.email_sponsor !== null &&
+                                            <div className="row">
+                                                <span className="name">Comision</span>
+                                                <span className="value">{dataRecord.phone}</span>
+                                            </div>
+                                        } */}
 
                                     </div>
 
