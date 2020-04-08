@@ -651,7 +651,7 @@ const Records = () => {
             </div>
 
             <div className="content">
-                <div className={`collection${allRequest.length === 0 ? ' empty' : ''}`}>
+                <div className={`collection${(allRequest.length === 0 && allUpgrades.length === 0) ? ' empty' : ''}`}>
                     {
                         loader &&
                         <ActivityIndicator size={64} />
