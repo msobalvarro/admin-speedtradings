@@ -12,6 +12,7 @@ import { DELETESTORAGE, SETSTORAGE } from '../store/ActionTypes'
 import Login from './Login/Login'
 import Records from './Records/Records'
 import Report from './Report/Report'
+import Logs from './Logs/Logs'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -52,6 +53,7 @@ const App = () => {
           <>
             <Route path="/" exact component={Records} />
             <Route path="/reports" exact component={Report} />
+            <Route path="/logs" exact component={Logs} />
           </>
         }
       </Switch>
