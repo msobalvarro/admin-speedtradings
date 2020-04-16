@@ -51,6 +51,10 @@ const Records = () => {
     // Estado que guarda la configuracion diaria del trading
     const [dataTrading, setDataTrading] = useState({ crypto: [], day: 0 })
 
+    // Estado que guarda el hash de transaccion al sponsor_email
+    // Cuando un usuario hace una solicitud de inversion
+    const [hashForSponsor, setHashForSponsor] = useState("")
+
     // Obtiene todas las solicitudes
     const getAllRequest = () => {
         Petition.get('/admin/request/', {
@@ -436,43 +440,54 @@ const Records = () => {
     }
 
     // Abre modal para confirmar rechazo de solicitud de registro
-    const AcceptRequest = async (id = 0) => {
+    const AcceptRequest = async (dataRequestItem = {}) => {
         setLoaderPetition(true)
 
-        await Petition.post('/admin/request/accept', { id }, {
-            headers: {
-                "x-auth-token": token
+        try {
+            console.log(dataRequestItem)
+
+            if (dataRequestItem.sponsor_username !== null && hashForSponsor.length === 0) {
+                throw "El hash de transaccion a sponsor es requerido"
             }
-        }).then(({ status, data }) => {
-            if (data.error) {
-                Swal.fire('Se ha producido un error', data.message, 'error')
-            } else {
-                if (status === 200) {
-                    setShowRequest(false)
 
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Solicitud Aceptada',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-
-                    ConfigurateComponent()
-                } else {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: 'Se ha producido un error',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
+            await Petition.post('/admin/request/accept', { data: dataRequestItem, hashSponsor: hashForSponsor }, {
+                headers: {
+                    "x-auth-token": token
                 }
-            }
+            }).then(({ status, data }) => {
+                if (data.error) {
+                    Swal.fire('Se ha producido un error', data.message, 'error')
+                } else {
+                    if (status === 200) {
+                        setShowRequest(false)
 
-        }).catch(reason => {
-            Swal.fire('Se ha producido un error', reason.toString(), 'error')
-        })
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Solicitud Aceptada',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+
+                        ConfigurateComponent()
+                    } else {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: 'Se ha producido un error',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }
+
+            }).catch(reason => {
+                Swal.fire('Se ha producido un error', reason.toString(), 'error')
+            })
+
+        } catch (error) {
+            Swal.fire("Ha ocurrido un error", error.toString(), "warning")
+        }
 
 
         setLoaderPetition(false)
@@ -644,7 +659,15 @@ const Records = () => {
 
                     </select>
 
-                    <button className="button secondary" disabled={dataTrading.crypto.length === 2} onClick={applyTrading}>Aplicar Trading</button>
+                    <button className="button secondary" disabled={dataTrading.crypto.length === 2 || loaderTrading} onClick={applyTrading}>
+                        {
+                            loaderTrading
+                                ? <>
+                                    <ActivityIndicator size={16} /> <span>Cargando..</span>
+                                </>
+                                : <span>Aplicar Trading</span>
+                        }
+                    </button>
                 </div>
 
 
@@ -829,6 +852,16 @@ const Records = () => {
                                                         {dataRequest.id_currency === 2 && dataRequest.sponsor_wallet_eth}
                                                     </span>
                                                 </div>
+
+                                                <div className="row">
+                                                    <span className="name">Hash de transaccion</span>
+                                                    <input
+                                                        type="text"
+                                                        value={hashForSponsor}
+                                                        onChange={e => setHashForSponsor(e.target.value)}
+                                                        placeholder="Transaccion a sponsor"
+                                                        className="text-input" />
+                                                </div>
                                             </>
                                         }
                                     </div>
@@ -840,7 +873,7 @@ const Records = () => {
                                         Rechazar
                                 </button>
 
-                                    <button className="button large secondary" onClick={_ => AcceptRequest(dataRequest.id)}>
+                                    <button className="button large secondary" onClick={_ => AcceptRequest(dataRequest)}>
                                         Aprobar
                                 </button>
                                 </div>
