@@ -21,7 +21,12 @@ const Logs = () => {
         })
             .then(({ data, status }) => {
                 if (status === 200) {
-                    setLogs(data.reverse())
+                    // Verificamos si hay logs
+                    if (data.length) {
+                        setLogs(data.reverse())
+                    } else {
+                        setLogs([])
+                    }
                 }
             })
     }, [])
@@ -53,6 +58,11 @@ const Logs = () => {
                             )
                         }
                     })
+                }
+
+                {
+                    dataLogs.length === 0 &&
+                    <h2 className="empty">No se encontraron LOGS</h2>
                 }
             </div>
         </div>
