@@ -59,8 +59,6 @@ const Records = () => {
 
     // Obtiene todas las solicitudes
     const getAllRequest = () => {
-        console.log("request")
-
         Petition.get('/admin/request/', {
             headers: {
                 "x-auth-token": token
@@ -128,13 +126,13 @@ const Records = () => {
 
             // esperamos respuesta de una nueva solicitud atravez del socket
             socket.on("newRequest", async () => {
-                getAllRequest()
+                await getAllRequest()
                 audioNotification.play()
             })
 
             // Esperamos una nueva solictud de upgrade
             socket.on("newUpgrade", async () => {
-                getAllUpgrades()
+                await getAllUpgrades()
                 audioNotification.play()
             })
 
