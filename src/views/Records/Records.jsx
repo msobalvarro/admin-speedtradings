@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import Validator from "validator"
 import jwt from "jwt-simple"
-import io from "socket.io-client"
+// import io from "socket.io-client"
 
-import { Petition, keySecret, copyData, urlServer } from "../../utils/constanst"
+import { Petition, keySecret, copyData } from "../../utils/constanst"
 import moment from "moment"
 
 // Import styles and assets
@@ -100,17 +100,17 @@ const Records = () => {
     }
 
     // Configura y esta a la esucha del servidor con soket
-    const ConfigurateSoket = () => {
-        const socket = io.connect("http://localhost")
+    // const ConfigurateSoket = () => {
+    //     const socket = io.connect("http://localhost")
 
-        // socket.
+    //     // socket.
 
-        socket.on('new', (args) => {
-            console.log(args)
-        })
+    //     socket.on('new', (args) => {
+    //         console.log(args)
+    //     })
 
-        socket.emit('my other event', { my: 'data' })
-    }
+    //     socket.emit('my other event', { my: 'data' })
+    // }
 
     // Ejecuta peticiones al servidor para obtener todos los datos de las tablas
     const ConfigurateComponent = async () => {

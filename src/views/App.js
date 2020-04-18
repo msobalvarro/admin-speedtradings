@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { HashRouter, Route, Switch } from "react-router-dom"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 
 // Import Assets
 
@@ -13,6 +13,7 @@ import Login from './Login/Login'
 import Records from './Records/Records'
 import Report from './Report/Report'
 import Logs from './Logs/Logs'
+import Mailing from './Mail/Mail'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -54,6 +55,7 @@ const App = () => {
             <Route path="/" exact component={Records} />
             <Route path="/reports" exact component={Report} />
             <Route path="/logs" exact component={Logs} />
+            <Route path="/mailing" exact component={Mailing} />
           </>
         }
       </Switch>
