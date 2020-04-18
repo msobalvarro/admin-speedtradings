@@ -56,6 +56,8 @@ div.container-records {
       padding: 20px;
       min-height: 512px;
       margin: 25px;
+      height: 75vh;
+      overflow: auto;
       width: 45%;
 
       &.empty {

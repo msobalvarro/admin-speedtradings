@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import Validator from "validator"
 import jwt from "jwt-simple"
-// import io from "socket.io-client"
+import alertSound from "alert"
 
-import { Petition, keySecret, copyData } from "../../utils/constanst"
+import { Petition, keySecret, copyData, urlServer } from "../../utils/constanst"
 import moment from "moment"
 
 // Import styles and assets
 import "./Records.scss"
 import Astronaut from '../../static/images/astronaut.png'
+import sounNotification from "../../static/sound/notification.mp3"
 
 // Import components
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
@@ -18,7 +19,8 @@ import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import Swal from "sweetalert2"
 
 const Records = () => {
-    const { token } = useSelector(({ globalStorage }) => globalStorage)
+    const { token } = useSelector((storage) => storage.globalStorage)
+    const socket = useSelector(storage => storage.socket)
 
     // Estado que guarda el texto para filtrar en la coleccion de solicitudes y registros
     const [filter, setFilter] = useState('')
@@ -57,6 +59,8 @@ const Records = () => {
 
     // Obtiene todas las solicitudes
     const getAllRequest = () => {
+        console.log("request")
+
         Petition.get('/admin/request/', {
             headers: {
                 "x-auth-token": token
@@ -99,21 +103,20 @@ const Records = () => {
         })
     }
 
-    // Configura y esta a la esucha del servidor con soket
-    // const ConfigurateSoket = () => {
-    //     const socket = io.connect("http://localhost")
+    const updateDataRequest = async () => {
+        setLoader(true)
 
-    //     // socket.
+        await getAllRequest()
+        await getAllUpgrades()
 
-    //     socket.on('new', (args) => {
-    //         console.log(args)
-    //     })
-
-    //     socket.emit('my other event', { my: 'data' })
-    // }
+        setLoader(false)
+    }
 
     // Ejecuta peticiones al servidor para obtener todos los datos de las tablas
     const ConfigurateComponent = async () => {
+        const audioNotification = new Audio(sounNotification)
+
+
         setLoader(true)
         try {
             await getAllRequest()
@@ -121,6 +124,19 @@ const Records = () => {
             await getAllRecords()
 
             await getAllUpgrades()
+
+
+            // esperamos respuesta de una nueva solicitud atravez del socket
+            socket.on("newRequest", async () => {
+                getAllRequest()
+                audioNotification.play()
+            })
+
+            // Esperamos una nueva solictud de upgrade
+            socket.on("newUpgrade", async () => {
+                getAllUpgrades()
+                audioNotification.play()
+            })
 
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error.toString(), 'error')
@@ -151,8 +167,6 @@ const Records = () => {
         ConfigurateComponent()
 
         configurateTrading()
-
-        // ConfigurateSoket()
     }, [])
 
     // Componente que representa un articulo de la lista
@@ -625,7 +639,6 @@ const Records = () => {
 
             <div className="header-content">
                 <div className="row">
-                    <span>Filtrar datos</span>
                     <input
                         value={filter}
                         onChange={e => setFilter(e.target.value)}
@@ -689,7 +702,7 @@ const Records = () => {
                     }
 
                     {
-                        allRequest.length > 0 &&
+                        (allRequest.length > 0 && !loader) &&
                         <>
                             <h2 className="title">Solicitudes de registros</h2>
 
@@ -708,7 +721,6 @@ const Records = () => {
                         </>
                     }
 
-                    {/* <hr /> */}
 
                     {
                         allUpgrades.length > 0 &&
@@ -768,7 +780,6 @@ const Records = () => {
                             </div>
                         </>
                     }
-
                 </div>
             </div>
 

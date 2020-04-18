@@ -4,10 +4,22 @@ import Swal from "sweetalert2"
 
 // Constanst
 const keyStorage = "@storage"
+
+/**
+ * Indica en que puerto donde corre el codigo backend 
+ * cuando esta en desarollo
+ * */
+const devPort = ":8080"
+
+/**Indica en que puerto correra el socket en backend */
+const portSocket = ":2000"
+
 export const keySecret = "testDevelop"
 
 export const urlServer = "https://ardent-medley-272823.appspot.com"
-// export const urlServer = "http://localhost:8080"
+// export const urlServer = "http://127.0.0.1" + devPort
+
+export const urlServerSocket = urlServer.replace(devPort, "") + portSocket
 
 /**
  * Format number with decimal miles separator
