@@ -23,6 +23,8 @@ const App = () => {
 
     // Configura y esta a la esucha del servidor con soket
     const ConfigurateSoket = () => {
+        console.log(urlServerSocket)
+
         const socket = io(urlServerSocket, {
             transports: ['websocket', 'polling', 'flashsocket']
         })

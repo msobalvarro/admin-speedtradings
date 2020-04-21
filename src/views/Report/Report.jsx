@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
-import { Petition } from "../../utils/constanst"
+import { Petition, copyData } from "../../utils/constanst"
 
 // Imports styles and assets
 import "./Report.scss"
@@ -25,8 +25,7 @@ const Report = () => {
     // Estado para renderizar loader
     const [loader, setLoader] = useState(true)
 
-    /**Monto total a pagar */
-    const total = []
+    const [total, setTotal] = useState(0)
 
     /**Metodo para ejecutar consulta de registros */
     const getAllData = async (_currency = "1") => {
@@ -37,17 +36,28 @@ const Report = () => {
         try {
             setLoader(true)
 
+
             // 
             await Petition.post('/admin/payments', { id_currency: Number(_currency) }, { headers })
                 .then(({ data, status }) => {
-                    console.log(data)
 
                     if (data.error) {
                         throw data.message
                     }
 
                     if (status === 200) {
+                        /**Alamacenara temporalmente la suma de total a pagar */
+                        let newTotal = 0
+
                         setData(data)
+
+                        for (let index = 0; index < data.length; index++) {
+                            const element = data[index]
+
+                            newTotal += element.amount
+                        }
+
+                        setTotal(newTotal)
                     }
                 })
                 .catch(reason => {
@@ -67,19 +77,17 @@ const Report = () => {
 
     /**Componente para renderizar los datos */
     const ItemComponent = (item, index) => {
-        total.push(item.amount)
-
         if (
             item.name.length > 0 && item.name.toLowerCase().search(filter) > -1 ||
             item.wallet.length > 0 && item.wallet.toLowerCase().search(filter) > -1 ||
             item.amount.length > 0 && item.amount.toLowerCase().search(filter) > -1
-            // allRecord.id_user
         ) {
             return (
                 <div className="row" key={index}>
                     <span>{item.name}</span>
-                    <span>{item.wallet}</span>
-                    <span>{item.amount}</span>
+                    <span>{item.amount} {currency === "1" ? "BTC" : "ETH"}</span>
+                    <span onClick={_ => copyData(item.wallet)}>{item.wallet}</span>
+                    <input type="text" className="text-input" />
                 </div>
             )
         }
@@ -104,10 +112,18 @@ const Report = () => {
                 <div className="header">
                     <input type="text" value={filter} onChange={e => setFilter(e.target.value)} className="text-input" placeholder="Filtrar.." />
 
-                    <select disabled={loader} className="picker" value={currency} onChange={changeCurrency}>
-                        <option value="1">Bitcoin</option>
-                        <option value="2">Ethereum</option>
-                    </select>
+                    <div className="selection">
+                        <span className="total">
+                            Total {total.toString()} {currency === "1" ? "BTC" : "ETH"}
+                        </span>
+
+                        <select disabled={loader} className="picker" value={currency} onChange={changeCurrency}>
+                            <option value="1">Bitcoin</option>
+                            <option value="2">Ethereum</option>
+                        </select>
+
+                        <button className="button">Enviar reporte</button>
+                    </div>
                 </div>
 
                 {
@@ -122,17 +138,12 @@ const Report = () => {
                         <div className="table">
                             <div className="header">
                                 <span>Nombre</span>
-                                <span>Wallet</span>
                                 <span>Monto</span>
+                                <span>Wallet</span>
+                                <span>hash</span>
                             </div>
 
                             {allData.map(ItemComponent)}
-
-                            <div className="footer">
-                                <span>
-                                    Total {total.reduce((a, b) => a + b, 0)} {currency === "1" ? "BTC" : "ETH"}
-                                </span>
-                            </div>
                         </div>
                     </>
                 }
