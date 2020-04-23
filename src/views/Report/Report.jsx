@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useReducer } from "react"
 import { useSelector } from "react-redux"
 import { Petition, copyData } from "../../utils/constanst"
 
@@ -12,6 +12,8 @@ import Swal from "sweetalert2"
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
 
 const Report = () => {
+    const hashs = []
+
     const { token } = useSelector(({ globalStorage }) => globalStorage)
 
     const [filter, setFilter] = useState('')
@@ -83,26 +85,31 @@ const Report = () => {
             item.amount.length > 0 && item.amount.toLowerCase().search(filter) > -1
         ) {
             return (
-                <div className="row" key={index}>
+                <div className={`row ${hashs[index] !== "" ? "opacity" : ""}`} key={index}>
                     <span>{item.name}</span>
                     <span>{item.amount} {currency === "1" ? "BTC" : "ETH"}</span>
                     <span onClick={_ => copyData(item.wallet)}>{item.wallet}</span>
-                    <input type="text" className="text-input" />
+                    <input type="text" className="text-input" onChange={e => hashs[index] = e.target.value} />
                 </div>
             )
         }
     }
 
+    /**Cambia de moneda al reporte */
     const changeCurrency = ({ target }) => {
         setCurrency(target.value)
 
         getAllData(target.value)
     }
 
+    /**Ejecuta el reporte de pago */
+    const onReport = () => {
+        console.log(hashs)
+    }
+
     useEffect(() => {
         getAllData()
     }, [])
-
 
     return (
         <div className="container-report">
@@ -122,7 +129,7 @@ const Report = () => {
                             <option value="2">Ethereum</option>
                         </select>
 
-                        <button className="button">Enviar reporte</button>
+                        <button className="button" onClick={onReport}>Enviar reporte</button>
                     </div>
                 </div>
 

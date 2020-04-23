@@ -281,8 +281,6 @@ const Records = () => {
                 }
             })
                 .then(({ data }) => {
-                    console.log(data)
-
                     if (data.error) {
                         throw data.message
                     } else {

@@ -72,7 +72,12 @@ div.container-report {
         display: flex;
         justify-content: space-between;
         padding: 10px 5px;
+        transition: $transition;
         width: 100%;
+
+        &.opacity {
+          opacity: 0.8;
+        }
 
         span {
           width: 25%;
