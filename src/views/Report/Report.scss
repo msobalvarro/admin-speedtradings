@@ -29,7 +29,6 @@ div.container-report {
           margin: 0 10px;
           width: 250px;
         }
-        
       }
     }
 
@@ -38,6 +37,7 @@ div.container-report {
       border-radius: 10px;
       height: 75vh;
       overflow: auto;
+      scroll-behavior: smooth;
       padding: 10px;
 
       .header {
@@ -47,7 +47,6 @@ div.container-report {
         display: flex;
         justify-content: space-between;
         padding: 10px 5px;
-        width: 100%;
 
         span {
           width: 25%;
@@ -75,8 +74,8 @@ div.container-report {
         transition: $transition;
         width: 100%;
 
-        &.opacity {
-          opacity: 0.8;
+        &.resalt {
+          background-color: rgba($color: $colorRed, $alpha: 0.2);
         }
 
         span {
@@ -84,6 +83,7 @@ div.container-report {
 
           &:nth-child(1) {
             text-align: left;
+            text-transform: capitalize;
           }
 
           &:nth-child(2) {
@@ -92,32 +92,42 @@ div.container-report {
           }
 
           &:nth-child(3) {
-            cursor: pointer;
             text-align: right;
-            position: relative;
+          }
+        }
 
-            &::before {
-              background-color: $colorYellow;
-              color: $colorMain;
-              font-size: 12px;
-              border-radius: 5px;
-              content: "Copiar";
-              padding: 5px;
-              position: absolute;
-              transition: $transition;
-              opacity: 0;
-              right: 100%;
-            }
+        div.hash-transaction {
+          width: 25%;
+          margin-left: 10px;
+          text-align: right;
+        }
 
-            &:hover::before {
-              opacity: 1;
-            }
+        .copy-element {
+          cursor: pointer;
+          position: relative;
+
+          &::before {
+            background-color: $colorYellow;
+            color: $colorMain;
+            font-size: 12px;
+            border-radius: 5px;
+            content: "Copiar";
+            padding: 5px;
+            position: absolute;
+            transition: $transition;
+            opacity: 0;
+            margin-left: -50px;
+            // right: 80%;
+          }
+
+          &:hover::before {
+            opacity: 1;
           }
         }
 
         input {
           width: 25%;
-          margin-left: 10px;
+          margin-left: 10px;          
         }
       }
 

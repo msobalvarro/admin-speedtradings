@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from "react"
+import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { Petition, copyData } from "../../utils/constanst"
 
@@ -12,6 +12,7 @@ import Swal from "sweetalert2"
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
 
 const Report = () => {
+    // Contendra todos los hash escrios
     const hashs = []
 
     const { token } = useSelector(({ globalStorage }) => globalStorage)
@@ -42,7 +43,6 @@ const Report = () => {
             // 
             await Petition.post('/admin/payments', { id_currency: Number(_currency) }, { headers })
                 .then(({ data, status }) => {
-
                     if (data.error) {
                         throw data.message
                     }
@@ -53,6 +53,7 @@ const Report = () => {
 
                         setData(data)
 
+                        // Sumamos el total a pagar
                         for (let index = 0; index < data.length; index++) {
                             const element = data[index]
 
@@ -85,11 +86,22 @@ const Report = () => {
             item.amount.length > 0 && item.amount.toLowerCase().search(filter) > -1
         ) {
             return (
-                <div className={`row ${hashs[index] !== "" ? "opacity" : ""}`} key={index}>
+                <div className="row" id={"row-" + index} key={index}>
                     <span>{item.name}</span>
                     <span>{item.amount} {currency === "1" ? "BTC" : "ETH"}</span>
-                    <span onClick={_ => copyData(item.wallet)}>{item.wallet}</span>
-                    <input type="text" className="text-input" onChange={e => hashs[index] = e.target.value} />
+                    <span className="copy-element" onClick={_ => copyData(item.wallet)}>{item.wallet}</span>
+
+                    {
+                        item.hash === null &&
+                        <input type="text" placeholder="Escriba hash de transaccion" className="text-input" onChange={e => hashs[index] = e.target.value} />
+                    }
+
+                    {
+                        item.hash !== null &&
+                        <div onClick={item.hash} className="hash-transaction copy-element">
+                            hash-48d5f4g654yfg65hx
+                        </div>
+                    }
                 </div>
             )
         }
@@ -104,7 +116,56 @@ const Report = () => {
 
     /**Ejecuta el reporte de pago */
     const onReport = () => {
-        console.log(hashs)
+        // Creamos la constante que tendra los datos preparados
+        // Para enviar al backend
+        const dataSend = []
+
+        // Esta constante almacena el nombre de la clase
+        // que da efecto a la fila resaltada cuando hay un error de hash
+        const nameEffectResalt = "resalt"
+
+
+        try {
+            for (let index = 0; index < allData.length; index++) {
+                // Obtenemos el hash de la fila
+                const hash = hashs[index]
+
+                // creamos una contante de la fila del elemento hash
+                const row = document.getElementById("row-" + index)
+
+                // Verificamos si la columna mapeada no tiene hash
+                if (hash === undefined) {
+                    // Haremos un efecto de resaltado en esta misma columna
+                    row.classList.add(nameEffectResalt)
+
+                    row.scrollIntoView({ block: "center" })
+
+                    // ejecutamos un focus en el elemento input de la fila
+                    // esto servira al usuario como referencia en donde escribira
+                    row.lastChild.focus()
+
+                    throw "Todos los hash son requeridos para esta operacion"
+                } else {
+                    // Aca ya validamos si tiene hash
+                    // Quitaremoe el efecto `resalt` class
+                    row.classList.remove(nameEffectResalt)
+                }
+
+                // Obtenemos los datos necesarios a ocupar de la lista actual
+                const { id_investment, amount } = allData[index]
+
+                // Construimos el objeto que necesitara el backend para procesar el retiro
+                const dataPush = { id_investment, hash, amount }
+
+                // Se lo agregamos a la constante que enviaremos al backend
+                dataSend.push(dataPush)
+            }
+
+        } catch (error) {
+            Swal.fire("Ha ocurrido un error", error.toString(), "warning")
+        }
+
+        console.log(dataSend)
     }
 
     useEffect(() => {
