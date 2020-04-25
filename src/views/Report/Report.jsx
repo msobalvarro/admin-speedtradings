@@ -30,12 +30,13 @@ const Report = () => {
 
     const [total, setTotal] = useState(0)
 
+    /**Token para ejecutar la petition */
+    const headers = {
+        "x-auth-token": token
+    }
+
     /**Metodo para ejecutar consulta de registros */
     const getAllData = async (_currency = "1") => {
-        const headers = {
-            "x-auth-token": token
-        }
-
         try {
             setLoader(true)
 
@@ -98,8 +99,8 @@ const Report = () => {
 
                     {
                         item.hash !== null &&
-                        <div onClick={item.hash} className="hash-transaction copy-element">
-                            hash-48d5f4g654yfg65hx
+                        <div onClick={_ => copyData(item.hash)} className="hash-transaction copy-element">
+                            {item.hash}
                         </div>
                     }
                 </div>
@@ -124,11 +125,13 @@ const Report = () => {
         // que da efecto a la fila resaltada cuando hay un error de hash
         const nameEffectResalt = "resalt"
 
+        // debugger
+
 
         try {
             for (let index = 0; index < allData.length; index++) {
                 // Obtenemos el hash de la fila
-                const hash = hashs[index]
+                const hash = hashs[index] === undefined ? "" : hashs[index]
 
                 // creamos una contante de la fila del elemento hash
                 const row = document.getElementById("row-" + index)
@@ -144,7 +147,9 @@ const Report = () => {
                     // esto servira al usuario como referencia en donde escribira
                     row.lastChild.focus()
 
-                    throw "Todos los hash son requeridos para esta operacion"
+                    // throw "Todos los hash son requeridos para esta operacion"
+
+                    return
                 } else {
                     // Aca ya validamos si tiene hash
                     // Quitaremoe el efecto `resalt` class
@@ -152,20 +157,35 @@ const Report = () => {
                 }
 
                 // Obtenemos los datos necesarios a ocupar de la lista actual
-                const { id_investment, amount } = allData[index]
+                const { id_investment, amount, name, email } = allData[index]
 
                 // Construimos el objeto que necesitara el backend para procesar el retiro
-                const dataPush = { id_investment, hash, amount }
+                const dataPush = { id_investment, hash, amount, name, email }
 
                 // Se lo agregamos a la constante que enviaremos al backend
                 dataSend.push(dataPush)
             }
 
+            // Ejecutamos la peticion para ejecutar reporte
+            Petition.post("/admin/payments/apply", { data: dataSend, id_currency: Number(currency) }, { headers })
+                .then(({ data, status }) => {
+                    if (data.error) {
+                        throw data.message
+                    }
+
+                    if (data.response && status === 200) {
+                        getAllData()
+
+                        Swal.fire("Reporte ejecutado", "Su reporte de pago ha sido recibido", "success")
+                    }
+                })
+                .catch((reason) => {
+                    throw reason
+                })
+
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error.toString(), "warning")
         }
-
-        console.log(dataSend)
     }
 
     useEffect(() => {
@@ -190,7 +210,7 @@ const Report = () => {
                             <option value="2">Ethereum</option>
                         </select>
 
-                        <button className="button" onClick={onReport}>Enviar reporte</button>
+                        <button disabled={loader} className="button" onClick={onReport}>Enviar reporte</button>
                     </div>
                 </div>
 

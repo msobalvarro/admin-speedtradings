@@ -44,7 +44,7 @@ const App = () => {
                 payload
             })
 
-            ConfigurateSoket()
+            // ConfigurateSoket()
 
             // Le decimos que el usuario esta logueado
             setLogin(true)
@@ -64,7 +64,7 @@ const App = () => {
             <Switch>
                 {
                     !loged &&
-                    <Route component={Login} />
+                    <Route component={Login} path="/" exact />
                 }
 
                 {
