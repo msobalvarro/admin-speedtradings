@@ -1,5 +1,6 @@
 import jwt from "jwt-simple"
 import Axios from "axios"
+import copy from "copy-to-clipboard"
 import Swal from "sweetalert2"
 
 // Constanst
@@ -39,9 +40,14 @@ export const copyData = (str = "") => {
     })
 
 
-    Swal.fire('Direccion Wallet copiada', '', 'success')
-}
+    copy(str, {
+        message: "Dato copiado",
+        onCopy: () => Swal.fire("Listo", "Copiado a portapapeles", "success")
+    })
 
+
+    // Swal.fire('Direccion Wallet copiada', '', 'success')
+}
 
 /**Config Axios for petition automatic */
 export const Petition = Axios.create({

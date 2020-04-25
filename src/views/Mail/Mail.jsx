@@ -8,11 +8,6 @@ import "./Mail.scss"
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import Quill from "quill"
 
-const configFroala = {
-    theme: "dark",
-    placeholder: "Escriba aca",
-}
-
 const Mailing = () => {
     const [html, setHTML] = useState("")
 
@@ -27,9 +22,7 @@ const Mailing = () => {
                     [{ 'script': 'sub' }, { 'script': 'super' }],
                     [{ 'indent': '-1' }, { 'indent': '+1' }],
                     [{ 'direction': 'rtl' }],
-
                     [{ 'size': ['small', false, 'large', 'huge'] }],
-
                     [{ 'color': [] }, { 'background': [] }],
                     [{ 'font': [] }],
                     [{ 'align': [] }],

@@ -101,15 +101,6 @@ const Records = () => {
         })
     }
 
-    const updateDataRequest = async () => {
-        setLoader(true)
-
-        await getAllRequest()
-        await getAllUpgrades()
-
-        setLoader(false)
-    }
-
     // Ejecuta peticiones al servidor para obtener todos los datos de las tablas
     const ConfigurateComponent = async () => {
         const audioNotification = new Audio(sounNotification)
@@ -290,8 +281,6 @@ const Records = () => {
                 }
             })
                 .then(({ data }) => {
-                    console.log(data)
-
                     if (data.error) {
                         throw data.message
                     } else {

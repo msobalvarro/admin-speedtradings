@@ -23,6 +23,8 @@ const App = () => {
 
     // Configura y esta a la esucha del servidor con soket
     const ConfigurateSoket = () => {
+        // console.log(urlServerSocket)
+
         const socket = io(urlServerSocket, {
             transports: ['websocket', 'polling', 'flashsocket']
         })
@@ -42,7 +44,7 @@ const App = () => {
                 payload
             })
 
-            ConfigurateSoket()
+            // ConfigurateSoket()
 
             // Le decimos que el usuario esta logueado
             setLogin(true)
@@ -62,7 +64,7 @@ const App = () => {
             <Switch>
                 {
                     !loged &&
-                    <Route component={Login} />
+                    <Route component={Login} path="/" exact />
                 }
 
                 {

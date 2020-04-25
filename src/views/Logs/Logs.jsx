@@ -9,7 +9,7 @@ import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import "./Logs.scss"
 
 const Logs = () => {
-    const { token } = useSelector(({ globalStorage }) => globalStorage)
+    const { token } = useSelector(store => store.globalStorage)
     const [dataLogs, setLogs] = useState([])
     const [filter, setFilter] = useState('')
 

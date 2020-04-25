@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
-import { Petition } from "../../utils/constanst"
+import { Petition, copyData } from "../../utils/constanst"
 
 // Imports styles and assets
 import "./Report.scss"
@@ -12,6 +12,9 @@ import Swal from "sweetalert2"
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
 
 const Report = () => {
+    // Contendra todos los hash escrios
+    const hashs = []
+
     const { token } = useSelector(({ globalStorage }) => globalStorage)
 
     const [filter, setFilter] = useState('')
@@ -25,29 +28,40 @@ const Report = () => {
     // Estado para renderizar loader
     const [loader, setLoader] = useState(true)
 
-    /**Monto total a pagar */
-    const total = []
+    const [total, setTotal] = useState(0)
+
+    /**Token para ejecutar la petition */
+    const headers = {
+        "x-auth-token": token
+    }
 
     /**Metodo para ejecutar consulta de registros */
     const getAllData = async (_currency = "1") => {
-        const headers = {
-            "x-auth-token": token
-        }
-
         try {
             setLoader(true)
+
 
             // 
             await Petition.post('/admin/payments', { id_currency: Number(_currency) }, { headers })
                 .then(({ data, status }) => {
-                    console.log(data)
-
                     if (data.error) {
                         throw data.message
                     }
 
                     if (status === 200) {
+                        /**Alamacenara temporalmente la suma de total a pagar */
+                        let newTotal = 0
+
                         setData(data)
+
+                        // Sumamos el total a pagar
+                        for (let index = 0; index < data.length; index++) {
+                            const element = data[index]
+
+                            newTotal += element.amount
+                        }
+
+                        setTotal(newTotal)
                     }
                 })
                 .catch(reason => {
@@ -67,34 +81,116 @@ const Report = () => {
 
     /**Componente para renderizar los datos */
     const ItemComponent = (item, index) => {
-        total.push(item.amount)
-
         if (
             item.name.length > 0 && item.name.toLowerCase().search(filter) > -1 ||
             item.wallet.length > 0 && item.wallet.toLowerCase().search(filter) > -1 ||
             item.amount.length > 0 && item.amount.toLowerCase().search(filter) > -1
-            // allRecord.id_user
         ) {
             return (
-                <div className="row" key={index}>
+                <div className="row" id={"row-" + index} key={index}>
                     <span>{item.name}</span>
-                    <span>{item.wallet}</span>
-                    <span>{item.amount}</span>
+                    <span>{item.amount} {currency === "1" ? "BTC" : "ETH"}</span>
+                    <span className="copy-element" onClick={_ => copyData(item.wallet)}>{item.wallet}</span>
+
+                    {
+                        item.hash === null &&
+                        <input type="text" placeholder="Escriba hash de transaccion" className="text-input" onChange={e => hashs[index] = e.target.value} />
+                    }
+
+                    {
+                        item.hash !== null &&
+                        <div onClick={_ => copyData(item.hash)} className="hash-transaction copy-element">
+                            {item.hash}
+                        </div>
+                    }
                 </div>
             )
         }
     }
 
+    /**Cambia de moneda al reporte */
     const changeCurrency = ({ target }) => {
         setCurrency(target.value)
 
         getAllData(target.value)
     }
 
+    /**Ejecuta el reporte de pago */
+    const onReport = () => {
+        // Creamos la constante que tendra los datos preparados
+        // Para enviar al backend
+        const dataSend = []
+
+        // Esta constante almacena el nombre de la clase
+        // que da efecto a la fila resaltada cuando hay un error de hash
+        const nameEffectResalt = "resalt"
+
+        // debugger
+
+
+        try {
+            for (let index = 0; index < allData.length; index++) {
+                // Obtenemos el hash de la fila
+                const hash = hashs[index] === undefined ? "" : hashs[index]
+
+                // creamos una contante de la fila del elemento hash
+                const row = document.getElementById("row-" + index)
+
+                // Verificamos si la columna mapeada no tiene hash
+                if (hash === undefined) {
+                    // Haremos un efecto de resaltado en esta misma columna
+                    row.classList.add(nameEffectResalt)
+
+                    row.scrollIntoView({ block: "center" })
+
+                    // ejecutamos un focus en el elemento input de la fila
+                    // esto servira al usuario como referencia en donde escribira
+                    row.lastChild.focus()
+
+                    // throw "Todos los hash son requeridos para esta operacion"
+
+                    return
+                } else {
+                    // Aca ya validamos si tiene hash
+                    // Quitaremoe el efecto `resalt` class
+                    row.classList.remove(nameEffectResalt)
+                }
+
+                // Obtenemos los datos necesarios a ocupar de la lista actual
+                const { id_investment, amount, name, email } = allData[index]
+
+                // Construimos el objeto que necesitara el backend para procesar el retiro
+                const dataPush = { id_investment, hash, amount, name, email }
+
+                // Se lo agregamos a la constante que enviaremos al backend
+                dataSend.push(dataPush)
+            }
+
+            // Ejecutamos la peticion para ejecutar reporte
+            Petition.post("/admin/payments/apply", { data: dataSend, id_currency: Number(currency) }, { headers })
+                .then(({ data, status }) => {
+                    if (data.error) {
+                        throw data.message
+                    }
+
+                    if (data.response && status === 200) {
+                        getAllData()
+
+                        Swal.fire("Reporte ejecutado", "Su reporte de pago ha sido recibido", "success")
+                    }
+                })
+                .catch((reason) => {
+                    throw reason
+                })
+
+        } catch (error) {
+            Swal.fire("Ha ocurrido un error", error.toString(), "warning")
+        }
+    }
+
     useEffect(() => {
         getAllData()
     }, [])
-
 
     return (
         <div className="container-report">
@@ -104,10 +200,18 @@ const Report = () => {
                 <div className="header">
                     <input type="text" value={filter} onChange={e => setFilter(e.target.value)} className="text-input" placeholder="Filtrar.." />
 
-                    <select disabled={loader} className="picker" value={currency} onChange={changeCurrency}>
-                        <option value="1">Bitcoin</option>
-                        <option value="2">Ethereum</option>
-                    </select>
+                    <div className="selection">
+                        <span className="total">
+                            Total {total.toString()} {currency === "1" ? "BTC" : "ETH"}
+                        </span>
+
+                        <select disabled={loader} className="picker" value={currency} onChange={changeCurrency}>
+                            <option value="1">Bitcoin</option>
+                            <option value="2">Ethereum</option>
+                        </select>
+
+                        <button disabled={loader} className="button" onClick={onReport}>Enviar reporte</button>
+                    </div>
                 </div>
 
                 {
@@ -122,17 +226,12 @@ const Report = () => {
                         <div className="table">
                             <div className="header">
                                 <span>Nombre</span>
-                                <span>Wallet</span>
                                 <span>Monto</span>
+                                <span>Wallet</span>
+                                <span>hash</span>
                             </div>
 
                             {allData.map(ItemComponent)}
-
-                            <div className="footer">
-                                <span>
-                                    Total {total.reduce((a, b) => a + b, 0)} {currency === "1" ? "BTC" : "ETH"}
-                                </span>
-                            </div>
                         </div>
                     </>
                 }
