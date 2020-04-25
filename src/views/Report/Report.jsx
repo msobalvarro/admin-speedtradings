@@ -69,6 +69,8 @@ const Report = () => {
                 })
 
         } catch (error) {
+            console.log(error)
+
             Swal.fire(
                 "Ha ocurrido un error",
                 error.toString(),

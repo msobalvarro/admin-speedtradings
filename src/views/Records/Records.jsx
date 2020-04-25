@@ -114,18 +114,19 @@ const Records = () => {
 
             await getAllUpgrades()
 
-
-            // esperamos respuesta de una nueva solicitud atravez del socket
-            socket.on("newRequest", async () => {
-                await getAllRequest()
-                audioNotification.play()
-            })
-
-            // Esperamos una nueva solictud de upgrade
-            socket.on("newUpgrade", async () => {
-                await getAllUpgrades()
-                audioNotification.play()
-            })
+            if (socket !== null) {
+                // esperamos respuesta de una nueva solicitud atravez del socket
+                socket.on("newRequest", async () => {
+                    await getAllRequest()
+                    audioNotification.play()
+                })
+    
+                // Esperamos una nueva solictud de upgrade
+                socket.on("newUpgrade", async () => {
+                    await getAllUpgrades()
+                    audioNotification.play()
+                })
+            }
 
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error.toString(), 'error')
@@ -209,7 +210,6 @@ const Records = () => {
     // Componente que representa un articulo de la lista
     // Registos
     const itemRecord = (item, index) => {
-
         if (
             item.name.length > 0 && item.name.toLowerCase().search(filter) > -1 ||
             item.country.length > 0 && item.country.toLowerCase().search(filter) > -1
