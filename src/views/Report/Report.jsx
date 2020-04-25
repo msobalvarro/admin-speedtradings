@@ -139,24 +139,24 @@ const Report = () => {
                 const row = document.getElementById("row-" + index)
 
                 // Verificamos si la columna mapeada no tiene hash
-                if (hash === "") {
-                    // Haremos un efecto de resaltado en esta misma columna
-                    row.classList.add(nameEffectResalt)
+                // if (hash === "") {
+                //     // Haremos un efecto de resaltado en esta misma columna
+                //     row.classList.add(nameEffectResalt)
 
-                    row.scrollIntoView({ block: "center" })
+                //     row.scrollIntoView({ block: "center" })
 
-                    // ejecutamos un focus en el elemento input de la fila
-                    // esto servira al usuario como referencia en donde escribira
-                    row.lastChild.focus()
+                //     // ejecutamos un focus en el elemento input de la fila
+                //     // esto servira al usuario como referencia en donde escribira
+                //     row.lastChild.focus()
 
-                    // throw "Todos los hash son requeridos para esta operacion"
+                //     // throw "Todos los hash son requeridos para esta operacion"
 
-                    return
-                } else {
-                    // Aca ya validamos si tiene hash
-                    // Quitaremoe el efecto `resalt` class
-                    row.classList.remove(nameEffectResalt)
-                }
+                //     return
+                // } else {
+                //     // Aca ya validamos si tiene hash
+                //     // Quitaremoe el efecto `resalt` class
+                //     row.classList.remove(nameEffectResalt)
+                // }
 
                 // Obtenemos los datos necesarios a ocupar de la lista actual
                 const { id_investment, amount, name, email } = allData[index]
