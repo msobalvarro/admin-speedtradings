@@ -139,7 +139,7 @@ const Report = () => {
                 const row = document.getElementById("row-" + index)
 
                 // Verificamos si la columna mapeada no tiene hash
-                if (hash === undefined) {
+                if (hash === "") {
                     // Haremos un efecto de resaltado en esta misma columna
                     row.classList.add(nameEffectResalt)
 
