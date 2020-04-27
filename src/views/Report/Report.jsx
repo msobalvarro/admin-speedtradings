@@ -136,7 +136,7 @@ const Report = () => {
                 const hash = hashs[index] === undefined ? "" : hashs[index]
 
                 // creamos una contante de la fila del elemento hash
-                const row = document.getElementById("row-" + index)
+                // const row = document.getElementById("row-" + index)
 
                 // Verificamos si la columna mapeada no tiene hash
                 // if (hash === "") {
