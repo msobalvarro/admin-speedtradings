@@ -120,7 +120,7 @@ const Records = () => {
                     await getAllRequest()
                     audioNotification.play()
                 })
-    
+
                 // Esperamos una nueva solictud de upgrade
                 socket.on("newUpgrade", async () => {
                     await getAllUpgrades()
@@ -445,8 +445,6 @@ const Records = () => {
         setLoaderPetition(true)
 
         try {
-            console.log(dataRequestItem)
-
             if (dataRequestItem.sponsor_username !== null && hashForSponsor.length === 0) {
                 throw "El hash de transaccion a sponsor es requerido"
             }
@@ -495,46 +493,52 @@ const Records = () => {
     }
 
     // Abre modal para confirmar solicitud de Upgrade
-    const AcceptUpgrade = async (id = 0) => {
+    const AcceptUpgrade = async (dataUpgrade) => {
         setLoaderPetition(true)
-
-        await Petition.post('/admin/upgrades/accept', { id }, {
-            headers: {
-                "x-auth-token": token
+        try {
+            if (dataUpgrade.sponsor_username !== null && hashForSponsor.length === 0) {
+                throw "El hash de transaccion a sponsor es requerido"
             }
-        }).then(({ status, data }) => {
-            if (data.error) {
-                Swal.fire('Se ha producido un error', data.message, 'error')
-            } else {
-                if (status === 200) {
-                    setShowUpgrade(false)
 
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Solicitud Aceptada',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-
-                    ConfigurateComponent()
-                } else {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'error',
-                        title: 'Se ha producido un error',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
+            await Petition.post('/admin/upgrades/accept', { data: dataUpgrade, hashSponsor: hashForSponsor }, {
+                headers: {
+                    "x-auth-token": token
                 }
-            }
+            }).then(({ status, data }) => {
+                if (data.error) {
+                    Swal.fire('Se ha producido un error', data.message, 'error')
+                } else {
+                    if (status === 200) {
+                        setShowUpgrade(false)
 
-        }).catch(reason => {
-            Swal.fire('Se ha producido un error', reason.toString(), 'error')
-        })
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Solicitud Aceptada',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
 
+                        ConfigurateComponent()
+                    } else {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: 'Se ha producido un error',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }
 
-        setLoaderPetition(false)
+            }).catch(reason => {
+                Swal.fire('Se ha producido un error', reason.toString(), 'error')
+            })
+        } catch (error) {
+            Swal.fire("Ha ocurrido un error", error.toString(), "warning")
+        } finally {
+            setLoaderPetition(false)
+        }
     }
 
     // Metodo para aplicar trading
@@ -969,6 +973,16 @@ const Records = () => {
                                                         {dataUpgrade.id_currency === 2 && dataUpgrade.sponsor_wallet_eth}
                                                     </span>
                                                 </div>
+
+                                                <div className="row">
+                                                    <span className="name">Hash de transaccion</span>
+                                                    <input
+                                                        type="text"
+                                                        value={hashForSponsor}
+                                                        onChange={e => setHashForSponsor(e.target.value)}
+                                                        placeholder="Transaccion a sponsor"
+                                                        className="text-input" />
+                                                </div>
                                             </>
                                         }
                                     </div>
@@ -980,7 +994,7 @@ const Records = () => {
                                         Rechazar
                                     </button>
 
-                                    <button className="button large secondary" onClick={_ => AcceptUpgrade(dataUpgrade.id)}>
+                                    <button className="button large secondary" onClick={_ => AcceptUpgrade(dataUpgrade)}>
                                         Aprobar
                                 </button>
                                 </div>

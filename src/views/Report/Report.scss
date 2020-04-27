@@ -131,17 +131,16 @@ div.container-report {
           margin-left: 10px;          
         }
       }
+    }
+    .empty {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
 
-      .empty {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        img {
-          width: 256px;
-          margin-bottom: 25px;
-        }
+      img {
+        width: 256px;
+        margin-bottom: 25px;
       }
     }
   }
