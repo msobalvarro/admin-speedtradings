@@ -44,7 +44,7 @@ const App = () => {
                 payload
             })
 
-            // ConfigurateSoket()
+            ConfigurateSoket()
 
             // Le decimos que el usuario esta logueado
             setLogin(true)
