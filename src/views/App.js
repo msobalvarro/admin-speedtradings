@@ -15,6 +15,7 @@ import Records from './Records/Records'
 import Report from './Report/Report'
 import Logs from './Logs/Logs'
 import Mailing from './Mail/Mail'
+import NotFound from './404/404'
 
 const App = () => {
     const dispatch = useDispatch()
@@ -50,7 +51,7 @@ const App = () => {
             setLogin(true)
         } else {
             setLogin(false)
-            
+
             // Destruimos el storage
             dispatch({ type: DELETESTORAGE })
 
@@ -61,22 +62,26 @@ const App = () => {
 
     return (
         <HashRouter>
-            <Switch>
-                {
-                    !loged &&
+            {
+                !loged &&
+                <Switch>
                     <Route component={Login} path="/" exact />
-                }
+                    <Route path="*" component={NotFound} />
+                </Switch>
+            }
 
-                {
-                    loged &&
-                    <>
+            {
+                loged &&
+                <>
+                    <Switch>
                         <Route path="/" exact component={Records} />
                         <Route path="/reports" exact component={Report} />
                         <Route path="/logs" exact component={Logs} />
                         <Route path="/mailing" exact component={Mailing} />
-                    </>
-                }
-            </Switch>
+                        <Route path="*" component={NotFound} />
+                    </Switch>
+                </>
+            }
         </HashRouter>
     )
 }
