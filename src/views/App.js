@@ -27,10 +27,16 @@ const App = () => {
         // console.log(urlServerSocket)
 
         const socket = io(urlServerSocket, {
-            transports: ['websocket', 'polling', 'flashsocket']
+            transports: ["websocket"],
+            forceNew: true
         })
 
         dispatch({ type: SETSOCKET, payload: socket })
+
+
+        return () => {
+            socket.disconnect()
+        }
     }
 
     useEffect(() => {
@@ -45,7 +51,7 @@ const App = () => {
                 payload
             })
 
-            ConfigurateSoket()
+            // ConfigurateSoket()
 
             // Le decimos que el usuario esta logueado
             setLogin(true)

@@ -22,6 +22,9 @@ const Records = () => {
     const { token } = useSelector((storage) => storage.globalStorage)
     const socket = useSelector(storage => storage.socket)
 
+    // Estado que guarda las tabs activas de solicitudes
+    const [tab, setTab] = useState(1)
+
     // Estado que guarda el texto para filtrar en la coleccion de solicitudes y registros
     const [filter, setFilter] = useState('')
 
@@ -678,67 +681,115 @@ const Records = () => {
             </div>
 
             <div className="content">
-                <div className={`collection${(allRequest.length === 0 && allUpgrades.length === 0) ? ' empty' : ''}`}>
+                <div className="collection">
+                    <div className="menu-tab">
+                        <div onClick={_ => setTab(1)} className={`item ${tab === 1 && "active"}`}>
+                            Registros
+
+                            {
+                                allRequest.length > 0 &&
+                                <span className="request">
+                                    {allRequest.length}
+                                </span>
+                            }
+                        </div>
+
+                        <div  onClick={_ => setTab(2)} className={`item ${tab === 2 && "active"}`}>
+                            Upgrades
+
+                            {
+                                allUpgrades.length > 0 &&
+                                <span className="request">
+                                    {allUpgrades.length}
+                                </span>
+                            }
+                        </div>
+
+                        <div  onClick={_ => setTab(3)} className={`item ${tab === 3 && "active"}`}>
+                            Exchange
+                        </div>
+                    </div>
                     {
                         loader &&
                         <ActivityIndicator size={64} />
                     }
 
                     {
-                        (allRequest.length === 0 && allUpgrades.length === 0 && !loader) &&
+                        tab === 1 &&
                         <>
-                            <img src={Astronaut} alt="empty" />
-                            <h2 className="title">No hay Solicitudes</h2>
+                            {
+                                (allRequest.length === 0 && !loader) &&
+                                <>
+                                    <div className="empty">
+                                        <img src={Astronaut} alt="empty" />
+                                        <h2 className="title">No hay Solicitudes</h2>
+                                    </div>
+                                </>
+                            }
+
+                            {
+                                (allRequest.length > 0 && !loader) &&
+                                <>
+                                    <h2 className="title">Solicitudes de registros</h2>
+
+
+                                    <div className="table request">
+                                        <div className="header">
+                                            <span>Nombre</span>
+                                            <span>Monto</span>
+                                            <span>Sponsor</span>
+                                        </div>
+
+                                        {
+                                            allRequest.map(itemRequest)
+                                        }
+                                    </div>
+                                </>
+                            }
                         </>
                     }
 
                     {
-                        (allRequest.length > 0 && !loader) &&
+                        tab === 2 &&
                         <>
-                            <h2 className="title">Solicitudes de registros</h2>
+                            {
+                                (allUpgrades.length === 0 && !loader) &&
+                                <>
+                                    <div className="empty">
+                                        <img src={Astronaut} alt="empty" />
+                                        <h2 className="title">No hay Solicitudes</h2>
+                                    </div>
+                                </>
+                            }
+
+                            {
+                                allUpgrades.length > 0 &&
+                                <>
+                                    <div className="separator" />
+
+                                    <h2 className="title">Solicitudes de UPGRADES</h2>
 
 
-                            <div className="table request">
-                                <div className="header">
-                                    <span>Nombre</span>
-                                    <span>Monto</span>
-                                    <span>Sponsor</span>
-                                </div>
+                                    <div className="table request">
+                                        <div className="header">
+                                            <span>Nombre</span>
+                                            <span>Monto</span>
+                                            <span>Sponsor</span>
+                                        </div>
 
-                                {
-                                    allRequest.map(itemRequest)
-                                }
-                            </div>
-                        </>
-                    }
+                                        {
+                                            allUpgrades.map(itemUpgrade)
+                                        }
+                                    </div>
 
-
-                    {
-                        allUpgrades.length > 0 &&
-                        <>
-                            <div className="separator" />
-
-                            <h2 className="title">Solicitudes de UPGRADES</h2>
-
-
-                            <div className="table request">
-                                <div className="header">
-                                    <span>Nombre</span>
-                                    <span>Monto</span>
-                                    <span>Sponsor</span>
-                                </div>
-
-                                {
-                                    allUpgrades.map(itemUpgrade)
-                                }
-                            </div>
-
+                                </>
+                            }
                         </>
                     }
 
                 </div>
 
-                <div className={`collection${allRecord.length === 0 ? ' empty' : ''}`}>
+                <div className="collection">
                     {
                         loader &&
                         <ActivityIndicator size={64} />
@@ -747,8 +798,10 @@ const Records = () => {
                     {
                         (allRecord.length === 0 && !loader) &&
                         <>
-                            <img src={Astronaut} alt="empty" />
-                            <h2 className="title">No hay Registros</h2>
+                            <div className="empty">
+                                <img src={Astronaut} alt="empty" />
+                                <h2 className="title">No hay Registos</h2>
+                            </div>
                         </>
                     }
 

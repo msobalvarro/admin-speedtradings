@@ -51,7 +51,7 @@ div.container-records {
     justify-content: space-between;
 
     .collection {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: rgba(0, 0, 0, 0.4);
       border-radius: 10px;
       padding: 20px;
       min-height: 512px;
@@ -60,11 +60,46 @@ div.container-records {
       overflow: auto;
       width: 45%;
 
-      &.empty {
+      .menu-tab {
+        border: 2px solid $colorYellow;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 10px;
+        display: flex;
+        width: 100%;
+
+        .item {
+          color: $colorYellow;
+          position: relative;
+          padding: 10px;
+          cursor: pointer;
+          text-align: center;
+          width: 33.3%;
+
+          &.active {
+            background-color: $colorYellow;
+            color: $colorMain;
+          }
+
+          .request {
+            background-color: red;
+            color: #FFF;
+            border-radius: 25px;
+            position: absolute;
+            padding: 5px;
+            top: 0%;
+            margin-left: 10px;
+            // right: 5%;
+          }
+        }
+      }
+
+      .empty {
+        align-items: center;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: center;
+        margin-top: 25px;
 
         img {
           width: 256px;
