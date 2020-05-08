@@ -32,6 +32,7 @@ const Records = () => {
     const [allUpgrades, setUpgrades] = useState([])
     const [allRequest, setRequests] = useState([])
     const [allRecord, setRecords] = useState([])
+    const [allExchange, setExchange] = useState([])
 
     // Estado que guarda el detalle de los registros
     const [dataRequest, setDataRequest] = useState({})
@@ -60,7 +61,16 @@ const Records = () => {
     // Cuando un usuario hace una solicitud de inversion
     const [hashForSponsor, setHashForSponsor] = useState("")
 
-    // Obtiene todas las solicitudes
+    // Estado que guarda el indice de
+    // los datos especificos y mostrarlos como detalles
+    const [showExchangeRequest, setExchangeRequestModal] = useState(false)
+
+    // Estado que guarda la solcitud exchange especifca
+    const [detailsRequestExchange, setDetailsExchange] = useState({})
+
+    const [hashExchangeRequest, setHashExchangeRequest] = useState("")
+
+    // Obtiene todas las solicitudes `allExchange` para obtener
     const getAllRequest = () => {
         Petition.get('/admin/request/', {
             headers: {
@@ -90,6 +100,7 @@ const Records = () => {
         })
     }
 
+    // Obtiene todas las solicitudes de Upgrades
     const getAllUpgrades = () => {
         Petition.get('/admin/upgrades', {
             headers: {
@@ -100,6 +111,21 @@ const Records = () => {
                 Swal.fire('Ha ocurrido un error', data.message, 'error')
             } else {
                 setUpgrades(data)
+            }
+        })
+    }
+
+    // Obtiene todas las solcitudes de intercambio exchange
+    const getAllExchange = () => {
+        Petition.get('/exchange', {
+            headers: {
+                "x-auth-token": token
+            }
+        }).then(({ data }) => {
+            if (data.error) {
+                Swal.fire('Ha ocurrido un error', data.message, 'error')
+            } else {
+                setExchange(data)
             }
         })
     }
@@ -116,6 +142,8 @@ const Records = () => {
             await getAllRecords()
 
             await getAllUpgrades()
+
+            await getAllExchange()
 
             if (socket !== null) {
                 // esperamos respuesta de una nueva solicitud atravez del socket
@@ -235,6 +263,20 @@ const Records = () => {
         }
     }
 
+    // Componente que representa un articulo de la lista Exchange request
+    const itemExchnage = (item, index) => {
+        // Compra -- Venta -- Cantidad -- tiempo
+
+        return (
+            <div className="row" key={index} onClick={_ => openExchangeRequest(index)}>
+                <span>{item.request_currency}</span>
+                <span>{item.currency}</span>
+                <span>{item.amount}</span>
+                <span>{moment(item.date).fromNow()}</span>
+            </div>
+        )
+    }
+
     // Funcion que abre detalles al hacer la peticion de
     // detalles de solitud
     const openDetailsRequest = async (id = 0) => {
@@ -330,6 +372,13 @@ const Records = () => {
         }
     }
 
+    // Funcion que abre ventana modal con detalles de solicitud exchange
+    const openExchangeRequest = async (index = 0) => {
+        await setDetailsExchange(allExchange[index])
+
+        setExchangeRequestModal(true)
+    }
+
     // Abre modal para confirmar rechazo de solicitud de registro
     const confirmDecline = (id = 0) => {
         Swal.fire({
@@ -387,6 +436,7 @@ const Records = () => {
         })
     }
 
+    // Metodo que se ejecuta cuando se rechaza una solicitudde UPGRADE
     const confirmDeclineUpgrade = (id = 0) => {
         Swal.fire({
             title: 'Rechazar',
@@ -694,7 +744,7 @@ const Records = () => {
                             }
                         </div>
 
-                        <div  onClick={_ => setTab(2)} className={`item ${tab === 2 && "active"}`}>
+                        <div onClick={_ => setTab(2)} className={`item ${tab === 2 && "active"}`}>
                             Upgrades
 
                             {
@@ -705,8 +755,15 @@ const Records = () => {
                             }
                         </div>
 
-                        <div  onClick={_ => setTab(3)} className={`item ${tab === 3 && "active"}`}>
+                        <div onClick={_ => setTab(3)} className={`item ${tab === 3 && "active"}`}>
                             Exchange
+
+                            {
+                                allExchange.length > 0 &&
+                                <span className="request">
+                                    {allExchange.length}
+                                </span>
+                            }
                         </div>
                     </div>
                     {
@@ -784,6 +841,46 @@ const Records = () => {
 
                                 </>
                             }
+                        </>
+                    }
+
+                    {
+                        tab === 3 &&
+                        <>
+                            {
+                                (allExchange.length === 0 && !loader) &&
+                                <>
+                                    <div className="empty">
+                                        <img src={Astronaut} alt="empty" />
+                                        <h2 className="title">No hay Solicitudes</h2>
+                                    </div>
+                                </>
+                            }
+
+                            {
+                                allExchange.length > 0 &&
+                                <>
+                                    <div className="separator" />
+
+                                    <h2 className="title">Solicitudes de UPGRADES</h2>
+
+
+                                    <div className="table exchange">
+                                        <div className="header">
+                                            <span>Compra</span>
+                                            <span>Venta</span>
+                                            <span>Cantidad</span>
+                                            <span>Solicitado</span>
+                                        </div>
+
+                                        {
+                                            allExchange.map(itemExchnage)
+                                        }
+                                    </div>
+
+                                </>
+                            }
+
                         </>
                     }
 
@@ -1177,6 +1274,108 @@ const Records = () => {
 
                                     <button className="button large secondary">
                                         Generar Reporte
+                                    </button>
+                                </div>
+                            </>
+                        }
+                    </div>
+                </Modal>
+            }
+
+            {
+                showExchangeRequest &&
+                <Modal onClose={e => setExchangeRequestModal(false)}>
+                    <div className="content-modal exchange">
+
+                        {
+                            loaderPetition &&
+                            <ActivityIndicator size={48} />
+                        }
+
+                        {
+                            !loaderPetition &&
+                            <>
+                                <div className="content-col">
+                                    <div className="col">
+                                        <h2>Detalle de Compra</h2>
+
+                                        <div className="row">
+                                            <span className="name">Solicitud Procesada</span>
+                                            <span className="value">{moment(detailsRequestExchange.date).fromNow()}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Moneda a pagar</span>
+                                            <span className="value">{detailsRequestExchange.currency}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Moneda a comprar</span>
+                                            <span className="value">{detailsRequestExchange.request_currency}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Cliente</span>
+                                            <span className="value">{detailsRequestExchange.email}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="col">
+                                        <h2>Detalle de Transaccion</h2>
+
+                                        <div className="row">
+                                            <span className="name">Hash de transaccion</span>
+                                            <span className="value">{detailsRequestExchange.hash}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Monto a Pagado</span>
+                                            <span className="value">{detailsRequestExchange.amount} {detailsRequestExchange.currency}</span>
+                                        </div>
+
+
+                                        <div className="row">
+                                            <span className="name">Monto de aproximado de {detailsRequestExchange.request_currency}</span>
+                                            <span className="value">{detailsRequestExchange.approximate_amount} <b>{detailsRequestExchange.request_currency}</b></span>
+                                        </div>
+
+                                        {
+                                            detailsRequestExchange.memo !== null &&
+                                            <div className="row">
+                                                <span className="name">Memo</span>
+                                                <span className="value">{detailsRequestExchange.memo}</span>
+                                            </div>
+                                        }
+
+                                        {
+                                            detailsRequestExchange.label !== null &&
+                                            <div className="row">
+                                                <span className="name">Label</span>
+                                                <span className="value">{detailsRequestExchange.label}</span>
+                                            </div>
+                                        }
+
+                                        <div className="row">
+                                            <span className="name">Hash de Pago</span>
+                                            <input
+                                                type="text"
+                                                value={hashExchangeRequest}
+                                                onChange={e => setHashExchangeRequest(e.target.value)}
+                                                placeholder="Hash de Transaccion"
+                                                className="text-input" />
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div className="buttons">
+                                    <button className="button large" onClick={e => setShowRecord(false)}>
+                                        Rechazar
+                                    </button>
+
+                                    <button className="button large secondary">
+                                        Enviar Reporte
                                     </button>
                                 </div>
                             </>
