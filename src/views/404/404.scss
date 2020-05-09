@@ -1,0 +1,139 @@
+@import "../../utils/constants.scss";
+
+.container-404 {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+
+  .content-astronaut {
+    // background-color: red;
+    position: relative;
+    height: 100%;
+    flex: 1;
+
+    .object_earth {
+      position: absolute;
+      top: 5%;
+      left: 35%;
+      z-index: 90;
+      animation: spin-earth 100s infinite linear both;
+    }
+
+    .object_moon {
+      position: absolute;
+      top: 15%;
+      left: 25%;
+      transform: rotate(0deg);
+    //   transition: transform ease-in 99999999999s;
+    }
+
+    img.object_astronaut {
+      z-index: 110 !important;
+      position: absolute;
+      top: 50%;
+      right: 20%;
+      will-change: transform;
+      animation: move-astronaut 50s infinite linear both alternate;
+    }
+
+    img.object_rocket {
+      z-index: 95;
+      position: absolute;
+      transform: translateX(-50px);
+      top: 5%;
+      right: 5%;
+      pointer-events: none;
+      animation: rocket-movement 200s linear infinite both running;
+    }
+
+    .stars {
+      background: url(http://salehriaz.com/404Page/img/overlay_stars.svg);
+      background-repeat: repeat;
+      background-size: contain;
+      background-position: left top;
+    }
+
+    .glowing_stars {
+      .star {
+        position: absolute;
+        border-radius: 100%;
+        background-color: #fff;
+        width: 3px;
+        height: 3px;
+        opacity: 0.3;
+        will-change: opacity;
+
+        &:nth-child(1) {
+          top: 80%;
+          left: 25%;
+          animation: glow-star 2s infinite ease-in-out alternate 1s;
+        }
+
+        &:nth-child(2) {
+          top: 20%;
+          left: 40%;
+          animation: glow-star 2s infinite ease-in-out alternate 3s;
+        }
+
+        &:nth-child(3) {
+          top: 25%;
+          left: 25%;
+          animation: glow-star 2s infinite ease-in-out alternate 5s;
+        }
+
+        &:nth-child(4) {
+          top: 75%;
+          left: 80%;
+          animation: glow-star 2s infinite ease-in-out alternate 7s;
+        }
+
+        &:nth-child(5) {
+          top: 90%;
+          left: 50%;
+          animation: glow-star 2s infinite ease-in-out alternate 9s;
+        }
+      }
+    }
+  }
+
+  .content-info {
+    text-align: center;
+    width: 25%;
+
+    h1 {
+      font-weight: bolder;
+      font-size: 3em;
+    }
+
+    p.info {
+      text-transform: uppercase;
+      font-weight: lighter;
+      margin: 25px 0;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-evenly;
+    }
+  }
+}
+
+@keyframes move-astronaut {
+  100% {
+    -webkit-transform: translate(-160px, -160px);
+  }
+}
+@keyframes rocket-movement {
+  100% {
+    -moz-transform: translate(1200px, -600px);
+  }
+}
+
+@keyframes spin-earth {
+    100% {
+        -webkit-transform: rotate(-360deg);
+        transform: rotate(-360deg);
+        transition: transform 20s;
+    }
+}

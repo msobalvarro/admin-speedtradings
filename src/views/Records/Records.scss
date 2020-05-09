@@ -51,7 +51,7 @@ div.container-records {
     justify-content: space-between;
 
     .collection {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: rgba(0, 0, 0, 0.4);
       border-radius: 10px;
       padding: 20px;
       min-height: 512px;
@@ -60,11 +60,51 @@ div.container-records {
       overflow: auto;
       width: 45%;
 
-      &.empty {
+      .menu-tab {
+        border: 2px solid $colorYellow;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 10px;
+        display: flex;
+        width: 100%;
+
+        .item {
+          color: $colorYellow;
+          transition: $transition;
+          position: relative;
+          padding: 10px;
+          cursor: pointer;
+          text-align: center;
+          width: 33.3%;
+
+          &.active {
+            background-color: $colorYellow;
+            color: $colorMain;
+          }
+
+          .request {
+            background-color: red;
+            color: #FFF;
+            border-radius: 25px;
+            font-size: 12px;
+            position: absolute;
+            padding: 5px 0;
+            text-align: center;
+            top: 10%;
+            margin-left: 10px;
+            width: 50px;
+            // right: 5%;
+          }
+        }
+      }
+
+      .empty {
+        align-items: center;
+        animation: fadeEffect 1s;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: center;
+        margin-top: 25px;
 
         img {
           width: 256px;
@@ -90,6 +130,7 @@ div.container-records {
       }
 
       .table {
+        animation: fadeEffect 1s;
         display: flex;
         flex-direction: column;
 
@@ -144,8 +185,8 @@ div.container-records {
         }
 
         .header {
-          border-bottom: 2px solid $colorSecondary;
-          color: $colorSecondary;
+          border-bottom: 2px solid $colorYellow;
+          color: $colorYellow;
           display: flex;
           justify-content: space-between;
           padding: 10px 0;
@@ -262,6 +303,27 @@ div.container-records {
           i {
             opacity: 0.5;
           }
+        }
+      }
+    }
+
+    .confirm-decline {
+      animation: fadeEffect 1s;
+      width: 100%;
+
+      h1 {
+        color: $colorYellow;
+        font-weight: normal;
+      }
+
+      .row-reason {
+        display: flex;
+        margin: 25px 0;
+        flex-direction: column;
+
+        span.legend-decline {
+          font-size: 12px;
+          margin-bottom: 5px;
         }
       }
     }

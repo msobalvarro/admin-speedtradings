@@ -22,6 +22,9 @@ const Records = () => {
     const { token } = useSelector((storage) => storage.globalStorage)
     const socket = useSelector(storage => storage.socket)
 
+    // Estado que guarda las tabs activas de solicitudes
+    const [tab, setTab] = useState(1)
+
     // Estado que guarda el texto para filtrar en la coleccion de solicitudes y registros
     const [filter, setFilter] = useState('')
 
@@ -29,6 +32,7 @@ const Records = () => {
     const [allUpgrades, setUpgrades] = useState([])
     const [allRequest, setRequests] = useState([])
     const [allRecord, setRecords] = useState([])
+    const [allExchange, setExchange] = useState([])
 
     // Estado que guarda el detalle de los registros
     const [dataRequest, setDataRequest] = useState({})
@@ -57,7 +61,23 @@ const Records = () => {
     // Cuando un usuario hace una solicitud de inversion
     const [hashForSponsor, setHashForSponsor] = useState("")
 
-    // Obtiene todas las solicitudes
+    // Estado que guarda el indice de
+    // los datos especificos y mostrarlos como detalles
+    const [showExchangeRequest, setExchangeRequestModal] = useState(false)
+
+    // Estado que guarda la solcitud exchange especifca
+    const [detailsRequestExchange, setDetailsExchange] = useState({})
+
+    // Estado que contiene el hash de pago en exchange
+    const [hashExchangeRequest, setHashExchangeRequest] = useState("")
+
+    // Estado que muestra la ventana de confirmacion de rechazo
+    const [declineConfirm, setDeclineConfirm] = useState(false)
+
+    // Estado que guarda la razon del rechazo de intercambio exchange
+    const [reasonDecline, setReasonDecline] = useState("")
+
+    // Obtiene todas las solicitudes `allExchange` para obtener
     const getAllRequest = () => {
         Petition.get('/admin/request/', {
             headers: {
@@ -87,6 +107,7 @@ const Records = () => {
         })
     }
 
+    // Obtiene todas las solicitudes de Upgrades
     const getAllUpgrades = () => {
         Petition.get('/admin/upgrades', {
             headers: {
@@ -97,6 +118,21 @@ const Records = () => {
                 Swal.fire('Ha ocurrido un error', data.message, 'error')
             } else {
                 setUpgrades(data)
+            }
+        })
+    }
+
+    // Obtiene todas las solcitudes de intercambio exchange
+    const getAllExchange = () => {
+        Petition.get('/exchange', {
+            headers: {
+                "x-auth-token": token
+            }
+        }).then(({ data }) => {
+            if (data.error) {
+                Swal.fire('Ha ocurrido un error', data.message, 'error')
+            } else {
+                setExchange(data)
             }
         })
     }
@@ -113,6 +149,8 @@ const Records = () => {
             await getAllRecords()
 
             await getAllUpgrades()
+
+            await getAllExchange()
 
             if (socket !== null) {
                 // esperamos respuesta de una nueva solicitud atravez del socket
@@ -232,6 +270,20 @@ const Records = () => {
         }
     }
 
+    // Componente que representa un articulo de la lista Exchange request
+    const itemExchnage = (item, index) => {
+        // Compra -- Venta -- Cantidad -- tiempo
+
+        return (
+            <div className="row" key={index} onClick={_ => openExchangeRequest(index)}>
+                <span>{item.request_currency}</span>
+                <span>{item.currency}</span>
+                <span>{item.amount}</span>
+                <span>{moment(item.date).fromNow()}</span>
+            </div>
+        )
+    }
+
     // Funcion que abre detalles al hacer la peticion de
     // detalles de solitud
     const openDetailsRequest = async (id = 0) => {
@@ -327,6 +379,13 @@ const Records = () => {
         }
     }
 
+    // Funcion que abre ventana modal con detalles de solicitud exchange
+    const openExchangeRequest = async (index = 0) => {
+        await setDetailsExchange(allExchange[index])
+
+        setExchangeRequestModal(true)
+    }
+
     // Abre modal para confirmar rechazo de solicitud de registro
     const confirmDecline = (id = 0) => {
         Swal.fire({
@@ -384,6 +443,7 @@ const Records = () => {
         })
     }
 
+    // Metodo que se ejecuta cuando se rechaza una solicitudde UPGRADE
     const confirmDeclineUpgrade = (id = 0) => {
         Swal.fire({
             title: 'Rechazar',
@@ -624,6 +684,104 @@ const Records = () => {
 
     }
 
+    // Metodo que ejecuta el rechazo de un intercambio de moneda
+    const declineExchangeRequest = async () => {
+        try {
+            if (reasonDecline.length < 10) {
+                throw "La razon de rechazo debe de tener minimo 10 caracteres"
+            }
+
+            setLoaderPetition(true)
+
+            const previousData = {
+                exchange: detailsRequestExchange,
+                reason: reasonDecline,
+            }
+
+            await Petition.post("/exchange/decline", previousData, {
+                headers: {
+                    "x-auth-token": token
+                }
+            }).then(async ({ data }) => {
+                if (data.error) {
+                    throw data.message
+                }
+
+                if (data.response === "success") {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Solicitud Rechazada',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+
+                    setReasonDecline("")
+
+                    setExchangeRequestModal(false)
+
+                    await getAllExchange()
+
+
+                } else {
+                    throw "Tu rechazo no se ha podido procesar"
+                }
+            })
+
+        } catch (error) {
+            Swal.fire("AlyExchange", error.toString(), "error")
+        } finally {
+            setLoaderPetition(false)
+        }
+    }
+
+    // Metodo que ejecuta el intercambio de moneda
+    const acceptExhangeRequest = async () => {
+        try {
+            setLoaderPetition(true)
+
+            if (hashExchangeRequest.length < 8) {
+                throw "El hash de transaccion no es valido"
+            }
+
+            const previousData = {
+                exchange: detailsRequestExchange,
+                hash: hashExchangeRequest,
+            }
+
+            await Petition.post("/exchange/accept", previousData, {
+                headers: {
+                    "x-auth-token": token
+                }
+            }).then(async ({ data }) => {
+                if (data.error) {
+                    throw data.message
+                }
+
+                if (data.response === "success") {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Reporte enviado',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+
+                    setExchangeRequestModal(false)
+
+                    await getAllExchange()
+
+
+                } else {
+                    throw "El reporte no se ha podido procesar"
+                }
+            })
+            
+        } catch (error) {
+            Swal.fire("AlyExchange", error.toString(), "error")
+        }
+    }
+
     return (
         <div className="container-records">
             <NavigationBar />
@@ -678,67 +836,161 @@ const Records = () => {
             </div>
 
             <div className="content">
-                <div className={`collection${(allRequest.length === 0 && allUpgrades.length === 0) ? ' empty' : ''}`}>
+                <div className="collection">
+                    <div className="menu-tab">
+                        <div onClick={_ => setTab(1)} className={`item ${tab === 1 && "active"}`}>
+                            Registros
+
+                            {
+                                allRequest.length > 0 &&
+                                <span className="request">
+                                    {allRequest.length}
+                                </span>
+                            }
+                        </div>
+
+                        <div onClick={_ => setTab(2)} className={`item ${tab === 2 && "active"}`}>
+                            Upgrades
+
+                            {
+                                allUpgrades.length > 0 &&
+                                <span className="request">
+                                    {allUpgrades.length}
+                                </span>
+                            }
+                        </div>
+
+                        <div onClick={_ => setTab(3)} className={`item ${tab === 3 && "active"}`}>
+                            Exchange
+
+                            {
+                                allExchange.length > 0 &&
+                                <span className="request">
+                                    {allExchange.length}
+                                </span>
+                            }
+                        </div>
+                    </div>
                     {
                         loader &&
                         <ActivityIndicator size={64} />
                     }
 
                     {
-                        (allRequest.length === 0 && allUpgrades.length === 0 && !loader) &&
+                        tab === 1 &&
                         <>
-                            <img src={Astronaut} alt="empty" />
-                            <h2 className="title">No hay Solicitudes</h2>
+                            {
+                                (allRequest.length === 0 && !loader) &&
+                                <>
+                                    <div className="empty">
+                                        <img src={Astronaut} alt="empty" />
+                                        <h2 className="title">No hay Solicitudes</h2>
+                                    </div>
+                                </>
+                            }
+
+                            {
+                                (allRequest.length > 0 && !loader) &&
+                                <>
+                                    <h2 className="title">Solicitudes de registros</h2>
+
+
+                                    <div className="table request">
+                                        <div className="header">
+                                            <span>Nombre</span>
+                                            <span>Monto</span>
+                                            <span>Sponsor</span>
+                                        </div>
+
+                                        {
+                                            allRequest.map(itemRequest)
+                                        }
+                                    </div>
+                                </>
+                            }
                         </>
                     }
 
                     {
-                        (allRequest.length > 0 && !loader) &&
+                        tab === 2 &&
                         <>
-                            <h2 className="title">Solicitudes de registros</h2>
+                            {
+                                (allUpgrades.length === 0 && !loader) &&
+                                <>
+                                    <div className="empty">
+                                        <img src={Astronaut} alt="empty" />
+                                        <h2 className="title">No hay Solicitudes</h2>
+                                    </div>
+                                </>
+                            }
+
+                            {
+                                allUpgrades.length > 0 &&
+                                <>
+                                    <div className="separator" />
+
+                                    <h2 className="title">Solicitudes de UPGRADES</h2>
 
 
-                            <div className="table request">
-                                <div className="header">
-                                    <span>Nombre</span>
-                                    <span>Monto</span>
-                                    <span>Sponsor</span>
-                                </div>
+                                    <div className="table request">
+                                        <div className="header">
+                                            <span>Nombre</span>
+                                            <span>Monto</span>
+                                            <span>Sponsor</span>
+                                        </div>
 
-                                {
-                                    allRequest.map(itemRequest)
-                                }
-                            </div>
+                                        {
+                                            allUpgrades.map(itemUpgrade)
+                                        }
+                                    </div>
+
+                                </>
+                            }
                         </>
                     }
 
-
                     {
-                        allUpgrades.length > 0 &&
+                        tab === 3 &&
                         <>
-                            <div className="separator" />
+                            {
+                                (allExchange.length === 0 && !loader) &&
+                                <>
+                                    <div className="empty">
+                                        <img src={Astronaut} alt="empty" />
+                                        <h2 className="title">No hay Solicitudes</h2>
+                                    </div>
+                                </>
+                            }
 
-                            <h2 className="title">Solicitudes de UPGRADES</h2>
+                            {
+                                allExchange.length > 0 &&
+                                <>
+                                    <div className="separator" />
 
+                                    <h2 className="title">Solicitudes de Exchange</h2>
 
-                            <div className="table request">
-                                <div className="header">
-                                    <span>Nombre</span>
-                                    <span>Monto</span>
-                                    <span>Sponsor</span>
-                                </div>
+                                    <div className="table exchange">
+                                        <div className="header">
+                                            <span>Compra</span>
+                                            <span>Venta</span>
+                                            <span>Cantidad</span>
+                                            <span>Solicitado</span>
+                                        </div>
 
-                                {
-                                    allUpgrades.map(itemUpgrade)
-                                }
-                            </div>
+                                        {
+                                            allExchange.map(itemExchnage)
+                                        }
+                                    </div>
+
+                                </>
+                            }
 
                         </>
                     }
 
                 </div>
 
-                <div className={`collection${allRecord.length === 0 ? ' empty' : ''}`}>
+                <div className="collection">
                     {
                         loader &&
                         <ActivityIndicator size={64} />
@@ -747,8 +999,10 @@ const Records = () => {
                     {
                         (allRecord.length === 0 && !loader) &&
                         <>
-                            <img src={Astronaut} alt="empty" />
-                            <h2 className="title">No hay Registros</h2>
+                            <div className="empty">
+                                <img src={Astronaut} alt="empty" />
+                                <h2 className="title">No hay Registos</h2>
+                            </div>
                         </>
                     }
 
@@ -1127,6 +1381,138 @@ const Records = () => {
                                     </button>
                                 </div>
                             </>
+                        }
+                    </div>
+                </Modal>
+            }
+
+            {
+                showExchangeRequest &&
+                <Modal onClose={e => setExchangeRequestModal(false)}>
+                    <div className="content-modal exchange">
+
+                        {
+                            loaderPetition &&
+                            <ActivityIndicator size={48} />
+                        }
+
+                        {
+                            (!loaderPetition && !declineConfirm) &&
+                            <>
+                                <div className="content-col">
+                                    <div className="col">
+                                        <h2>Detalle de Compra</h2>
+
+                                        <div className="row">
+                                            <span className="name">Solicitud Procesada</span>
+                                            <span className="value">{moment(detailsRequestExchange.date).fromNow()}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Moneda a pagar</span>
+                                            <span className="value">{detailsRequestExchange.currency}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Moneda a comprar</span>
+                                            <span className="value">{detailsRequestExchange.request_currency}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Cliente</span>
+                                            <span className="value">{detailsRequestExchange.email}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="col">
+                                        <h2>Detalle de Transaccion</h2>
+
+                                        <div className="row">
+                                            <span className="name">Hash de transaccion</span>
+                                            <span className="value">{detailsRequestExchange.hash}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Monto a Pagado</span>
+                                            <span className="value">{detailsRequestExchange.amount} {detailsRequestExchange.currency}</span>
+                                        </div>
+
+
+                                        <div className="row">
+                                            <span className="name">Monto de aproximado de {detailsRequestExchange.request_currency}</span>
+                                            <span className="value">{detailsRequestExchange.approximate_amount} <b>{detailsRequestExchange.request_currency}</b></span>
+                                        </div>
+
+                                        {
+                                            detailsRequestExchange.memo !== null &&
+                                            <div className="row">
+                                                <span className="name">Memo</span>
+                                                <span className="value">{detailsRequestExchange.memo}</span>
+                                            </div>
+                                        }
+
+                                        {
+                                            detailsRequestExchange.label !== null &&
+                                            <div className="row">
+                                                <span className="name">Label</span>
+                                                <span className="value">{detailsRequestExchange.label}</span>
+                                            </div>
+                                        }
+
+                                        <div className="row">
+                                            <span className="name">Hash de Pago</span>
+                                            <input
+                                                type="text"
+                                                value={hashExchangeRequest}
+                                                onChange={e => setHashExchangeRequest(e.target.value)}
+                                                placeholder="Hash de Transaccion"
+                                                className="text-input" />
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div className="buttons">
+                                    <button className="button large" onClick={_ => setDeclineConfirm(true)}>
+                                        Rechazar
+                                    </button>
+
+                                    <button className="button large secondary" onClick={acceptExhangeRequest}>
+                                        Enviar Reporte
+                                    </button>
+                                </div>
+                            </>
+                        }
+
+                        {
+                            (declineConfirm && !loaderPetition) &&
+                            <div className="confirm-decline">
+                                <h1>Rechazar Solicitud de intercambio</h1>
+
+                                <div className="row-reason">
+                                    <span className="legend-decline">
+                                        Describa la razon de rechazo ({reasonDecline.length})
+                                    </span>
+
+                                    <textarea
+                                        className="text-input"
+                                        placeholder="Razon de rechazo"
+                                        value={reasonDecline}
+                                        rows="5"
+                                        onChange={e => setReasonDecline(e.target.value)} />
+                                </div>
+
+                                <div className="buttons">
+                                    <button className="button large" onClick={e => setDeclineConfirm(false)}>
+                                        Cancelar
+                                    </button>
+
+                                    <button onClick={declineExchangeRequest} className="button large secondary">
+                                        Rechazar
+                                    </button>
+                                </div>
+                            </div>
                         }
                     </div>
                 </Modal>

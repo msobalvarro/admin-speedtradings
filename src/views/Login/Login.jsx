@@ -104,8 +104,6 @@ const Login = () => {
                 : <span>Contraseña</span>
             }
             <input required value={password} onChange={e => setPassword(e.target.value)} type="password" className="text-input" />
-
-            <a href="#" className="password-forgot link">¿Olvido su contraseña?</a>
           </div>
 
           <div className="row">
@@ -117,10 +115,6 @@ const Login = () => {
               }
             </button>
           </div>
-
-          {/* <div className="row">
-            <Link className="link register" to="/register">Registarse</Link>
-          </div> */}
         </form>
 
       </div>
