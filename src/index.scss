@@ -34,6 +34,7 @@ code {
 input,
 button,
 select,
+textarea,
 a {
   outline: none;
 
@@ -42,6 +43,7 @@ a {
     border: 2px solid #000;
     border-radius: 3px;
     color: #fff;
+    resize: none;
     padding: 8px;
     transition: $transition;
 

@@ -185,8 +185,8 @@ div.container-records {
         }
 
         .header {
-          border-bottom: 2px solid $colorSecondary;
-          color: $colorSecondary;
+          border-bottom: 2px solid $colorYellow;
+          color: $colorYellow;
           display: flex;
           justify-content: space-between;
           padding: 10px 0;
@@ -303,6 +303,27 @@ div.container-records {
           i {
             opacity: 0.5;
           }
+        }
+      }
+    }
+
+    .confirm-decline {
+      animation: fadeEffect 1s;
+      width: 100%;
+
+      h1 {
+        color: $colorYellow;
+        font-weight: normal;
+      }
+
+      .row-reason {
+        display: flex;
+        margin: 25px 0;
+        flex-direction: column;
+
+        span.legend-decline {
+          font-size: 12px;
+          margin-bottom: 5px;
         }
       }
     }

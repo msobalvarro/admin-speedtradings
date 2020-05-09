@@ -68,7 +68,14 @@ const Records = () => {
     // Estado que guarda la solcitud exchange especifca
     const [detailsRequestExchange, setDetailsExchange] = useState({})
 
+    // Estado que contiene el hash de pago en exchange
     const [hashExchangeRequest, setHashExchangeRequest] = useState("")
+
+    // Estado que muestra la ventana de confirmacion de rechazo
+    const [declineConfirm, setDeclineConfirm] = useState(false)
+
+    // Estado que guarda la razon del rechazo de intercambio exchange
+    const [reasonDecline, setReasonDecline] = useState("")
 
     // Obtiene todas las solicitudes `allExchange` para obtener
     const getAllRequest = () => {
@@ -677,6 +684,104 @@ const Records = () => {
 
     }
 
+    // Metodo que ejecuta el rechazo de un intercambio de moneda
+    const declineExchangeRequest = async () => {
+        try {
+            if (reasonDecline.length < 10) {
+                throw "La razon de rechazo debe de tener minimo 10 caracteres"
+            }
+
+            setLoaderPetition(true)
+
+            const previousData = {
+                exchange: detailsRequestExchange,
+                reason: reasonDecline,
+            }
+
+            await Petition.post("/exchange/decline", previousData, {
+                headers: {
+                    "x-auth-token": token
+                }
+            }).then(async ({ data }) => {
+                if (data.error) {
+                    throw data.message
+                }
+
+                if (data.response === "success") {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Solicitud Rechazada',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+
+                    setReasonDecline("")
+
+                    setExchangeRequestModal(false)
+
+                    await getAllExchange()
+
+
+                } else {
+                    throw "Tu rechazo no se ha podido procesar"
+                }
+            })
+
+        } catch (error) {
+            Swal.fire("AlyExchange", error.toString(), "error")
+        } finally {
+            setLoaderPetition(false)
+        }
+    }
+
+    // Metodo que ejecuta el intercambio de moneda
+    const acceptExhangeRequest = async () => {
+        try {
+            setLoaderPetition(true)
+
+            if (hashExchangeRequest.length < 8) {
+                throw "El hash de transaccion no es valido"
+            }
+
+            const previousData = {
+                exchange: detailsRequestExchange,
+                hash: hashExchangeRequest,
+            }
+
+            await Petition.post("/exchange/accept", previousData, {
+                headers: {
+                    "x-auth-token": token
+                }
+            }).then(async ({ data }) => {
+                if (data.error) {
+                    throw data.message
+                }
+
+                if (data.response === "success") {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Reporte enviado',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+
+                    setExchangeRequestModal(false)
+
+                    await getAllExchange()
+
+
+                } else {
+                    throw "El reporte no se ha podido procesar"
+                }
+            })
+            
+        } catch (error) {
+            Swal.fire("AlyExchange", error.toString(), "error")
+        }
+    }
+
     return (
         <div className="container-records">
             <NavigationBar />
@@ -862,8 +967,7 @@ const Records = () => {
                                 <>
                                     <div className="separator" />
 
-                                    <h2 className="title">Solicitudes de UPGRADES</h2>
-
+                                    <h2 className="title">Solicitudes de Exchange</h2>
 
                                     <div className="table exchange">
                                         <div className="header">
@@ -1293,7 +1397,7 @@ const Records = () => {
                         }
 
                         {
-                            !loaderPetition &&
+                            (!loaderPetition && !declineConfirm) &&
                             <>
                                 <div className="content-col">
                                     <div className="col">
@@ -1370,15 +1474,45 @@ const Records = () => {
 
 
                                 <div className="buttons">
-                                    <button className="button large" onClick={e => setShowRecord(false)}>
+                                    <button className="button large" onClick={_ => setDeclineConfirm(true)}>
                                         Rechazar
                                     </button>
 
-                                    <button className="button large secondary">
+                                    <button className="button large secondary" onClick={acceptExhangeRequest}>
                                         Enviar Reporte
                                     </button>
                                 </div>
                             </>
+                        }
+
+                        {
+                            (declineConfirm && !loaderPetition) &&
+                            <div className="confirm-decline">
+                                <h1>Rechazar Solicitud de intercambio</h1>
+
+                                <div className="row-reason">
+                                    <span className="legend-decline">
+                                        Describa la razon de rechazo ({reasonDecline.length})
+                                    </span>
+
+                                    <textarea
+                                        className="text-input"
+                                        placeholder="Razon de rechazo"
+                                        value={reasonDecline}
+                                        rows="5"
+                                        onChange={e => setReasonDecline(e.target.value)} />
+                                </div>
+
+                                <div className="buttons">
+                                    <button className="button large" onClick={e => setDeclineConfirm(false)}>
+                                        Cancelar
+                                    </button>
+
+                                    <button onClick={declineExchangeRequest} className="button large secondary">
+                                        Rechazar
+                                    </button>
+                                </div>
+                            </div>
                         }
                     </div>
                 </Modal>
