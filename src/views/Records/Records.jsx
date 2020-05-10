@@ -1410,12 +1410,12 @@ const Records = () => {
 
                                         <div className="row">
                                             <span className="name">Moneda a pagar</span>
-                                            <span className="value">{detailsRequestExchange.currency}</span>
+                                            <span className="value">{detailsRequestExchange.request_currency}</span>
                                         </div>
 
                                         <div className="row">
                                             <span className="name">Moneda a comprar</span>
-                                            <span className="value">{detailsRequestExchange.request_currency}</span>
+                                            <span className="value">{detailsRequestExchange.currency}</span>
                                         </div>
 
                                         <div className="row">
@@ -1433,14 +1433,14 @@ const Records = () => {
                                         </div>
 
                                         <div className="row">
-                                            <span className="name">Monto a Pagado</span>
-                                            <span className="value">{detailsRequestExchange.amount} {detailsRequestExchange.currency}</span>
+                                            <span className="name">Monto recibido</span>
+                                            <span className="value">{detailsRequestExchange.amount} {detailsRequestExchange.request_currency}</span>
                                         </div>
 
 
                                         <div className="row">
-                                            <span className="name">Monto de aproximado de {detailsRequestExchange.request_currency}</span>
-                                            <span className="value">{detailsRequestExchange.approximate_amount} <b>{detailsRequestExchange.request_currency}</b></span>
+                                            <span className="name">Monto aproximado de {detailsRequestExchange.currency}</span>
+                                            <span className="value">{detailsRequestExchange.approximate_amount} <b>{detailsRequestExchange.currency}</b></span>
                                         </div>
 
                                         {
