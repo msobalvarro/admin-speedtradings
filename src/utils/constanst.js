@@ -17,7 +17,7 @@ const portSocket = ":2000"
 
 export const keySecret = "testDevelop"
 
-export const urlServer = "http://ardent-medley-272823.appspot.com"
+export const urlServer = "https://ardent-medley-272823.appspot.com"
 // export const urlServer = "http://127.0.0.1" + devPort
 
 // export const urlServerSocket = urlServer.replace(devPort, "") + portSocket
