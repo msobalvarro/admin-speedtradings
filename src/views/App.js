@@ -21,9 +21,13 @@ const App = () => {
 
     // Configura y esta a la esucha del servidor con soket
     const ConfigurateSoket = (token = "") => {
-        const socket = new WebSocket(urlServerSocket)
+        try {
+            const socket = new WebSocket(urlServerSocket)
 
-        dispatch({ type: SETSOCKET, payload: socket })
+            dispatch({ type: SETSOCKET, payload: socket })
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
