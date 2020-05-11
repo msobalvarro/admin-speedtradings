@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { HashRouter, Route, Switch } from "react-router-dom"
-import { useDispatch } from "react-redux"
-import io from "socket.io-client"
-
+import { useDispatch, useSelector } from "react-redux"
 // Import Assets
 
 // Redux configurations
@@ -19,24 +17,13 @@ import NotFound from './404/404'
 
 const App = () => {
     const dispatch = useDispatch()
-    // useSelector(({ globalStorage }) => console.log(globalStorage))
     const [loged, setLogin] = useState(false)
 
     // Configura y esta a la esucha del servidor con soket
-    const ConfigurateSoket = () => {
-        // console.log(urlServerSocket)
-
-        const socket = io(urlServerSocket, {
-            transports: ["websocket"],
-            forceNew: true
-        })
+    const ConfigurateSoket = (token = "") => {
+        const socket = new WebSocket(urlServerSocket)
 
         dispatch({ type: SETSOCKET, payload: socket })
-
-
-        return () => {
-            socket.disconnect()
-        }
     }
 
     useEffect(() => {
@@ -51,7 +38,7 @@ const App = () => {
                 payload
             })
 
-            // ConfigurateSoket()
+            ConfigurateSoket(payload.token)
 
             // Le decimos que el usuario esta logueado
             setLogin(true)
