@@ -159,8 +159,12 @@ const Records = () => {
                     }
 
                     // Esperamos una nueva solictud de upgrade
-                    if (typeEvent === "newRequest") {
+                    if (typeEvent === "newUpgrade") {
                         await getAllUpgrades()
+                    }
+                    // Esperamos una nueva solictud de Exchange
+                    if (typeEvent === "newExchange") {
+                        await getAllExchange()
                     }
 
                     audioNotification.play()
