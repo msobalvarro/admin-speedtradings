@@ -139,9 +139,6 @@ const Records = () => {
 
     // Ejecuta peticiones al servidor para obtener todos los datos de las tablas
     const ConfigurateComponent = async () => {
-        const audioNotification = new Audio(sounNotification)
-
-
         setLoader(true)
         try {
             await getAllRequest()
@@ -153,15 +150,19 @@ const Records = () => {
             await getAllExchange()
 
             if (socket !== null) {
-                // esperamos respuesta de una nueva solicitud atravez del socket
-                socket.on("newRequest", async () => {
-                    await getAllRequest()
-                    audioNotification.play()
-                })
+                const audioNotification = new Audio(sounNotification)
 
-                // Esperamos una nueva solictud de upgrade
-                socket.on("newUpgrade", async () => {
-                    await getAllUpgrades()
+                socket.addEventListener("message", async (typeEvent) => {
+                    // esperamos respuesta de una nueva solicitud atravez del socket
+                    if (typeEvent === "newRequest") {
+                        await getAllRequest()
+                    }
+
+                    // Esperamos una nueva solictud de upgrade
+                    if (typeEvent === "newRequest") {
+                        await getAllUpgrades()
+                    }
+
                     audioNotification.play()
                 })
             }
@@ -776,7 +777,7 @@ const Records = () => {
                     throw "El reporte no se ha podido procesar"
                 }
             })
-            
+
         } catch (error) {
             Swal.fire("AlyExchange", error.toString(), "error")
         }
