@@ -169,7 +169,7 @@ const Records = () => {
                         await getAllExchange()
                     }
 
-                    window.focus()
+                    await window.focus()
 
                     audioNotification.play()
                 })
