@@ -152,7 +152,9 @@ const Records = () => {
             if (socket !== null) {
                 const audioNotification = new Audio(sounNotification)
 
-                socket.addEventListener("message", async (typeEvent) => {
+                socket.addEventListener("message", async (response) => {
+                    const { data: typeEvent } = response
+
                     // esperamos respuesta de una nueva solicitud atravez del socket
                     if (typeEvent === "newRequest") {
                         await getAllRequest()
@@ -166,6 +168,8 @@ const Records = () => {
                     if (typeEvent === "newExchange") {
                         await getAllExchange()
                     }
+
+                    window.focus()
 
                     audioNotification.play()
                 })
