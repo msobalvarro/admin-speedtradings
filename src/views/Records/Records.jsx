@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import Validator from "validator"
 import jwt from "jwt-simple"
-import alertSound from "alert"
-
 import { Petition, keySecret, copyData, urlServer } from "../../utils/constanst"
 import moment from "moment"
 
@@ -170,6 +168,8 @@ const Records = () => {
                     }
 
                     await window.focus()
+
+                    audioNotification.muted = false
 
                     audioNotification.play()
                 })
@@ -1419,12 +1419,12 @@ const Records = () => {
 
                                         <div className="row">
                                             <span className="name">Moneda a pagar</span>
-                                            <span className="value">{detailsRequestExchange.request_currency}</span>
+                                            <span className="value">{detailsRequestExchange.currency}</span>
                                         </div>
 
                                         <div className="row">
                                             <span className="name">Moneda a comprar</span>
-                                            <span className="value">{detailsRequestExchange.currency}</span>
+                                            <span className="value">{detailsRequestExchange.request_currency}</span>
                                         </div>
 
                                         <div className="row">
@@ -1443,13 +1443,13 @@ const Records = () => {
 
                                         <div className="row">
                                             <span className="name">Monto recibido</span>
-                                            <span className="value">{detailsRequestExchange.amount} {detailsRequestExchange.request_currency}</span>
+                                            <span className="value">{detailsRequestExchange.amount} {detailsRequestExchange.currency}</span>
                                         </div>
 
 
                                         <div className="row">
-                                            <span className="name">Monto aproximado de {detailsRequestExchange.currency}</span>
-                                            <span className="value">{detailsRequestExchange.approximate_amount} <b>{detailsRequestExchange.currency}</b></span>
+                                            <span className="name">Monto aproximado de {detailsRequestExchange.request_currency}</span>
+                                            <span className="value">{detailsRequestExchange.approximate_amount} <b>{detailsRequestExchange.request_currency}</b></span>
                                         </div>
 
                                         {
