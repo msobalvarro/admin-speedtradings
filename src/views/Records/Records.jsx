@@ -741,6 +741,8 @@ const Records = () => {
             Swal.fire("AlyExchange", error.toString(), "error")
         } finally {
             setLoaderPetition(false)
+
+            setDeclineConfirm(false)
         }
     }
 
