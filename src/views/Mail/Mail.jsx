@@ -37,6 +37,9 @@ const Mailing = () => {
     // Estado que define si se muestra los resultados de busqueda
     const [showList, setShowList] = useState(false)
 
+    // Estado que representa si toda la lista contiene a todos los usuarios
+    const [selectAll, setSelectAll] = useState(false)
+
     /**Creacion de correo */
     const createEditor = () => {
         const editor = new Quill('#editor', {
@@ -157,6 +160,10 @@ const Mailing = () => {
                         type="text"
                         placeholder="Buscar usuario"
                         className="search-user" />
+
+                    <button className={`select-all ${selectAll ? "select" : ""}`}>
+                        Todo
+                    </button>
                 </div>
 
 
@@ -166,10 +173,9 @@ const Mailing = () => {
                         {
                             allEmails.map((item, key) => {
                                 if (
-                                    item.fullname.length > 0 && item.fullname.toLowerCase().search(searchUser.toLocaleLowerCase()) > -1 ||
-                                    item.email.length > 0 && item.email.toLowerCase().search(searchUser.toLocaleLowerCase()) > -1 &&
-                                    // emailSelected.some(e => e.email !== item.email)
-                                    emailSelected.filter(e => e.email === item.email).length > 0
+                                    item.fullname.length > 0 && item.fullname.toLowerCase().search(searchUser.toLocaleLowerCase()) > -1
+                                    || item.email.length > 0 && item.email.toLowerCase().search(searchUser.toLocaleLowerCase()) > -1
+                                    && emailSelected.filter(e => e.email === item.email).length > 0
                                 ) {
                                     return (
                                         <div className="mail-item" onClick={_ => selectUser(key)} key={key}>

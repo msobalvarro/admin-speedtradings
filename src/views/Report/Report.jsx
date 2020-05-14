@@ -92,7 +92,12 @@ const Report = () => {
                 <div className="row" id={"row-" + index} key={index}>
                     <span>{item.name}</span>
                     <span>{item.amount} {currency === "1" ? "BTC" : "ETH"}</span>
-                    <span className="copy-element" onClick={_ => copyData(item.wallet)}>{item.wallet}</span>
+                    {
+                        item.user_coinbase !== null
+                            ? <span className="copy-element" onClick={_ => copyData(item.user_coinbase)}>{item.user_coinbase}</span>
+                            : <span className="copy-element" onClick={_ => copyData(item.wallet)}>{item.wallet}</span>
+                    }
+
 
                     {
                         item.hash === null &&

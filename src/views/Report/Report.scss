@@ -105,6 +105,7 @@ div.container-report {
 
         .copy-element {
           cursor: pointer;
+          // overflow: hidden;
           position: relative;
 
           &::before {

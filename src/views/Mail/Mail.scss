@@ -62,6 +62,20 @@
         border: none;
         flex: 1;
       }
+
+      button.select-all {
+        // background-color: red;
+        background-color: #ccc;
+        cursor: pointer;
+        color: #2d2d2d;
+        border: none;
+        padding: 8px;
+        
+        &.select {
+          background-color: #979797;
+          background-color: #ccc;
+        }
+      }
     }
 
     .list-avaible {
