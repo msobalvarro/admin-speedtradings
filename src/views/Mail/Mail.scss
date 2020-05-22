@@ -47,6 +47,9 @@
         span.name {
           color: #2d2d2d;
           font-size: 12px;
+          overflow-x: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
         }
 
         span.delete {
@@ -70,7 +73,7 @@
         color: #2d2d2d;
         border: none;
         padding: 8px;
-        
+
         &.select {
           background-color: #979797;
           background-color: #ccc;
