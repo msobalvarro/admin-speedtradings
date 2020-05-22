@@ -515,7 +515,7 @@ const Records = () => {
 
         try {
             if (dataRequestItem.sponsor_username !== null && hashForSponsor.length === 0) {
-                throw "El hash de transaccion a sponsor es requerido"
+                throw new Error("El hash de transaccion a sponsor es requerido")
             }
 
             await Petition.post('/admin/request/accept', { data: dataRequestItem, hashSponsor: hashForSponsor }, {
@@ -566,7 +566,7 @@ const Records = () => {
         setLoaderPetition(true)
         try {
             if (dataUpgrade.sponsor_username !== null && hashForSponsor.length === 0) {
-                throw "El hash de transaccion a sponsor es requerido"
+                throw new Error("El hash de transaccion a sponsor es requerido")
             }
 
             await Petition.post('/admin/upgrades/accept', { data: dataUpgrade, hashSponsor: hashForSponsor }, {
@@ -616,11 +616,11 @@ const Records = () => {
             setLoaderTrading(true)
 
             if (!Validator.isNumeric(percentage)) {
-                throw "El porcentaje del trading no es valido"
+                throw new Error("El porcentaje del trading no es valido")
             }
 
             if (cryptoCurrency === "default") {
-                throw "Seleccione una moneda"
+                throw new Error("Seleccione una moneda")
             }
 
             // Verificamos si el trading en esa moneda ya se hizo
@@ -634,7 +634,7 @@ const Records = () => {
                     }
                 }).then(({ status, data }) => {
                     if (data.error) {
-                        throw data.message
+                        throw new Error(data.message)
                     }
 
                     if (status === 200 && data.response === "success") {
@@ -672,7 +672,7 @@ const Records = () => {
                     }
 
                 }).catch(reason => {
-                    throw reason
+                    throw new Error(reason)
                 })
 
             } else {
@@ -697,7 +697,7 @@ const Records = () => {
     const declineExchangeRequest = async () => {
         try {
             if (reasonDecline.length < 10) {
-                throw "La razon de rechazo debe de tener minimo 10 caracteres"
+                throw new Error("La razon de rechazo debe de tener minimo 10 caracteres")
             }
 
             setLoaderPetition(true)
@@ -733,7 +733,7 @@ const Records = () => {
 
 
                 } else {
-                    throw "Tu rechazo no se ha podido procesar"
+                    throw new Error("Tu rechazo no se ha podido procesar")
                 }
             })
 
@@ -752,7 +752,7 @@ const Records = () => {
             setLoaderPetition(true)
 
             if (hashExchangeRequest.length < 8) {
-                throw "El hash de transaccion no es valido"
+                throw new Error("El hash de transaccion no es valido")
             }
 
             const previousData = {
@@ -766,7 +766,7 @@ const Records = () => {
                 }
             }).then(async ({ data }) => {
                 if (data.error) {
-                    throw data.message
+                    throw new Error(data.message)
                 }
 
                 if (data.response === "success") {

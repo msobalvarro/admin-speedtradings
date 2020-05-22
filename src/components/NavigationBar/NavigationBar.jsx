@@ -20,7 +20,7 @@ const NavigationBar = () => {
                 <Link to="/reports" className={(location === '#/reports') ? 'active' : ''}>Reporte de pago</Link>
                 <Link to="/mailing" className={(location === '#/mailing') ? 'active' : ''}>Correo</Link>
                 <Link to="/logs" className={(location === '#/logs') ? 'active' : ''}>Consola</Link>
-                <a href="#" onClick={LogOut}>Cerrar sesion</a>
+                <a href="/#" onClick={LogOut}>Cerrar sesion</a>
             </div>
         </nav>
     )

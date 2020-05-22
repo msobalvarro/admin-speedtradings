@@ -10,10 +10,10 @@ const keyStorage = "@storage"
  * Indica en que puerto donde corre el codigo backend 
  * cuando esta en desarollo
  * */
-const devPort = ":8080"
+// const devPort = ":8080"
 
 /**Indica en que puerto correra el socket en backend */
-const portSocket = ":2000"
+// const portSocket = ":2000"
 
 export const keySecret = "testDevelop"
 

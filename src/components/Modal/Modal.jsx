@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 
 // Import styles and asstes
 import "./Modal.scss"
 
 const Modal = ({ children, onClose = () => { } }) => {
+    const onHandledCallback = useCallback(() => onClose(), [])
+
     useEffect(() => {
         document.body.style.overflow = "hidden"
 
         document.onkeyup = (key) => {
             if (key.code === "Escape") {
-                onClose()
+                onHandledCallback()
             }
         }
 

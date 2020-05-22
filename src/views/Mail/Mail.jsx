@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react"
 
 // Constant and redux store
 import { useSelector } from "react-redux"
-import { Petition, copyData } from "../../utils/constanst"
+import { Petition } from "../../utils/constanst"
 
 // Import assets
 import "quill/dist/quill.snow.css"
