@@ -2,7 +2,7 @@
 
 .container-mailing {
   .header-mail {
-    align-items: center;
+    align-items: stretch;
     margin-top: 25px;
     position: relative;
     display: flex;
@@ -68,15 +68,20 @@
 
       button.select-all {
         // background-color: red;
-        background-color: #ccc;
+        background-color: rgb(56, 55, 55);
+        margin: 5px;
+        border-radius: 50%;
         cursor: pointer;
         color: #2d2d2d;
         border: none;
         padding: 8px;
 
-        &.select {
-          background-color: #979797;
-          background-color: #ccc;
+        &:disabled {
+          opacity: 0.5;
+        }
+
+        img {
+          width: 16px;
         }
       }
     }
@@ -132,9 +137,14 @@
       overflow: hidden;
       color: #000;
       width: 48%;
+      min-height: 60vh;
 
-      .ql-editor {
-        height: 512px;
+      .second-toolbar {
+        display: none;
+      }
+
+      .fr-wrapper {
+        border: none;
       }
     }
 
@@ -149,5 +159,11 @@
         max-width: 100%;
       }
     }
+  }
+
+  .buttons {
+    margin: 0 25px;
+    display: flex;
+    justify-content: flex-end;
   }
 }
