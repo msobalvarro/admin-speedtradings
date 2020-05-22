@@ -56,6 +56,8 @@ const Logs = () => {
                                     <span className="text-log">{log}</span>
                                 </div>
                             )
+                        } else {
+                            return null
                         }
                     })
                 }

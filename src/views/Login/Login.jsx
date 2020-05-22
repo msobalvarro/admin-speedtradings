@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import Validator from "validator"
 import { useDispatch } from "react-redux"
-import { Link } from 'react-router-dom'
 
 // import Assets
 import "./Login.scss"

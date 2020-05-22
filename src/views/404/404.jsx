@@ -47,12 +47,12 @@ const NotFound = () => {
 
             <div className="content-astronaut">
                 <div className="earth-moon">
-                    <img className="object_earth" src={earth} width="100px" />
-                    <img className="object_moon" src={moon} width="80px" />
+                    <img className="object_earth" src={earth} alt="earth" width="100px" />
+                    <img className="object_moon" src={moon} alt="moon" width="80px" />
                 </div>
 
-                <img className="object_rocket" src={rocket} width="40px" />
-                <img className="object_astronaut" src={astronaut} width="140px" />
+                <img className="object_rocket" src={rocket} alt="rocket" width="40px" />
+                <img className="object_astronaut" src={astronaut} alt="astronaut" width="140px" />
 
                 <div className="glowing_stars">
                     <div className="star"></div>
