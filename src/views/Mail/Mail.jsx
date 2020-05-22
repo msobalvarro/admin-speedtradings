@@ -18,6 +18,8 @@ import 'froala-editor/js/third_party/embedly.min.js'
 import FroalaEditorComponent from "react-froala-wysiwyg"
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import Swal from "sweetalert2"
+import Modal from "../../components/Modal/Modal"
+import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
 
 const Editor = ({ onChange = () => { } }) => {
     // Estado que almacena el cuerpo del correo
@@ -84,6 +86,9 @@ const Mailing = () => {
 
     // Estado que alamcena todos los correos seleccionados por el usuario
     const [emailSelected, setSelect] = useState([])
+
+    // Estado que alamacena un proceso
+    const [loader, setLoader] = useState(false)
 
 
     /**Metodo que obtiene todos los datos del servidor (emails) */
@@ -176,6 +181,9 @@ const Mailing = () => {
      */
     const onSend = async () => {
         try {
+            // Activamos el loader
+            setLoader(true)
+
             // Vaidamos si hay correos que enviar
             if (emailSelected.length === 0) {
                 throw new Error("Seleccione al menos un correo")
@@ -236,6 +244,8 @@ const Mailing = () => {
             })
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error.toString(), "error")
+        } finally {
+            setLoader(false)
         }
     }
 
@@ -324,6 +334,14 @@ const Mailing = () => {
             <div className="buttons">
                 <button className="button" onClick={onSend}>Enviar</button>
             </div>
+
+
+            {
+                loader &&
+                <Modal persist={true} onlyChildren>
+                    <ActivityIndicator size={64} />
+                </Modal>
+            }
         </div>
     )
 }

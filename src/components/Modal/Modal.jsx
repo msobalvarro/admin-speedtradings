@@ -3,15 +3,24 @@ import React, { useEffect, useCallback } from 'react'
 // Import styles and asstes
 import "./Modal.scss"
 
-const Modal = ({ children, onClose = () => { } }) => {
+const Modal = ({ children, onlyChildren = false, onClose = () => { }, persist = false }) => {
     const onHandledCallback = useCallback(() => onClose(), [])
 
-    useEffect(() => {
-        document.body.style.overflow = "hidden"
+    /**Metodo que comprueba si la ventana modal es persistente */
+    const tryClose = () => {
+        if (!persist) {
+            onHandledCallback()
+        }
+    }
 
-        document.onkeyup = (key) => {
-            if (key.code === "Escape") {
-                onHandledCallback()
+    useEffect(() => {
+        if (!persist) {
+            document.body.style.overflow = "hidden"
+
+            document.onkeyup = (key) => {
+                if (key.code === "Escape") {
+                    onHandledCallback()
+                }
             }
         }
 
@@ -22,11 +31,22 @@ const Modal = ({ children, onClose = () => { } }) => {
 
     return (
         <div className="modal">
-            <div className="background-modal" onClick={onClose} />
+            <div className="background-modal" onClick={tryClose} />
 
-            <div className="container">
-                {children}
-            </div>
+            {
+                !onlyChildren &&
+                <div className="container">
+                    {children}
+                </div>
+            }
+
+            {
+                onlyChildren &&
+                <>
+                    {children}
+                </>
+            }
+
         </div>
     )
 }
