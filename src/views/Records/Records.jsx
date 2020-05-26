@@ -1067,7 +1067,7 @@ const Records = () => {
                                         <div className="row">
                                             {
                                                 dataRequest.email_airtm !== null
-                                                    ? <span className="name">Id de manipulcacion</span>
+                                                    ? <span className="name">Id de manipulacion</span>
                                                     : <span className="name">Hash de transaccion</span>
                                             }
 
@@ -1200,7 +1200,7 @@ const Records = () => {
                                         <div className="row">
                                             {
                                                 dataUpgrade.email_airtm !== null
-                                                    ? <span className="name">Id de manipulcacion</span>
+                                                    ? <span className="name">Id de manipulacion</span>
                                                     : <span className="name">Hash de transaccion</span>
                                             }
 
