@@ -1064,8 +1064,20 @@ const Records = () => {
                                             <span className="value">{dataRequest.email}</span>
                                         </div>
 
+                                        {
+                                            dataRequest.email_airtm !== null &&
+                                            <div className="row">
+                                                <span className="name">Correo de transaccion</span>
+                                                <span className="value">{dataRequest.email_airtm}</span>
+                                            </div>
+                                        }
+
                                         <div className="row">
-                                            <span className="name">Hash de transaccion</span>
+                                            {
+                                                (dataRequest.email_airtm !== null)
+                                                    ? <span className="name">Id de manipulcacion</span>
+                                                    : <span className="name">Hash de transaccion</span>
+                                            }
                                             <span className="value copy" onClick={_ => copyData(dataRequest.hash)}>{dataRequest.hash}</span>
                                         </div>
 
@@ -1075,6 +1087,15 @@ const Records = () => {
                                                 {dataRequest.amount} {dataRequest.id_currency === 1 && 'BTC'} {dataRequest.id_currency === 2 && 'ETH'}
                                             </span>
                                         </div>
+
+                                        {
+                                            (dataRequest.aproximate_amount !== null) &&
+
+                                            <div className="row">
+                                                <span className="name">Deposito aproximado</span>
+                                                <span className="value">$ {dataRequest.aproximate_amount}</span>
+                                            </div>
+                                        }
                                     </div>
 
                                     <div className={`col${dataRequest.sponsor_username === null ? ' empty' : ''}`}>
