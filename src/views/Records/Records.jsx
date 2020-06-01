@@ -1496,6 +1496,11 @@ const Records = () => {
                                             <span className="value">{detailsRequestExchange.approximate_amount} <b>{detailsRequestExchange.request_currency}</b></span>
                                         </div>
 
+                                        <div className="row">
+                                            <span className="name">Direccion Wallet</span>
+                                            <span className="value copy" onClick={_ => copyData(detailsRequestExchange.wallet)}>{detailsRequestExchange.wallet}</span>
+                                        </div>                                        
+
                                         {
                                             detailsRequestExchange.memo !== null &&
                                             <div className="row">
@@ -1532,7 +1537,7 @@ const Records = () => {
                                     </button>
 
                                     <button className="button large secondary" onClick={acceptExhangeRequest}>
-                                        Enviar Reporte
+                                        Responder
                                     </button>
                                 </div>
                             </>
