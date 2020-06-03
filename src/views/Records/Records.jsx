@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import Validator from "validator"
 import jwt from "jwt-simple"
-import { Petition, keySecret, copyData, urlServer } from "../../utils/constanst"
+import { Petition, keySecret, copyData, urlServer, WithDecimals } from "../../utils/constanst"
 import moment from "moment"
 
 // Import styles and assets
@@ -21,7 +21,7 @@ const Records = () => {
     const socket = useSelector(storage => storage.socket)
 
     // Estado que guarda las tabs activas de solicitudes
-    const [tab, setTab] = useState(1)
+    const [tab, setTab] = useState(4)
 
     // Estado que guarda el texto para filtrar en la coleccion de solicitudes y registros
     const [filter, setFilter] = useState('')
@@ -31,6 +31,7 @@ const Records = () => {
     const [allRequest, setRequests] = useState([])
     const [allRecord, setRecords] = useState([])
     const [allExchange, setExchange] = useState([])
+    const [allMoneyChanger, setMoneyChanger] = useState([])
 
     // Estado que guarda el detalle de los registros
     const [dataRequest, setDataRequest] = useState({})
@@ -63,11 +64,21 @@ const Records = () => {
     // los datos especificos y mostrarlos como detalles
     const [showExchangeRequest, setExchangeRequestModal] = useState(false)
 
+    // Estado que guarda el indice de
+    // los datos especificos y mostrarlos como detalles de compra y venta
+    const [showMoneyChagerRequest, setMoneyChagerRequestModal] = useState(false)
+
     // Estado que guarda la solcitud exchange especifca
     const [detailsRequestExchange, setDetailsExchange] = useState({})
 
+    // Estado que guarda la solcitud compora y venta (Money Changer)
+    const [detailsRequestMoneyChanger, setDetailsMoneyChanger] = useState({})
+
     // Estado que contiene el hash de pago en exchange
     const [hashExchangeRequest, setHashExchangeRequest] = useState("")
+
+    // Estado que contiene el hash de pago en Compra (Money Changer)
+    const [hashMonyeChangerRequest, setHashMonyeChangerRequest] = useState("")
 
     // Estado que muestra la ventana de confirmacion de rechazo
     const [declineConfirm, setDeclineConfirm] = useState(false)
@@ -135,6 +146,23 @@ const Records = () => {
         })
     }
 
+    // Obtiene todas las solcitudes de compra y venta en Money Changer
+    const getAllMoneyChanger = () => {
+        Petition.get('/money-changer', {
+            headers: {
+                "x-auth-token": token
+            }
+        }).then(({ data }) => {
+            if (data.error) {
+                Swal.fire('Ha ocurrido un error', data.message, 'error')
+            } else {
+                setMoneyChanger(data)
+
+                console.log(data)
+            }
+        })
+    }
+
     // Ejecuta peticiones al servidor para obtener todos los datos de las tablas
     const ConfigurateComponent = async () => {
         setLoader(true)
@@ -146,6 +174,8 @@ const Records = () => {
             await getAllUpgrades()
 
             await getAllExchange()
+
+            await getAllMoneyChanger()
 
             if (socket !== null) {
                 const audioNotification = new Audio(sounNotification)
@@ -162,9 +192,15 @@ const Records = () => {
                     if (typeEvent === "newUpgrade") {
                         await getAllUpgrades()
                     }
+
                     // Esperamos una nueva solictud de Exchange
                     if (typeEvent === "newExchange") {
                         await getAllExchange()
+                    }
+
+                    // Esperamos una nueva solictud de Exchange
+                    if (typeEvent === "newMoneyChanger") {
+                        await getAllMoneyChanger()
                     }
 
                     await window.focus()
@@ -293,6 +329,34 @@ const Records = () => {
         )
     }
 
+    // Componente que representa un articulo de la lista Exchange request
+    const itemMoneyChanger = (item, index) => {
+        // Tipo - Moneda - Monto - Solicitado
+
+        return (
+            <div className="row" key={index} onClick={_ => openMoneyChangerRequest(index)}>
+                {
+                    item.type === "buy" &&
+                    <span>Compra</span>
+                }
+
+                {
+                    item.type === "sell" &&
+                    <span>Venta</span>
+                }
+
+                {
+                    (item.type !== "sell" && item.type !== "buy") &&
+                    <span>No identificado</span>
+                }
+
+                <span>{item.coin_name}</span>
+                <span>$ {item.amount_usd}</span>
+                <span>{moment(item.date).fromNow()}</span>
+            </div>
+        )
+    }
+
     // Funcion que abre detalles al hacer la peticion de
     // detalles de solitud
     const openDetailsRequest = async (id = 0) => {
@@ -393,6 +457,13 @@ const Records = () => {
         await setDetailsExchange(allExchange[index])
 
         setExchangeRequestModal(true)
+    }
+
+    // Funcion que abre ventana modal con detalles de solicitud exchange
+    const openMoneyChangerRequest = async (index = 0) => {
+        await setDetailsMoneyChanger(allMoneyChanger[index])
+
+        setMoneyChagerRequestModal(true)
     }
 
     // Abre modal para confirmar rechazo de solicitud de registro
@@ -793,6 +864,165 @@ const Records = () => {
         }
     }
 
+    /**Sub componente que muestra las solicitudes de registro */
+    const RequestTabView = () => {
+        return (
+            <>
+                {
+                    (allRequest.length === 0 && !loader) &&
+                    <>
+                        <div className="empty">
+                            <img src={Astronaut} alt="empty" />
+                            <h2 className="title">No hay Solicitudes</h2>
+                        </div>
+                    </>
+                }
+
+                {
+                    (allRequest.length > 0 && !loader) &&
+                    <>
+                        <h2 className="title">Solicitudes de registros</h2>
+
+
+                        <div className="table request">
+                            <div className="header">
+                                <span>Nombre</span>
+                                <span>Monto</span>
+                                <span>Sponsor</span>
+                            </div>
+
+                            {
+                                allRequest.map(itemRequest)
+                            }
+                        </div>
+                    </>
+                }
+            </>
+        )
+    }
+
+    /**Sub Componente que muestra todas las solcitudes de Upgrades */
+    const UpgradeRequestTabView = () => {
+        return (
+            <>
+                {
+                    (allUpgrades.length === 0 && !loader) &&
+                    <>
+                        <div className="empty">
+                            <img src={Astronaut} alt="empty" />
+                            <h2 className="title">No hay Solicitudes</h2>
+                        </div>
+                    </>
+                }
+
+                {
+                    allUpgrades.length > 0 &&
+                    <>
+                        <div className="separator" />
+
+                        <h2 className="title">Solicitudes de UPGRADES</h2>
+
+
+                        <div className="table request">
+                            <div className="header">
+                                <span>Nombre</span>
+                                <span>Monto</span>
+                                <span>Sponsor</span>
+                            </div>
+
+                            {
+                                allUpgrades.map(itemUpgrade)
+                            }
+                        </div>
+
+                    </>
+                }
+            </>
+        )
+    }
+
+    /**Sub Componente que muestra todas las solicitudes de Intercambio (Exchange) */
+    const ExchangeRequestTabView = () => {
+        return (
+            <>
+                {
+                    (allExchange.length === 0 && !loader) &&
+                    <>
+                        <div className="empty">
+                            <img src={Astronaut} alt="empty" />
+                            <h2 className="title">No hay Solicitudes</h2>
+                        </div>
+                    </>
+                }
+
+                {
+                    allExchange.length > 0 &&
+                    <>
+                        <div className="separator" />
+
+                        <h2 className="title">Solicitudes de Exchange</h2>
+
+                        <div className="table exchange">
+                            <div className="header">
+                                <span>Compra</span>
+                                <span>Venta</span>
+                                <span>Cantidad</span>
+                                <span>Solicitado</span>
+                            </div>
+
+                            {
+                                allExchange.map(itemExchnage)
+                            }
+                        </div>
+
+                    </>
+                }
+
+            </>
+        )
+    }
+
+    /**Sub Componente que muestra todas las solicitudes de Compra y venta */
+    const MoneyChangerRequestTabView = () => {
+        return (
+            <>
+                {
+                    (allMoneyChanger.length === 0 && !loader) &&
+                    <>
+                        <div className="empty">
+                            <img src={Astronaut} alt="empty" />
+                            <h2 className="title">No hay Solicitudes</h2>
+                        </div>
+                    </>
+                }
+
+                {
+                    allMoneyChanger.length > 0 &&
+                    <>
+                        <div className="separator" />
+
+                        <h2 className="title">Solicitudes de Exchange</h2>
+
+                        <div className="table exchange">
+                            <div className="header">
+                                <span>Tipo</span>
+                                <span>Moneda</span>
+                                <span>Monto</span>
+                                <span>Solicitado</span>
+                            </div>
+
+                            {
+                                allMoneyChanger.map(itemMoneyChanger)
+                            }
+                        </div>
+
+                    </>
+                }
+
+            </>
+        )
+    }
+
     return (
         <div className="container-records">
             <NavigationBar />
@@ -852,7 +1082,7 @@ const Records = () => {
                         <div onClick={_ => setTab(1)} className={`item ${tab === 1 && "active"}`}>
                             Registros
 
-                            {
+                        {
                                 allRequest.length > 0 &&
                                 <span className="request">
                                     {allRequest.length}
@@ -863,7 +1093,7 @@ const Records = () => {
                         <div onClick={_ => setTab(2)} className={`item ${tab === 2 && "active"}`}>
                             Upgrades
 
-                            {
+                        {
                                 allUpgrades.length > 0 &&
                                 <span className="request">
                                     {allUpgrades.length}
@@ -881,7 +1111,19 @@ const Records = () => {
                                 </span>
                             }
                         </div>
+
+                        <div onClick={_ => setTab(4)} className={`item ${tab === 4 && "active"}`}>
+                            Money Changer
+
+                            {
+                                allMoneyChanger.length > 0 &&
+                                <span className="request">
+                                    {allMoneyChanger.length}
+                                </span>
+                            }
+                        </div>
                     </div>
+
                     {
                         loader &&
                         <ActivityIndicator size={64} />
@@ -889,114 +1131,22 @@ const Records = () => {
 
                     {
                         tab === 1 &&
-                        <>
-                            {
-                                (allRequest.length === 0 && !loader) &&
-                                <>
-                                    <div className="empty">
-                                        <img src={Astronaut} alt="empty" />
-                                        <h2 className="title">No hay Solicitudes</h2>
-                                    </div>
-                                </>
-                            }
-
-                            {
-                                (allRequest.length > 0 && !loader) &&
-                                <>
-                                    <h2 className="title">Solicitudes de registros</h2>
-
-
-                                    <div className="table request">
-                                        <div className="header">
-                                            <span>Nombre</span>
-                                            <span>Monto</span>
-                                            <span>Sponsor</span>
-                                        </div>
-
-                                        {
-                                            allRequest.map(itemRequest)
-                                        }
-                                    </div>
-                                </>
-                            }
-                        </>
+                        <RequestTabView />
                     }
 
                     {
                         tab === 2 &&
-                        <>
-                            {
-                                (allUpgrades.length === 0 && !loader) &&
-                                <>
-                                    <div className="empty">
-                                        <img src={Astronaut} alt="empty" />
-                                        <h2 className="title">No hay Solicitudes</h2>
-                                    </div>
-                                </>
-                            }
-
-                            {
-                                allUpgrades.length > 0 &&
-                                <>
-                                    <div className="separator" />
-
-                                    <h2 className="title">Solicitudes de UPGRADES</h2>
-
-
-                                    <div className="table request">
-                                        <div className="header">
-                                            <span>Nombre</span>
-                                            <span>Monto</span>
-                                            <span>Sponsor</span>
-                                        </div>
-
-                                        {
-                                            allUpgrades.map(itemUpgrade)
-                                        }
-                                    </div>
-
-                                </>
-                            }
-                        </>
+                        <UpgradeRequestTabView />
                     }
 
                     {
                         tab === 3 &&
-                        <>
-                            {
-                                (allExchange.length === 0 && !loader) &&
-                                <>
-                                    <div className="empty">
-                                        <img src={Astronaut} alt="empty" />
-                                        <h2 className="title">No hay Solicitudes</h2>
-                                    </div>
-                                </>
-                            }
+                        <ExchangeRequestTabView />
+                    }
 
-                            {
-                                allExchange.length > 0 &&
-                                <>
-                                    <div className="separator" />
-
-                                    <h2 className="title">Solicitudes de Exchange</h2>
-
-                                    <div className="table exchange">
-                                        <div className="header">
-                                            <span>Compra</span>
-                                            <span>Venta</span>
-                                            <span>Cantidad</span>
-                                            <span>Solicitado</span>
-                                        </div>
-
-                                        {
-                                            allExchange.map(itemExchnage)
-                                        }
-                                    </div>
-
-                                </>
-                            }
-
-                        </>
+                    {
+                        tab === 4 &&
+                        <MoneyChangerRequestTabView />
                     }
 
                 </div>
@@ -1038,6 +1188,133 @@ const Records = () => {
                     }
                 </div>
             </div>
+
+            {
+                showRecord &&
+                <Modal onClose={e => setShowRecord(false)}>
+                    <div className="content-modal request">
+
+                        {
+                            loaderPetition &&
+                            <ActivityIndicator size={48} />
+                        }
+
+                        {
+                            !loaderPetition &&
+                            <>
+                                <div className="content-col">
+                                    <div className="col">
+                                        <h2>Detalles</h2>
+                                        <div className="row">
+                                            <span className="name">Nombre</span>
+                                            <span className="value">{dataRecord.name}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Correo</span>
+                                            <span className="value">{dataRecord.email}</span>
+                                        </div>
+
+
+                                        <div className="row">
+                                            <span className="name">Pais</span>
+                                            <span className="value">{dataRecord.country}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Telefono</span>
+                                            <span className="value">{dataRecord.phone}</span>
+                                        </div>
+
+                                        <div className="row color">
+                                            <span className="name">Sponsor</span>
+                                            {
+                                                dataRecord.email_sponsor !== null &&
+                                                < span className="value">{dataRecord.email_sponsor}</span>
+                                            }
+
+                                            {
+                                                dataRecord.email_sponsor === null &&
+                                                < span className="value">
+                                                    <i>SIN SPONSOR</i>
+                                                </span>
+                                            }
+                                        </div>
+
+                                        {/* {
+                                            dataRecord.email_sponsor !== null &&
+                                            <div className="row">
+                                                <span className="name">Comision</span>
+                                                <span className="value">{dataRecord.phone}</span>
+                                            </div>
+                                        } */}
+
+                                    </div>
+
+                                    <div className="col">
+                                        <div className="rows border-bottom">
+                                            <div className="header">
+                                                <span className={`status ${dataRecord.amount_btc !== null ? 'active' : 'inactive'}`}>
+                                                    {dataRecord.amount_btc !== null ? 'Activo' : 'Inactivo'}
+                                                </span>
+                                                <h2>Plan en Bitcoin</h2>
+                                            </div>
+
+                                            <div className="row">
+                                                <span className="name">Monto Actual</span>
+                                                {
+                                                    dataRecord.amount_btc !== null
+                                                        ? <span className="value">{dataRecord.amount_btc} BTC</span>
+                                                        : <span className="value"> <i>SIN MONTO</i> </span>
+                                                }
+                                            </div>
+
+                                            <div className="row">
+                                                <span className="name">Wallet</span>
+                                                <span className="value copy" onClick={_ => copyData(dataRecord.wallet_btc)}>{dataRecord.wallet_btc}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="rows border-bottom">
+                                            <div className="header">
+                                                <span className={`status ${dataRecord.amount_eth !== null ? 'active' : 'inactive'}`}>
+                                                    {dataRecord.amount_eth !== null ? 'Activo' : 'Inactivo'}
+                                                </span>
+                                                <h2>Plan en Ethereum</h2>
+                                            </div>
+
+                                            <div className="row">
+                                                <span className="name">Monto Actual</span>
+                                                {
+                                                    dataRecord.amount_eth !== null
+                                                        ? <span className="value">{dataRecord.amount_eth} ETH</span>
+                                                        : <span className="value"> <i>SIN MONTO</i> </span>
+                                                }
+                                            </div>
+
+                                            <div className="row">
+                                                <span className="name">Wallet</span>
+                                                <span className="value copy" onClick={_ => copyData(dataRecord.wallet_eth)}>{dataRecord.wallet_eth}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div className="buttons">
+                                    <button className="button large" onClick={e => setShowRecord(false)}>
+                                        cerrar
+                                    </button>
+
+                                    <button className="button large secondary">
+                                        Generar Reporte
+                                    </button>
+                                </div>
+                            </>
+                        }
+                    </div>
+                </Modal>
+            }
 
             {
                 showRequest &&
@@ -1313,133 +1590,6 @@ const Records = () => {
             }
 
             {
-                showRecord &&
-                <Modal onClose={e => setShowRecord(false)}>
-                    <div className="content-modal request">
-
-                        {
-                            loaderPetition &&
-                            <ActivityIndicator size={48} />
-                        }
-
-                        {
-                            !loaderPetition &&
-                            <>
-                                <div className="content-col">
-                                    <div className="col">
-                                        <h2>Detalles</h2>
-                                        <div className="row">
-                                            <span className="name">Nombre</span>
-                                            <span className="value">{dataRecord.name}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Correo</span>
-                                            <span className="value">{dataRecord.email}</span>
-                                        </div>
-
-
-                                        <div className="row">
-                                            <span className="name">Pais</span>
-                                            <span className="value">{dataRecord.country}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Telefono</span>
-                                            <span className="value">{dataRecord.phone}</span>
-                                        </div>
-
-                                        <div className="row color">
-                                            <span className="name">Sponsor</span>
-                                            {
-                                                dataRecord.email_sponsor !== null &&
-                                                < span className="value">{dataRecord.email_sponsor}</span>
-                                            }
-
-                                            {
-                                                dataRecord.email_sponsor === null &&
-                                                < span className="value">
-                                                    <i>SIN SPONSOR</i>
-                                                </span>
-                                            }
-                                        </div>
-
-                                        {/* {
-                                            dataRecord.email_sponsor !== null &&
-                                            <div className="row">
-                                                <span className="name">Comision</span>
-                                                <span className="value">{dataRecord.phone}</span>
-                                            </div>
-                                        } */}
-
-                                    </div>
-
-                                    <div className="col">
-                                        <div className="rows border-bottom">
-                                            <div className="header">
-                                                <span className={`status ${dataRecord.amount_btc !== null ? 'active' : 'inactive'}`}>
-                                                    {dataRecord.amount_btc !== null ? 'Activo' : 'Inactivo'}
-                                                </span>
-                                                <h2>Plan en Bitcoin</h2>
-                                            </div>
-
-                                            <div className="row">
-                                                <span className="name">Monto Actual</span>
-                                                {
-                                                    dataRecord.amount_btc !== null
-                                                        ? <span className="value">{dataRecord.amount_btc} BTC</span>
-                                                        : <span className="value"> <i>SIN MONTO</i> </span>
-                                                }
-                                            </div>
-
-                                            <div className="row">
-                                                <span className="name">Wallet</span>
-                                                <span className="value copy" onClick={_ => copyData(dataRecord.wallet_btc)}>{dataRecord.wallet_btc}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="rows border-bottom">
-                                            <div className="header">
-                                                <span className={`status ${dataRecord.amount_eth !== null ? 'active' : 'inactive'}`}>
-                                                    {dataRecord.amount_eth !== null ? 'Activo' : 'Inactivo'}
-                                                </span>
-                                                <h2>Plan en Ethereum</h2>
-                                            </div>
-
-                                            <div className="row">
-                                                <span className="name">Monto Actual</span>
-                                                {
-                                                    dataRecord.amount_eth !== null
-                                                        ? <span className="value">{dataRecord.amount_eth} ETH</span>
-                                                        : <span className="value"> <i>SIN MONTO</i> </span>
-                                                }
-                                            </div>
-
-                                            <div className="row">
-                                                <span className="name">Wallet</span>
-                                                <span className="value copy" onClick={_ => copyData(dataRecord.wallet_eth)}>{dataRecord.wallet_eth}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div className="buttons">
-                                    <button className="button large" onClick={e => setShowRecord(false)}>
-                                        cerrar
-                                    </button>
-
-                                    <button className="button large secondary">
-                                        Generar Reporte
-                                    </button>
-                                </div>
-                            </>
-                        }
-                    </div>
-                </Modal>
-            }
-
-            {
                 showExchangeRequest &&
                 <Modal onClose={e => setExchangeRequestModal(false)}>
                     <div className="content-modal exchange">
@@ -1499,7 +1649,7 @@ const Records = () => {
                                         <div className="row">
                                             <span className="name">Direccion Wallet</span>
                                             <span className="value copy" onClick={_ => copyData(detailsRequestExchange.wallet)}>{detailsRequestExchange.wallet}</span>
-                                        </div>                                        
+                                        </div>
 
                                         {
                                             detailsRequestExchange.memo !== null &&
@@ -1575,6 +1725,187 @@ const Records = () => {
                     </div>
                 </Modal>
             }
+
+            {
+                showMoneyChagerRequest &&
+                <Modal onClose={e => setMoneyChagerRequestModal(false)}>
+                    <div className="content-modal exchange">
+                        {
+                            loaderPetition &&
+                            <ActivityIndicator size={48} />
+                        }
+
+                        {
+                            (!loaderPetition && detailsRequestMoneyChanger !== null && !declineConfirm) &&
+                            <>
+                                <div className="content-col">
+                                    <div className="col">
+                                        {
+                                            detailsRequestMoneyChanger.type === "buy" &&
+                                            <h2>Detalles de Compra</h2>
+                                        }
+
+                                        {
+                                            detailsRequestMoneyChanger.type === "sell" &&
+                                            <h2>Detalles de Venta</h2>
+                                        }
+
+                                        {
+                                            (detailsRequestMoneyChanger.type !== "sell" && detailsRequestMoneyChanger.type !== "buy") &&
+                                            <h2>Detalles general</h2>
+                                        }
+
+                                        <div className="row">
+                                            <span className="name">Solicitud Procesada</span>
+                                            <span className="value">{moment(detailsRequestMoneyChanger.date).fromNow()}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Moneda</span>
+                                            <span className="value">{detailsRequestMoneyChanger.coin_name}</span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Precio moneda</span>
+                                            <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.price_coin)}>
+                                                $ {WithDecimals(detailsRequestMoneyChanger.price_coin)}
+                                            </span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Correo Airtm</span>
+                                            <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.email_airtm)}>{detailsRequestMoneyChanger.email_airtm}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="col">
+                                        <h2>Detalle de Transaccion</h2>
+
+                                        {
+                                            detailsRequestMoneyChanger.manipulation_id !== null &&
+                                            <div className="row">
+                                                <span className="name">ID de manipulacion</span>
+                                                <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.manipulation_id)}>{detailsRequestMoneyChanger.manipulation_id}</span>
+                                            </div>
+                                        }
+
+                                        {
+                                            detailsRequestMoneyChanger.wallet !== null &&
+                                            <div className="row">
+                                                <span className="name">Wallet</span>
+                                                <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.wallet)}>{detailsRequestMoneyChanger.wallet}</span>
+                                            </div>
+                                        }
+
+
+                                        <div className="row">
+                                            {
+                                                detailsRequestMoneyChanger.type === "buy" &&
+                                                <span className="name">Monto (USD) <b>A RECIBIR</b></span>
+                                            }
+
+                                            {
+                                                detailsRequestMoneyChanger.type === "sell" &&
+                                                <span className="name">Monto (USD) <b>A ENVIAR</b></span>
+                                            }
+
+                                            {
+                                                (detailsRequestMoneyChanger.type !== "sell" && detailsRequestMoneyChanger.type !== "buy") &&
+                                                <span className="name">Monto (USD)</span>
+                                            }
+                                            <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.amount_usd)}>
+                                                $ {WithDecimals(detailsRequestMoneyChanger.amount_usd)}
+                                            </span>
+                                        </div>
+
+                                        <div className="row">
+                                            <span className="name">Fracciones</span>
+                                            <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.amount_fraction)}>{detailsRequestMoneyChanger.amount_fraction}</span>
+                                        </div>
+
+                                        {
+                                            detailsRequestMoneyChanger.hash === null &&
+                                            <div className="row">
+                                                <span className="name">Hash de Pago</span>
+
+                                                <input
+                                                    type="text"
+                                                    value={hashMonyeChangerRequest}
+                                                    onChange={e => setHashMonyeChangerRequest(e.target.value)}
+                                                    placeholder="Hash de Transaccion"
+                                                    className="text-input" />
+                                            </div>
+                                        }
+
+                                        {
+                                            detailsRequestMoneyChanger.hash !== null &&
+                                            <div className="row">
+                                                <span className="name">Hash de transaccion</span>
+                                                <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.hash)}>{detailsRequestMoneyChanger.hash}</span>
+                                            </div>
+                                        }
+
+                                        {
+                                            detailsRequestMoneyChanger.manipulation_id === null &&
+                                            <div className="row">
+                                                <span className="name">ID de manipulacion</span>
+
+                                                <input
+                                                    type="text"
+                                                    value={hashMonyeChangerRequest}
+                                                    onChange={e => setHashMonyeChangerRequest(e.target.value)}
+                                                    placeholder="ID de manipulacion"
+                                                    className="text-input" />
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div className="buttons">
+                                    <button className="button large" onClick={_ => setDeclineConfirm(true)}>
+                                        Rechazar
+                                    </button>
+
+                                    <button className="button large secondary">
+                                        Responder
+                                    </button>
+                                </div>
+                            </>
+                        }
+
+                        {
+                            (declineConfirm && !loaderPetition) &&
+                            <div className="confirm-decline">
+                                {
+                                    detailsRequestMoneyChanger.type === "buy" &&
+                                    <h2>Rechazar Compra</h2>
+                                }
+
+                                {
+                                    detailsRequestMoneyChanger.type === "sell" &&
+                                    <h2>Rechazar Venta</h2>
+                                }
+
+                                {
+                                    (detailsRequestMoneyChanger.type !== "sell" && detailsRequestMoneyChanger.type !== "buy") &&
+                                    <h2>Rechazar</h2>
+                                }
+
+                                <div className="buttons">
+                                    <button className="button large" onClick={e => setDeclineConfirm(false)}>
+                                        Cancelar
+                                    </button>
+
+                                    <button onClick={declineExchangeRequest} className="button large secondary">
+                                        Rechazar
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </Modal>
+            }
+
         </div >
     )
 }

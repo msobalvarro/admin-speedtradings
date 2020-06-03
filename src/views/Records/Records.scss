@@ -75,7 +75,7 @@ div.container-records {
           padding: 10px;
           cursor: pointer;
           text-align: center;
-          width: 33.3%;
+          width: 25%;
 
           &.active {
             background-color: $colorYellow;
@@ -83,8 +83,8 @@ div.container-records {
           }
 
           .request {
-            background-color: red;
-            color: #FFF;
+            background-color: $colorRed;
+            color: #fff;
             border-radius: 25px;
             font-size: 12px;
             position: absolute;
@@ -94,6 +94,15 @@ div.container-records {
             margin-left: 10px;
             width: 50px;
             // right: 5%;
+          }
+
+          &:last-child {
+            .request {
+              margin-left: 0px;
+              padding: 5px 10px;
+              width: auto !important;
+              top: 0%;
+            }
           }
         }
       }
