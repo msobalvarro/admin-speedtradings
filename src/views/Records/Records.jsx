@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
-import Validator from "validator"
+import { Petition, keySecret, copyData, setTittleDOM, WithDecimals } from "../../utils/constanst"
+
+// Import middlewares and validators
 import jwt from "jwt-simple"
-import { Petition, keySecret, copyData, urlServer, WithDecimals } from "../../utils/constanst"
 import moment from "moment"
+import Validator from "validator"
 
 // Import styles and assets
 import "./Records.scss"
@@ -235,12 +237,6 @@ const Records = () => {
             }
         }
     }
-
-    useEffect(() => {
-        ConfigurateComponent()
-
-        configurateTrading()
-    }, [])
 
     // Componente que representa un articulo de la lista
     // de solicitudes de registro
@@ -672,10 +668,75 @@ const Records = () => {
                 }
 
             }).catch(reason => {
-                Swal.fire('Se ha producido un error', reason.toString(), 'error')
+                Swal.fire('Ha ocurrido un error', reason.toString(), 'error')
             })
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error.toString(), "warning")
+        } finally {
+            setLoaderPetition(false)
+        }
+    }
+
+    // Metodo que acepta la solicitud de Money Changer
+    const acceptMoneyChanger = async () => {
+        try {
+            setLoaderPetition(true)
+
+            // Validamos la compra si existe un hash de transaccion
+            if (detailsRequestMoneyChanger.type === "buy") {
+                if (hashMonyeChangerRequest.length < 8) {
+                    throw "Hash de transacción es incorrecto"
+                }
+            } else if (detailsRequestMoneyChanger.type === "sell") {
+                // Validamos la venta con un ID de manipulacion
+                if (hashMonyeChangerRequest.length < 8) {
+                    throw "ID de manipulación es incorrecto"
+                }
+            } else {
+                // Si el detalle no es de venta ni de compra
+                // Alertamos al usuario
+                throw "Detalles de compra no definido, contacte a Samuel"
+            }
+
+            const data = {
+                ...detailsRequestMoneyChanger,
+                hash: hashMonyeChangerRequest
+            }
+
+            await Petition.post("/money-changer/accept", { data }, { headers: { "x-auth-token": token } })
+                .then(response => {
+                    const { data } = response
+
+                    if (data.error) {
+                        // Verificamos si el server retorna un error
+                        throw data.message
+                    } else if (data.response === "success") {
+                        // Verificamos que el servidor retorne la confirmacion
+                        setHashMonyeChangerRequest("")
+                        setMoneyChagerRequestModal(false)
+
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Solicitud Procesada',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+
+                        getAllMoneyChanger()
+
+                    } else {
+                        // Si el servidor no devuelve una respuesta valida
+                        throw "La solicitud no pudo completarse, contacte a Samuel"
+                    }
+                })
+                .catch(reason => {
+                    throw reason
+                })
+
+
+        } catch (reason) {
+            Swal.fire('Ha ocurrido un error', reason.toString(), 'error')
         } finally {
             setLoaderPetition(false)
         }
@@ -817,6 +878,17 @@ const Records = () => {
         }
     }
 
+    // Metodo que ejecuta el rechazo de una solicitud de money changer
+    const declineMoneyChangerRequest = async () => {
+        try {
+            setLoaderPetition(true)
+        } catch (error) {
+            Swal.fire("AlyExchange", error.toString(), "error")
+        } finally {
+            setLoaderPetition(false)
+        }
+    }
+
     // Metodo que ejecuta el intercambio de moneda
     const acceptExhangeRequest = async () => {
         try {
@@ -864,164 +936,36 @@ const Records = () => {
         }
     }
 
-    /**Sub componente que muestra las solicitudes de registro */
-    const RequestTabView = () => {
-        return (
-            <>
-                {
-                    (allRequest.length === 0 && !loader) &&
-                    <>
-                        <div className="empty">
-                            <img src={Astronaut} alt="empty" />
-                            <h2 className="title">No hay Solicitudes</h2>
-                        </div>
-                    </>
-                }
+    useEffect(() => {
+        setTittleDOM()
 
-                {
-                    (allRequest.length > 0 && !loader) &&
-                    <>
-                        <h2 className="title">Solicitudes de registros</h2>
+        // Verificamos si hay solicitudes de registro
+        if (allRequest.length > 0) {
+            setTittleDOM(`Solictudes (${allRequest.length})`)
+        }
 
+        // Verificamos si hay upgrades
+        if (allUpgrades.length > 0) {
+            setTittleDOM(`Upgrades (${allUpgrades.length})`)
+        }
 
-                        <div className="table request">
-                            <div className="header">
-                                <span>Nombre</span>
-                                <span>Monto</span>
-                                <span>Sponsor</span>
-                            </div>
+        // Verificamos si hay solicitudes de intercambios
+        if (allExchange.length > 0) {
+            setTittleDOM(`Exchange Request (${allExchange.length})`)
+        }
 
-                            {
-                                allRequest.map(itemRequest)
-                            }
-                        </div>
-                    </>
-                }
-            </>
-        )
-    }
+        // Verificamos si hay solicitudes de Money Changer
+        if (allMoneyChanger) {
+            setTittleDOM(`Money Changer Request (${allMoneyChanger.length})`)
+        }
 
-    /**Sub Componente que muestra todas las solcitudes de Upgrades */
-    const UpgradeRequestTabView = () => {
-        return (
-            <>
-                {
-                    (allUpgrades.length === 0 && !loader) &&
-                    <>
-                        <div className="empty">
-                            <img src={Astronaut} alt="empty" />
-                            <h2 className="title">No hay Solicitudes</h2>
-                        </div>
-                    </>
-                }
+    }, [allRequest, allUpgrades, allExchange, allMoneyChanger])
 
-                {
-                    allUpgrades.length > 0 &&
-                    <>
-                        <div className="separator" />
+    useEffect(() => {
+        ConfigurateComponent()
 
-                        <h2 className="title">Solicitudes de UPGRADES</h2>
-
-
-                        <div className="table request">
-                            <div className="header">
-                                <span>Nombre</span>
-                                <span>Monto</span>
-                                <span>Sponsor</span>
-                            </div>
-
-                            {
-                                allUpgrades.map(itemUpgrade)
-                            }
-                        </div>
-
-                    </>
-                }
-            </>
-        )
-    }
-
-    /**Sub Componente que muestra todas las solicitudes de Intercambio (Exchange) */
-    const ExchangeRequestTabView = () => {
-        return (
-            <>
-                {
-                    (allExchange.length === 0 && !loader) &&
-                    <>
-                        <div className="empty">
-                            <img src={Astronaut} alt="empty" />
-                            <h2 className="title">No hay Solicitudes</h2>
-                        </div>
-                    </>
-                }
-
-                {
-                    allExchange.length > 0 &&
-                    <>
-                        <div className="separator" />
-
-                        <h2 className="title">Solicitudes de Exchange</h2>
-
-                        <div className="table exchange">
-                            <div className="header">
-                                <span>Compra</span>
-                                <span>Venta</span>
-                                <span>Cantidad</span>
-                                <span>Solicitado</span>
-                            </div>
-
-                            {
-                                allExchange.map(itemExchnage)
-                            }
-                        </div>
-
-                    </>
-                }
-
-            </>
-        )
-    }
-
-    /**Sub Componente que muestra todas las solicitudes de Compra y venta */
-    const MoneyChangerRequestTabView = () => {
-        return (
-            <>
-                {
-                    (allMoneyChanger.length === 0 && !loader) &&
-                    <>
-                        <div className="empty">
-                            <img src={Astronaut} alt="empty" />
-                            <h2 className="title">No hay Solicitudes</h2>
-                        </div>
-                    </>
-                }
-
-                {
-                    allMoneyChanger.length > 0 &&
-                    <>
-                        <div className="separator" />
-
-                        <h2 className="title">Solicitudes de Exchange</h2>
-
-                        <div className="table exchange">
-                            <div className="header">
-                                <span>Tipo</span>
-                                <span>Moneda</span>
-                                <span>Monto</span>
-                                <span>Solicitado</span>
-                            </div>
-
-                            {
-                                allMoneyChanger.map(itemMoneyChanger)
-                            }
-                        </div>
-
-                    </>
-                }
-
-            </>
-        )
-    }
+        configurateTrading()
+    }, [])
 
     return (
         <div className="container-records">
@@ -1131,22 +1075,153 @@ const Records = () => {
 
                     {
                         tab === 1 &&
-                        <RequestTabView />
+                        <>
+                            {
+                                (allRequest.length === 0 && !loader) &&
+                                <>
+                                    <div className="empty">
+                                        <img src={Astronaut} alt="empty" />
+                                        <h2 className="title">No hay Solicitudes</h2>
+                                    </div>
+                                </>
+                            }
+
+                            {
+                                (allRequest.length > 0 && !loader) &&
+                                <>
+                                    <h2 className="title">Solicitudes de registros</h2>
+
+
+                                    <div className="table request">
+                                        <div className="header">
+                                            <span>Nombre</span>
+                                            <span>Monto</span>
+                                            <span>Sponsor</span>
+                                        </div>
+
+                                        {
+                                            allRequest.map(itemRequest)
+                                        }
+                                    </div>
+                                </>
+                            }
+                        </>
                     }
 
                     {
                         tab === 2 &&
-                        <UpgradeRequestTabView />
+                        <>
+                            {
+                                (allUpgrades.length === 0 && !loader) &&
+                                <>
+                                    <div className="empty">
+                                        <img src={Astronaut} alt="empty" />
+                                        <h2 className="title">No hay Solicitudes</h2>
+                                    </div>
+                                </>
+                            }
+
+                            {
+                                allUpgrades.length > 0 &&
+                                <>
+                                    <div className="separator" />
+
+                                    <h2 className="title">Solicitudes de UPGRADES</h2>
+
+
+                                    <div className="table request">
+                                        <div className="header">
+                                            <span>Nombre</span>
+                                            <span>Monto</span>
+                                            <span>Sponsor</span>
+                                        </div>
+
+                                        {
+                                            allUpgrades.map(itemUpgrade)
+                                        }
+                                    </div>
+
+                                </>
+                            }
+                        </>
                     }
 
                     {
                         tab === 3 &&
-                        <ExchangeRequestTabView />
+                        <>
+                            {
+                                (allExchange.length === 0 && !loader) &&
+                                <>
+                                    <div className="empty">
+                                        <img src={Astronaut} alt="empty" />
+                                        <h2 className="title">No hay Solicitudes</h2>
+                                    </div>
+                                </>
+                            }
+
+                            {
+                                allExchange.length > 0 &&
+                                <>
+                                    <div className="separator" />
+
+                                    <h2 className="title">Solicitudes de Exchange</h2>
+
+                                    <div className="table exchange">
+                                        <div className="header">
+                                            <span>Compra</span>
+                                            <span>Venta</span>
+                                            <span>Cantidad</span>
+                                            <span>Solicitado</span>
+                                        </div>
+
+                                        {
+                                            allExchange.map(itemExchnage)
+                                        }
+                                    </div>
+
+                                </>
+                            }
+
+                        </>
                     }
 
                     {
                         tab === 4 &&
-                        <MoneyChangerRequestTabView />
+                        <>
+                            {
+                                (allMoneyChanger.length === 0 && !loader) &&
+                                <>
+                                    <div className="empty">
+                                        <img src={Astronaut} alt="empty" />
+                                        <h2 className="title">No hay Solicitudes</h2>
+                                    </div>
+                                </>
+                            }
+
+                            {
+                                allMoneyChanger.length > 0 &&
+                                <>
+                                    <div className="separator" />
+
+                                    <h2 className="title">Solicitudes de Exchange</h2>
+
+                                    <div className="table exchange">
+                                        <div className="header">
+                                            <span>Tipo</span>
+                                            <span>Moneda</span>
+                                            <span>Monto</span>
+                                            <span>Solicitado</span>
+                                        </div>
+
+                                        {
+                                            allMoneyChanger.map(itemMoneyChanger)
+                                        }
+                                    </div>
+
+                                </>
+                            }
+
+                        </>
                     }
 
                 </div>
@@ -1866,8 +1941,8 @@ const Records = () => {
                                         Rechazar
                                     </button>
 
-                                    <button className="button large secondary">
-                                        Responder
+                                    <button className="button large secondary" onClick={acceptMoneyChanger}>
+                                        Aceptar
                                     </button>
                                 </div>
                             </>
@@ -1876,27 +1951,27 @@ const Records = () => {
                         {
                             (declineConfirm && !loaderPetition) &&
                             <div className="confirm-decline">
-                                {
-                                    detailsRequestMoneyChanger.type === "buy" &&
-                                    <h2>Rechazar Compra</h2>
-                                }
+                                <h1>Rechazar Solicitud de intercambio</h1>
 
-                                {
-                                    detailsRequestMoneyChanger.type === "sell" &&
-                                    <h2>Rechazar Venta</h2>
-                                }
+                                <div className="row-reason">
+                                    <span className="legend-decline">
+                                        Describa la razon de rechazo ({reasonDecline.length})
+                                    </span>
 
-                                {
-                                    (detailsRequestMoneyChanger.type !== "sell" && detailsRequestMoneyChanger.type !== "buy") &&
-                                    <h2>Rechazar</h2>
-                                }
+                                    <textarea
+                                        className="text-input"
+                                        placeholder="Razon de rechazo"
+                                        value={reasonDecline}
+                                        rows="5"
+                                        onChange={e => setReasonDecline(e.target.value)} />
+                                </div>
 
                                 <div className="buttons">
                                     <button className="button large" onClick={e => setDeclineConfirm(false)}>
                                         Cancelar
                                     </button>
 
-                                    <button onClick={declineExchangeRequest} className="button large secondary">
+                                    <button onClick={declineMoneyChangerRequest} className="button large secondary">
                                         Rechazar
                                     </button>
                                 </div>

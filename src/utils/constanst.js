@@ -50,6 +50,15 @@ export const copyData = (str = "") => {
     // Swal.fire('Direccion Wallet copiada', '', 'success')
 }
 
+/**
+ * Metodo para cambiar el nombre de la pagina
+ * 
+ * @param {String} title 
+ */
+export const setTittleDOM = (title = "Back Office") => {
+    document.title = title
+}
+
 /**Config Axios for petition automatic */
 export const Petition = Axios.create({
     baseURL: urlServer,
