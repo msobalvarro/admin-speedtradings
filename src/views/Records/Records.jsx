@@ -992,7 +992,7 @@ const Records = () => {
         }
 
         // Verificamos si hay solicitudes de Money Changer
-        if (allMoneyChanger) {
+        if (allMoneyChanger.length > 0) {
             setTittleDOM(`Money Changer Request (${allMoneyChanger.length})`)
         }
 
