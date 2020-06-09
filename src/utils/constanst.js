@@ -17,8 +17,8 @@ const devPort = ":8080"
 
 export const keySecret = "testDevelop"
 
-export const urlServer = "https://ardent-medley-272823.appspot.com"
-// export const urlServer = "http://127.0.0.1" + devPort
+// export const urlServer = "https://ardent-medley-272823.appspot.com"
+export const urlServer = "http://127.0.0.1" + devPort
 
 export const urlServerSocket = urlServer.replace("https", "wss").replace("http", "ws")
 // export const urlServerSocket = urlServer
@@ -48,6 +48,15 @@ export const copyData = (str = "") => {
 
 
     // Swal.fire('Direccion Wallet copiada', '', 'success')
+}
+
+/**
+ * Metodo para cambiar el nombre de la pagina
+ * 
+ * @param {String} title 
+ */
+export const setTittleDOM = (title = "Back Office") => {
+    document.title = title
 }
 
 /**Config Axios for petition automatic */
