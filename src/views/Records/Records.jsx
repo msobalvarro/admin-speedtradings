@@ -23,7 +23,7 @@ const Records = () => {
     const socket = useSelector(storage => storage.socket)
 
     // Estado que guarda las tabs activas de solicitudes
-    const [tab, setTab] = useState(4)
+    const [tab, setTab] = useState(1)
 
     // Estado que guarda el texto para filtrar en la coleccion de solicitudes y registros
     const [filter, setFilter] = useState('')
@@ -1009,15 +1009,6 @@ const Records = () => {
             <NavigationBar />
 
             <div className="header-content">
-                <div className="row">
-                    <input
-                        value={filter}
-                        onChange={e => setFilter(e.target.value)}
-                        placeholder="Escribe para buscar.."
-                        type="text"
-                        className="text-input" />
-                </div>
-
                 <div className="trading">
                     {
                         (percentage !== "" && (Number(percentage) > 1 || Number(percentage) < 0.5)) &&
@@ -1282,7 +1273,16 @@ const Records = () => {
                     {
                         allRecord.length > 0 &&
                         <>
-                            <h2 className="title">Registros</h2>
+                            <div className="sub-header">
+                                <h2 className="title">Registros</h2>
+
+                                <input
+                                    value={filter}
+                                    onChange={e => setFilter(e.target.value)}
+                                    placeholder="Escribe para buscar.."
+                                    type="text"
+                                    className="text-input" />
+                            </div>
 
                             <div className="table records">
                                 <div className="header">

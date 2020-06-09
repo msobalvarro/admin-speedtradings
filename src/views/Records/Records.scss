@@ -6,7 +6,7 @@ div.container-records {
     align-items: center;
     display: flex;
     padding: 0 25px;
-    justify-content: space-between;
+    justify-content: flex-end;
 
     .row {
       display: flex;
@@ -125,17 +125,16 @@ div.container-records {
         margin: 25px 0;
         // border-bottom: 1px solid #FFF;
       }
+      .sub-header {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+      }
 
       h2.title {
         color: $colorYellow;
-        margin-bottom: 15px;
         font-weight: normal;
-      }
-
-      &:last-child {
-        h2.title {
-          text-align: right;
-        }
       }
 
       .table {
