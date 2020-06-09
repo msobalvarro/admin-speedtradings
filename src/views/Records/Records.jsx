@@ -88,6 +88,9 @@ const Records = () => {
     // Estado que guarda la razon del rechazo de intercambio exchange
     const [reasonDecline, setReasonDecline] = useState("")
 
+    // Estado que indica si envia notificacion al correo del rechazo de solicitud en Money Changer
+    const [checkSendNotification, setCheckSendNotification] = useState(true)
+
     // Obtiene todas las solicitudes `allExchange` para obtener
     const getAllRequest = () => {
         Petition.get('/admin/request/', {
@@ -159,8 +162,6 @@ const Records = () => {
                 Swal.fire('Ha ocurrido un error', data.message, 'error')
             } else {
                 setMoneyChanger(data)
-
-                console.log(data)
             }
         })
     }
@@ -373,7 +374,6 @@ const Records = () => {
                     if (data.error) {
                         throw data.message
                     } else {
-                        console.log(data)
                         setDataRequest(data)
                     }
                 })
@@ -405,7 +405,6 @@ const Records = () => {
                     if (data.error) {
                         throw data.message
                     } else {
-                        console.log(data)
                         setDataUpgrade(data)
                     }
                 })
@@ -870,7 +869,7 @@ const Records = () => {
             })
 
         } catch (error) {
-            Swal.fire("AlyExchange", error.toString(), "error")
+            Swal.fire("Ha ocurrido un errro", error.toString(), "error")
         } finally {
             setLoaderPetition(false)
 
@@ -882,8 +881,46 @@ const Records = () => {
     const declineMoneyChangerRequest = async () => {
         try {
             setLoaderPetition(true)
+
+            const data = {
+                data: detailsRequestMoneyChanger,
+                send: checkSendNotification,
+                reason: reasonDecline,
+            }
+
+            await Petition.post("/money-changer/decline", data, { headers: { "x-auth-token": token } })
+                .then(response => {
+                    const { data } = response
+
+                    if (data.error) {
+                        // Verificamos si en la respuesta del servidor hay errores
+                        throw data.message
+                    } else if (data.response === "success") {
+                        // Verificamos si se rechazo correctamente
+                        setReasonDecline("")
+
+                        setDeclineConfirm(false)
+
+                        setMoneyChagerRequestModal(false)
+
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Solicitud Rechazada',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+
+                        // Actualizamos la lista de solicitudes
+                        getAllMoneyChanger()
+                    } else {
+                        // Si la respuesta del servidor es desconocida
+                        throw new Error("No se ha podido ejecutar esta accion, contacte a Samuel.")
+                    }
+                })
+
         } catch (error) {
-            Swal.fire("AlyExchange", error.toString(), "error")
+            Swal.fire("Ha ocurrido un errro", error.toString(), "error")
         } finally {
             setLoaderPetition(false)
         }
@@ -1843,7 +1880,7 @@ const Records = () => {
                                         <div className="row">
                                             <span className="name">Precio moneda</span>
                                             <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.price_coin)}>
-                                                $ {WithDecimals(detailsRequestMoneyChanger.price_coin)}
+                                                $ {detailsRequestMoneyChanger.price_coin}
                                             </span>
                                         </div>
 
@@ -1954,9 +1991,20 @@ const Records = () => {
                                 <h1>Rechazar Solicitud de intercambio</h1>
 
                                 <div className="row-reason">
-                                    <span className="legend-decline">
-                                        Describa la razon de rechazo ({reasonDecline.length})
-                                    </span>
+                                    <div className="sub-row">
+                                        <span className="legend-decline">
+                                            Describa la razon de rechazo ({reasonDecline.length})
+                                        </span>
+
+                                        <div className="content-check">
+                                            <label htmlFor="check-send-email-decline">Enviar notificación</label>
+                                            <input
+                                                checked={checkSendNotification}
+                                                onChange={_ => setCheckSendNotification(!checkSendNotification)}
+                                                type="checkbox"
+                                                id="check-send-email-decline" />
+                                        </div>
+                                    </div>
 
                                     <textarea
                                         className="text-input"

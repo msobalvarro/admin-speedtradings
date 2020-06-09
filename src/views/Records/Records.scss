@@ -334,6 +334,23 @@ div.container-records {
           font-size: 12px;
           margin-bottom: 5px;
         }
+
+        .sub-row {
+          align-items: center;
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 10px;
+
+          .content-check {
+            align-items: center;
+            font-size: 12px;
+            display: flex;
+
+            label {
+              margin-right: 5px;
+            }
+          }
+        }
       }
     }
 
