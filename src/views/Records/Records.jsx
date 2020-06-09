@@ -1729,6 +1729,11 @@ const Records = () => {
                                         </div>
 
                                         <div className="row">
+                                            <span className="name">Precio de Moneda</span>
+                                            <span className="value">$ {detailsRequestExchange.coin_price}</span>
+                                        </div>
+
+                                        <div className="row">
                                             <span className="name">Moneda a comprar</span>
                                             <span className="value">{detailsRequestExchange.request_currency}</span>
                                         </div>
