@@ -96,6 +96,30 @@ div.container-report {
           }
         }
 
+        span.alypay-verified {
+          color: $colorGreen;
+          display: flex;
+          justify-content: center;
+          position: relative;
+          text-align: center;
+
+          &::before {
+            align-self: center;
+            content: "";
+            background-image: url("../../static/images/verified.png");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            height: 16px;
+            top: 10%;
+            left: 0%;
+            // position: absolute;
+            margin-right: 10px;
+            width: 16px;
+            z-index: 100;
+          }
+        }
+
         div.hash-transaction {
           width: 25%;
           margin-left: 10px;

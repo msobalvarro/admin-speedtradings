@@ -148,7 +148,7 @@ const Mailing = () => {
         // emailSelected
         const copyArr = emailSelected
 
-        await allEmails.map((_, index) => {
+        allEmails.map((_, index) => {
             if (!emailSelected.includes(index)) {
                 copyArr.push(index)
             }
