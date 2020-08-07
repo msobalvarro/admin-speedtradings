@@ -67,7 +67,7 @@ export const Petition = Axios.create({
     },
     validateStatus: (status) => {
         if (status === 401) {
-            LogOut()
+            // LogOut()
         }
 
         return status >= 200 && status < 300;
@@ -111,5 +111,16 @@ export const getStorage = () => {
         return jwt.decode(storage, keySecret)
     } else {
         return {}
+    }
+}
+
+
+/**
+ * Reducer para estados generales
+ */
+export const reducer = (state, action) => {
+    return {
+        ...state,
+        [action.type]: action.payload
     }
 }
