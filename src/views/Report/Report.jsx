@@ -52,8 +52,6 @@ const Report = () => {
             // 
             const { data, status } = await Petition.get(`/admin/payments/${_currency}`, { headers })
 
-            console.log(data)
-
             if (data.error) {
                 throw data.message
             }
@@ -96,10 +94,6 @@ const Report = () => {
                 <div className="row" id={"row-" + index} key={index}>
                     <span>{item.name}</span>
                     <span className="copy-element" onClick={_ => copyData(item.amount)}>{item.amount} {state.currency === 1 ? "BTC" : "ETH"}</span>
-                    {/* {
-                        item.user_coinbase !== null
-                            ? <span className="copy-element" onClick={_ => copyData(item.user_coinbase)}>{item.user_coinbase}</span>
-                        } */}
 
                     <span className="copy-element" onClick={_ => copyData(item.wallet)}>{item.wallet}</span>
 
@@ -147,13 +141,19 @@ const Report = () => {
         // Para enviar al backend
         const dataSend = []
 
+        console.log(hashs)
+
         try {
             for (let index = 0; index < state.allData.length; index++) {
+                if (hashs[index] === undefined) {
+                    hashs[index] = ""
+                }
+
                 // Obtenemos el hash de la fila
                 const hash = hashs[index] === undefined ? "" : hashs[index]
 
                 // Construimos el objeto que necesitara el backend para procesar el retiro
-                const dataPush = { hash, ...state.allData[index] }
+                const dataPush = { ...state.allData[index], hash }
 
                 // Se lo agregamos a la constante que enviaremos al backend
                 dataSend.push(dataPush)
