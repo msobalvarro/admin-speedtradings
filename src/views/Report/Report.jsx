@@ -141,8 +141,6 @@ const Report = () => {
         // Para enviar al backend
         const dataSend = []
 
-        console.log(hashs)
-
         try {
             for (let index = 0; index < state.allData.length; index++) {
                 if (hashs[index] === undefined) {
@@ -153,7 +151,10 @@ const Report = () => {
                 const hash = hashs[index] === undefined ? "" : hashs[index]
 
                 // Construimos el objeto que necesitara el backend para procesar el retiro
-                const dataPush = { ...state.allData[index], hash }
+                const dataPush = { 
+                    ...state.allData[index], 
+                    hash: 
+                        (state.allData[index].hash === null ? hash : state.allData[index].hash) }
 
                 // Se lo agregamos a la constante que enviaremos al backend
                 dataSend.push(dataPush)
