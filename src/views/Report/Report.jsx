@@ -97,28 +97,30 @@ const Report = () => {
 
                     <span className="copy-element" onClick={_ => copyData(item.wallet)}>{item.wallet}</span>
 
-                    {
 
-                        // verificamos la wallet no es de alypay
-                        item.alypay !== 1 &&
+                    {
+                        item.hash !== null &&
+                        <div onClick={_ => copyData(item.hash)} className="hash-transaction copy-element">{item.hash}</div>
+                    }
+
+                    {
+                        item.hash === null &&
                         <>
                             {
-                                item.hash === null
-                                    ? <input type="text" placeholder="Escriba hash de transaccion" className="text-input" onChange={e => hashs[index] = e.target.value} />
-                                    : <div onClick={_ => copyData(item.hash)} className="hash-transaction copy-element">{item.hash}</div>
+                                // verificamos la wallet no es de alypay
+                                item.alypay !== 1 &&
+                                <input type="text" placeholder="Escriba hash de transaccion" className="text-input" onChange={e => hashs[index] = e.target.value} />
+                            }
 
+
+                            {
+                                // verificamos si la wallet le pertenece a alypay
+                                item.alypay === 1 &&
+                                <span className="alypay-verified">AlyPay Verified</span>
                             }
                         </>
                     }
 
-
-                    {
-                        // verificamos si la wallet le pertenece a alypay
-                        item.alypay === 1 &&
-                        <>
-                            <span className="alypay-verified">AlyPay Verified</span>
-                        </>
-                    }
 
                 </div>
             )
@@ -151,10 +153,11 @@ const Report = () => {
                 const hash = hashs[index] === undefined ? "" : hashs[index]
 
                 // Construimos el objeto que necesitara el backend para procesar el retiro
-                const dataPush = { 
-                    ...state.allData[index], 
-                    hash: 
-                        (state.allData[index].hash === null ? hash : state.allData[index].hash) }
+                const dataPush = {
+                    ...state.allData[index],
+                    hash:
+                        (state.allData[index].hash === null ? hash : state.allData[index].hash)
+                }
 
                 // Se lo agregamos a la constante que enviaremos al backend
                 dataSend.push(dataPush)
