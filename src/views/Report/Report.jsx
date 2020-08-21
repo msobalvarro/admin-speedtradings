@@ -171,7 +171,6 @@ const Report = () => {
             }
 
             if (data.response && status === 200) {
-                getAllData()
 
                 Swal.fire("Reporte ejecutado", "Su reporte de pago ha sido recibido", "success")
             }
@@ -179,6 +178,9 @@ const Report = () => {
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error.toString(), "warning")
         }
+
+
+        getAllData()
     }
 
     useEffect(() => {
