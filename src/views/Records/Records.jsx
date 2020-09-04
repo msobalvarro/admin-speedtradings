@@ -242,49 +242,37 @@ const Records = () => {
     // Componente que representa un articulo de la lista
     // de solicitudes de registro
     const itemRequest = (item, index) => {
-        if (
-            (item.name.length > 0 && item.name.toLowerCase().search(filter) > -1) ||
-            (item.amount.length > 0 && item.amount.toLowerCase().search(filter) > -1) ||
-            (item.sponsor_email !== null && item.sponsor_email.toLowerCase().search(filter) > -1)
-        ) {
-            return (
-                <div className="row" key={index} onClick={_ => openDetailsRequest(item.id)}>
-                    <span className="name">{item.name}</span>
-                    <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
-                    <span>
-                        {
-                            item.sponsor_email !== null
-                                ? item.sponsor_email
-                                : <i>Sin sponsor</i>
-                        }
-                    </span>
-                </div>
-            )
-        }
+        return (
+            <div className="row" key={index} onClick={_ => openDetailsRequest(item.id)}>
+                <span className="name">{item.name}</span>
+                <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
+                <span>
+                    {
+                        item.sponsor_email !== null
+                            ? item.sponsor_email
+                            : <i>Sin sponsor</i>
+                    }
+                </span>
+            </div>
+        )
     }
 
     // Componente que representa un articulo de la lista
     // de solicitudes de Upgrade
     const itemUpgrade = (item, index) => {
-        if (
-            item.name.length > 0 && item.name.toLowerCase().search(filter) > -1 ||
-            item.amount.length > 0 && item.amount.toLowerCase().search(filter) > -1 ||
-            item.sponsor_email !== null && item.sponsor_email.toLowerCase().search(filter) > -1
-        ) {
-            return (
-                <div className="row" key={index} onClick={_ => openDetailsUpgrade(item.id)}>
-                    <span className="name">{item.name}</span>
-                    <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
-                    <span>
-                        {
-                            item.sponsor_email !== null
-                                ? item.sponsor_email
-                                : <i>Sin sponsor</i>
-                        }
-                    </span>
-                </div>
-            )
-        }
+        return (
+            <div className="row" key={index} onClick={_ => openDetailsUpgrade(item.id)}>
+                <span className="name">{item.name}</span>
+                <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
+                <span>
+                    {
+                        item.sponsor_email !== null
+                            ? item.sponsor_email
+                            : <i>Sin sponsor</i>
+                    }
+                </span>
+            </div>
+        )
     }
 
     // Componente que representa un articulo de la lista
@@ -759,7 +747,7 @@ const Records = () => {
 
                 const dataSend = { percentage, id_currency: Number(cryptoCurrency) }
 
-                await Petition.post('/admin/trading', dataSend, {
+                /*await Petition.post('/admin/trading', dataSend, {
                     headers: {
                         "x-auth-token": token
                     }
@@ -804,7 +792,7 @@ const Records = () => {
 
                 }).catch(reason => {
                     throw String(reason)
-                })
+                })*/
 
             } else {
                 Swal.fire(
@@ -838,7 +826,7 @@ const Records = () => {
                 reason: reasonDecline,
             }
 
-            await Petition.post("/exchange/decline", previousData, {
+            /*await Petition.post("/exchange/decline", previousData, {
                 headers: {
                     "x-auth-token": token
                 }
@@ -866,7 +854,7 @@ const Records = () => {
                 } else {
                     throw String("Tu rechazo no se ha podido procesar")
                 }
-            })
+            })*/
 
         } catch (error) {
             Swal.fire("Ha ocurrido un errro", error.toString(), "error")
@@ -888,7 +876,7 @@ const Records = () => {
                 reason: reasonDecline,
             }
 
-            await Petition.post("/money-changer/decline", data, { headers: { "x-auth-token": token } })
+            /*await Petition.post("/money-changer/decline", data, { headers: { "x-auth-token": token } })
                 .then(response => {
                     const { data } = response
 
@@ -917,7 +905,7 @@ const Records = () => {
                         // Si la respuesta del servidor es desconocida
                         throw String("No se ha podido ejecutar esta accion, contacte a Samuel.")
                     }
-                })
+                })*/
 
         } catch (error) {
             Swal.fire("Ha ocurrido un errro", error.toString(), "error")
@@ -940,7 +928,7 @@ const Records = () => {
                 hash: hashExchangeRequest,
             }
 
-            await Petition.post("/exchange/accept", previousData, {
+            /*await Petition.post("/exchange/accept", previousData, {
                 headers: {
                     "x-auth-token": token
                 }
@@ -966,7 +954,7 @@ const Records = () => {
                 } else {
                     throw "El reporte no se ha podido procesar"
                 }
-            })
+            })*/
 
         } catch (error) {
             Swal.fire("AlyExchange", error.toString(), "error")
