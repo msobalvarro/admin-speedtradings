@@ -15,7 +15,8 @@ import allEmailImage from "../../static/images/email.png"
 import 'froala-editor/js/third_party/embedly.min.js'
 
 // Import components
-import FroalaEditorComponent from "react-froala-wysiwyg"
+// import FroalaEditorComponent from "react-froala-wysiwyg"
+import { Editor as EditorComponent, EditorState } from "draft-js"
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import Swal from "sweetalert2"
 import Modal from "../../components/Modal/Modal"
@@ -23,26 +24,14 @@ import ActivityIndicator from "../../components/ActivityIndicator/Activityindica
 
 const Editor = ({ onChange = () => { } }) => {
     // Estado que almacena el cuerpo del correo
-    const [html, setHTML] = useState("")
+    const [html, setHTML] = useState(EditorState.createEmpty())
 
-    /**Evento que se ejecuta cuando el usuario escribe en el editor */
-    const onHandledChangeText = (content = "") => {
-        setHTML(content)
-        onChange(content)
-    }
+    useEffect(() => console.log(html), [html])
 
     return (
         <div className="content">
             <div className="editor-container">
-                <FroalaEditorComponent
-                    tag='textarea'
-                    model={html}
-                    config={{
-                        placeholderText: 'Escriba aqui',
-                        pasteAllowLocalImages: true,
-                    }}
-                    onModelChange={onHandledChangeText}
-                />
+                <EditorComponent editorState={html} onChange={setHTML}/>
             </div>
 
             <div className="preview">
