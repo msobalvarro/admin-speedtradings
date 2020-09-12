@@ -1654,7 +1654,7 @@ const Records = () => {
 
                                                 <div className="row">
                                                     <span className="name">Comision por Upgrade</span>
-                                                    <span className="value">{dataUpgrade.amount_requested * 0.05}</span>
+                                                    <span className="value copy" onClick={_ =>  copyData((dataUpgrade.amount_requested * 0.05).toString())}>{dataUpgrade.amount_requested * 0.05}</span>
                                                 </div>
 
                                                 <div className="row">

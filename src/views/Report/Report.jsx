@@ -3,6 +3,7 @@ import { useSelector } from "react-redux"
 
 // import constants and functions
 import { Petition, copyData, reducer } from "../../utils/constanst"
+import _ from "lodash"
 
 // Imports styles and assets
 import "./Report.scss"
@@ -22,7 +23,7 @@ const initialState = {
     currency: 1,
 
     // Estado que representara la suma de total a pagar
-    total: 0,
+    total: 0.00,
 
     // estado que renderiza el loader
     loader: false,
@@ -56,21 +57,22 @@ const Report = () => {
                 throw data.message
             }
 
-            if (status === 200) {
-                /**Alamacenara temporalmente la suma de total a pagar */
-                let newTotal = 0
+            /**Alamacenara temporalmente la suma de total a pagar */
+            const sum =[]
 
-                dispatch({ type: "allData", payload: data })
+            dispatch({ type: "allData", payload: data })
 
-                // Sumamos el total a pagar
-                for (let index = 0; index < data.length; index++) {
-                    const element = data[index]
+            // Sumamos el total a pagar
+            for (let index = 0; index < data.length; index++) {
+                const element = data[index]
 
-                    newTotal += element.amount
-                }
-
-                dispatch({ type: "total", payload: newTotal })
+                sum.push(element.amount)
             }
+
+            // sumamos el arreglo de monto con lodash
+            const total = _.sum(sum)
+
+            dispatch({ type: "total", payload: _.floor(total, 8) })
 
         } catch (error) {
             Swal.fire(
