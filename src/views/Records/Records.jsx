@@ -20,6 +20,7 @@ import ModalUpgrade from "../../components/ModalUpgrade/ModalUpgrade"
 import ModalExchangeRequest from "../../components/ModalExchangeRequest/ModalExchangeRequest"
 import ModalMoneyChangerRequest from "../../components/ModalMoneyChangerRequest/ModalMoneyChangerRequest"
 import ModalRecord from "../../components/ModalRecord/ModalRecord"
+import RecordsList from "../../components/RecordsList/RecordsList"
 import Swal from "sweetalert2"
 
 const Records = () => {
@@ -52,6 +53,7 @@ const Records = () => {
 
     // Estado para renderizar los preloader/loader al hacer una peticion
     const [loader, setLoader] = useState(true)
+    const [loaderRecord, setLoaderRecord] = useState(false)
     const [loaderPetition, setLoaderPetition] = useState(false)
     const [loaderTrading, setLoaderTrading] = useState(false)
 
@@ -94,6 +96,8 @@ const Records = () => {
 
     // Obtiene todos los registros
     const getAllRecords = () => {
+        setLoaderRecord(true)
+
         Petition.get('/admin/records/', {
             headers: {
                 "x-auth-token": token
@@ -101,9 +105,11 @@ const Records = () => {
         }).then(({ data }) => {
             if (data.error) {
                 Swal.fire('Ha ocurrido un error', data.message, 'error')
-            } else { console.log(data)
+            } else {
                 setRecords(data)
             }
+
+            setLoaderRecord(false)
         })
     }
 
@@ -260,31 +266,6 @@ const Records = () => {
                 </span>
             </div>
         )
-    }
-
-    // Componente que representa un articulo de la lista
-    // Registos
-    const itemRecord = (item, index) => {
-        if (
-            item.name.length > 0 && item.name.toLowerCase().search(filter) > -1 ||
-            item.country.length > 0 && item.country.toLowerCase().search(filter) > -1
-            // allRecord.id_user
-        ) {
-            return (
-                <div className="row" key={index} onClick={e => openDetailsRecord(item.id_user)}>
-                    <span>{moment(item.start_date).format('MMM. D, YYYY')}</span>
-                    <span className="name">{item.name}</span>
-                    <span>{item.country}</span>
-                    <span>
-                        {
-                            item.sponsor_email !== null
-                                ? item.sponsor_email
-                                : <i>Sin sponsor</i>
-                        }
-                    </span>
-                </div>
-            )
-        }
     }
 
     // Componente que representa un articulo de la lista Exchange request
@@ -1246,62 +1227,43 @@ const Records = () => {
 
                 <div className="collection">
                     {
-                        loader && <p style={{zIndex: 10000, backgroundColor: 'tomato'}}>test loader</p>
-                        //<ActivityIndicator size={64} />
+                        loaderRecord &&
+                        <ActivityIndicator size={64} />
                     }
 
-                    {/*
-                        (allRecord.length === 0 && !loader) &&
+                    {
+                        (allRecord.length === 0 && !loaderRecord) &&
                         <>
                             <div className="empty">
                                 <img src={Astronaut} alt="empty" />
                                 <h2 className="title">No hay Registos</h2>
                             </div>
-                        </>*/
+                        </>
                     }
 
                     {
+                        // Listado de los usuarios
                         allRecord.length > 0 &&
-                        <>
-                            <div className="sub-header">
-                                <h2 className="title">Registros</h2>
-
-                                <input
-                                    value={filter}
-                                    onChange={e => setFilter(e.target.value)}
-                                    placeholder="Escribe para buscar.."
-                                    type="text"
-                                    className="text-input" />
-                            </div>
-
-                            <div className="table records">
-                                <div className="header">
-                                    <span>Fecha</span>
-                                    <span>Nombre</span>
-                                    <span>Pais</span>
-                                    <span>Sponsor</span>
-                                </div>
-
-                                {
-                                    allRecord
-                                        .sort((a, b) => 
-                                            (new Date(b.start_date) - new Date(a.start_date)))
-                                        .map(itemRecord)
-                                }
-                            </div>
-                        </>
+                        <RecordsList
+                            data={allRecord}
+                            filter={filter}
+                            onChangeFilter={setFilter}
+                            onDetail={openDetailsRecord} />
                     }
                 </div>
             </div>
 
             {
+                // Modal de detalle para los detalle de usuario
                 showRecord &&
                 <ModalRecord
                     data={dataRecord}
+                    loader={loaderPetition}
                     onClose={_ => setShowRecord(false)} />
             }
 
             {
+                // Modal de detalle para los nuevos registros
                 showRequest &&
                 <ModalRequest 
                     data={dataRequest}
@@ -1312,6 +1274,7 @@ const Records = () => {
             }
 
             {
+                // Modal de detalle para las solicitudes de upgrades
                 showUpgrade &&
                 <ModalUpgrade
                     data={dataUpgrade}
@@ -1322,6 +1285,7 @@ const Records = () => {
             }
 
             {
+                // Modal de detalle para las solicitudes de exchange
                 showExchangeRequest &&
                 <ModalExchangeRequest
                     data={detailsRequestExchange}
@@ -1332,6 +1296,7 @@ const Records = () => {
             }
 
             {
+                // Modal de detalle para los MoneyChanger
                 showMoneyChagerRequest &&
                 <ModalMoneyChangerRequest
                     data={detailsRequestMoneyChanger}
