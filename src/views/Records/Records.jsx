@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
+import { Link } from "react-router-dom"
 import { Petition, keySecret, copyData, setTittleDOM, WithDecimals } from "../../utils/constanst"
 
 // Import middlewares and validators
@@ -16,6 +17,9 @@ import sounNotification from "../../static/sound/notification.mp3"
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
 import Modal from "../../components/Modal/Modal"
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
+import ModalRequest from "../../components/ModalRequest/ModalRequest"
+import ModalUpgrade from "../../components/ModalUpgrade/ModalUpgrade"
+import ModalExchangeRequest from "../../components/ModalExchangeRequest/ModalExchangeRequest"
 import Swal from "sweetalert2"
 
 const Records = () => {
@@ -58,10 +62,6 @@ const Records = () => {
     // Estado que guarda la configuracion diaria del trading
     const [dataTrading, setDataTrading] = useState({ crypto: [], day: 0 })
 
-    // Estado que guarda el hash de transaccion al sponsor_email
-    // Cuando un usuario hace una solicitud de inversion
-    const [hashForSponsor, setHashForSponsor] = useState("")
-
     // Estado que guarda el indice de
     // los datos especificos y mostrarlos como detalles
     const [showExchangeRequest, setExchangeRequestModal] = useState(false)
@@ -75,9 +75,6 @@ const Records = () => {
 
     // Estado que guarda la solcitud compora y venta (Money Changer)
     const [detailsRequestMoneyChanger, setDetailsMoneyChanger] = useState({})
-
-    // Estado que contiene el hash de pago en exchange
-    const [hashExchangeRequest, setHashExchangeRequest] = useState("")
 
     // Estado que contiene el hash de pago en Compra (Money Changer)
     const [hashMonyeChangerRequest, setHashMonyeChangerRequest] = useState("")
@@ -115,7 +112,7 @@ const Records = () => {
         }).then(({ data }) => {
             if (data.error) {
                 Swal.fire('Ha ocurrido un error', data.message, 'error')
-            } else {
+            } else { console.log(data)
                 setRecords(data)
             }
         })
@@ -214,10 +211,11 @@ const Records = () => {
                 })
             }
 
-        } catch (error) {
-            Swal.fire('Ha ocurrido un error', error.toString(), 'error')
-        } finally {
             setLoader(false)
+
+        } catch (error) {
+            setLoader(false)
+            Swal.fire('Ha ocurrido un error', error.toString(), 'error')
         }
 
     }
@@ -363,13 +361,12 @@ const Records = () => {
                         throw data.message
                     } else {
                         setDataRequest(data)
+                        setLoaderPetition(false)
                     }
                 })
         } catch (error) {
-            Swal.fire('Ha ocurrido un error', error.toString(), 'error')
             setShowRequest(false)
-        } finally {
-            setLoaderPetition(false)
+            Swal.fire('Ha ocurrido un error', error.toString(), 'error')
         }
     }
 
@@ -420,7 +417,7 @@ const Records = () => {
                     "x-auth-token": token
                 }
             })
-                .then(({ data }) => {
+                .then(({ data }) => { console.log(JSON.stringify(data))
                     if (data.error) {
                         throw data.message
                     } else {
@@ -563,8 +560,12 @@ const Records = () => {
         })
     }
 
-    // Abre modal para confirmar rechazo de solicitud de registro
-    const AcceptRequest = async (dataRequestItem = {}) => {
+    /** 
+     * Abre modal para confirmar rechazo de solicitud de registro
+     * @param {Object} dataRequestItem -  Datos del request a enviar
+     * @param {String} hashForSponsor - Hash del request
+     */
+    const AcceptRequest = async (dataRequestItem = {}, hashForSponsor) => {
         setLoaderPetition(true)
 
         try {
@@ -615,8 +616,12 @@ const Records = () => {
         setLoaderPetition(false)
     }
 
-    // Abre modal para confirmar solicitud de Upgrade
-    const AcceptUpgrade = async (dataUpgrade) => {
+    /**
+     * Abre modal para confirmar solicitud de Upgrade
+     * @param {Object} dataUpgrade - Datos del upgrade
+     * @param {String} hashForSponsor - Hash del upgrade
+     */
+    const AcceptUpgrade = async (dataUpgrade, hashForSponsor) => {
         setLoaderPetition(true)
         try {
             if (dataUpgrade.sponsor_username !== null && hashForSponsor.length === 0) {
@@ -672,17 +677,17 @@ const Records = () => {
             // Validamos la compra si existe un hash de transaccion
             if (detailsRequestMoneyChanger.type === "buy") {
                 if (hashMonyeChangerRequest.length < 8) {
-                    throw "Hash de transacción es incorrecto"
+                    throw String("Hash de transacción es incorrecto")
                 }
             } else if (detailsRequestMoneyChanger.type === "sell") {
                 // Validamos la venta con un ID de manipulacion
                 if (hashMonyeChangerRequest.length < 8) {
-                    throw "ID de manipulación es incorrecto"
+                    throw String("ID de manipulación es incorrecto")
                 }
             } else {
                 // Si el detalle no es de venta ni de compra
                 // Alertamos al usuario
-                throw "Detalles de compra no definido, contacte a Samuel"
+                throw String("Detalles de compra no definido, contacte a Samuel")
             }
 
             const data = {
@@ -714,7 +719,7 @@ const Records = () => {
 
                     } else {
                         // Si el servidor no devuelve una respuesta valida
-                        throw "La solicitud no pudo completarse, contacte a Samuel"
+                        throw String("La solicitud no pudo completarse, contacte a Samuel")
                     }
                 })
                 .catch(reason => {
@@ -813,7 +818,7 @@ const Records = () => {
     }
 
     // Metodo que ejecuta el rechazo de un intercambio de moneda
-    const declineExchangeRequest = async () => {
+    const declineExchangeRequest = async (reasonDecline) => {
         try {
             if (reasonDecline.length < 10) {
                 throw String("La razon de rechazo debe de tener minimo 10 caracteres")
@@ -914,8 +919,11 @@ const Records = () => {
         }
     }
 
-    // Metodo que ejecuta el intercambio de moneda
-    const acceptExhangeRequest = async () => {
+    /**
+     * Metodo que ejecuta el intercambio de moneda
+     * @param {String} hashExchangeRequest - hash del pago del Exchange
+     */
+    const acceptExhangeRequest = async (hashExchangeRequest) => {
         try {
             setLoaderPetition(true)
 
@@ -1244,18 +1252,18 @@ const Records = () => {
 
                 <div className="collection">
                     {
-                        loader &&
-                        <ActivityIndicator size={64} />
+                        loader && <p style={{zIndex: 10000, backgroundColor: 'tomato'}}>test loader</p>
+                        //<ActivityIndicator size={64} />
                     }
 
-                    {
+                    {/*
                         (allRecord.length === 0 && !loader) &&
                         <>
                             <div className="empty">
                                 <img src={Astronaut} alt="empty" />
                                 <h2 className="title">No hay Registos</h2>
                             </div>
-                        </>
+                        </>*/
                     }
 
                     {
@@ -1281,7 +1289,10 @@ const Records = () => {
                                 </div>
 
                                 {
-                                    allRecord.map(itemRecord)
+                                    allRecord
+                                        .sort((a, b) => 
+                                            (new Date(b.start_date) - new Date(a.start_date)))
+                                        .map(itemRecord)
                                 }
                             </div>
                         </>
@@ -1341,14 +1352,6 @@ const Records = () => {
                                             }
                                         </div>
 
-                                        {/* {
-                                            dataRecord.email_sponsor !== null &&
-                                            <div className="row">
-                                                <span className="name">Comision</span>
-                                                <span className="value">{dataRecord.phone}</span>
-                                            </div>
-                                        } */}
-
                                     </div>
 
                                     <div className="col">
@@ -1406,9 +1409,9 @@ const Records = () => {
                                         cerrar
                                     </button>
 
-                                    <button className="button large secondary">
+                                    <Link to={`/reports/${dataRecord.id}`} className="button large secondary">
                                         Generar Reporte
-                                    </button>
+                                    </Link>
                                 </div>
                             </>
                         }
@@ -1418,417 +1421,32 @@ const Records = () => {
 
             {
                 showRequest &&
-                <Modal onClose={_ => setShowRequest(false)}>
-                    <div className="content-modal request">
-                        {
-                            loaderPetition &&
-                            <ActivityIndicator size={48} />
-                        }
-                        {
-                            !loaderPetition &&
-                            <>
-                                <div className="content-col">
-                                    <div className="col">
-                                        <h2>Detalles de solicitud</h2>
-
-                                        <div className="row">
-                                            <span className="name">Nombre</span>
-                                            <span className="value">{dataRequest.name}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Correo</span>
-                                            <span className="value">{dataRequest.email}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            {
-                                                dataRequest.email_airtm !== null
-                                                    ? <span className="name">Id de manipulacion</span>
-                                                    : <span className="name">Hash de transaccion</span>
-                                            }
-
-                                            <span className="value copy" onClick={_ => copyData(dataRequest.hash)}>{dataRequest.hash}</span>
-                                        </div>
-
-                                        {
-                                            (dataRequest.aproximate_amount !== null) &&
-
-                                            <>
-                                                <div className="row">
-                                                    <span className="name">Deposito aproximado</span>
-                                                    <span className="value">$ {dataRequest.aproximate_amount}</span>
-                                                </div>
-
-                                                <div className="row">
-                                                    <span className="name">Correo de transaccion</span>
-                                                    <span className="value">{dataRequest.email_airtm}</span>
-                                                </div>
-                                            </>
-                                        }
-
-                                        <div className="row">
-                                            <span className="name">Monto</span>
-                                            <span className="value">
-                                                {dataRequest.amount} {dataRequest.id_currency === 1 && 'BTC'} {dataRequest.id_currency === 2 && 'ETH'}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={`col${dataRequest.sponsor_username === null ? ' empty' : ''}`}>
-                                        {
-                                            dataRequest.sponsor_username === null &&
-                                            <>
-                                                <h2>
-                                                    Sin Sponsor
-                                            </h2>
-                                            </>
-                                        }
-
-                                        {
-                                            dataRequest.sponsor_username !== null &&
-                                            <>
-                                                <h2>Sponsor</h2>
-
-                                                <div className="row">
-                                                    <span className="name">Nombre</span>
-                                                    <span className="value">{dataRequest.sponsor_name}</span>
-                                                </div>
-
-                                                <div className="row">
-                                                    <span className="name">Correo Electronico</span>
-                                                    <span className="value">{dataRequest.sponsor_email}</span>
-                                                </div>
-
-                                                <div className="row">
-                                                    <span className="name">Comision</span>
-                                                    <span className="value">{dataRequest.amount * 0.05}</span>
-                                                </div>
-
-                                                <div className="row">
-                                                    <span className="name">
-                                                        Wallet en {dataRequest.id_currency === 1 && 'BTC'} {dataRequest.id_currency === 2 && 'ETH'}
-                                                    </span>
-
-                                                    <span className="value copy" onClick={_ => {
-                                                        copyData(dataRequest.id_currency === 1 ? dataRequest.sponsor_wallet_btc : dataRequest.sponsor_wallet_eth)
-                                                    }}>
-                                                        {dataRequest.id_currency === 1 && dataRequest.sponsor_wallet_btc}
-                                                        {dataRequest.id_currency === 2 && dataRequest.sponsor_wallet_eth}
-                                                    </span>
-                                                </div>
-
-                                                <div className="row">
-                                                    <span className="name">Hash de transaccion</span>
-                                                    <input
-                                                        type="text"
-                                                        value={hashForSponsor}
-                                                        onChange={e => setHashForSponsor(e.target.value)}
-                                                        placeholder="Transaccion a sponsor"
-                                                        className="text-input" />
-                                                </div>
-                                            </>
-                                        }
-                                    </div>
-                                </div>
-
-
-                                <div className="buttons">
-                                    <button className="button large" onClick={_ => confirmDecline(dataRequest.id)}>
-                                        Rechazar
-                                </button>
-
-                                    <button className="button large secondary" onClick={_ => AcceptRequest(dataRequest)}>
-                                        Aprobar
-                                </button>
-                                </div>
-                            </>
-                        }
-
-                    </div>
-                </Modal>
+                <ModalRequest 
+                    data={dataRequest}
+                    loader={loaderPetition}
+                    onClose={_ => setShowRequest(false)}
+                    onDecline={_ => confirmDecline(dataRequest.id)}
+                    onAccept={(hashForSponsor) => AcceptRequest(dataRequest, hashForSponsor)} />
             }
 
             {
                 showUpgrade &&
-                <Modal onClose={_ => setShowUpgrade(false)}>
-                    <div className="content-modal request">
-                        {
-                            loaderPetition &&
-                            <ActivityIndicator size={48} />
-                        }
-                        {
-                            !loaderPetition &&
-                            <>
-                                <div className="content-col">
-                                    <div className="col">
-                                        <h2>Detalles de solicitud</h2>
-
-                                        <div className="row">
-                                            <span className="name">Nombre</span>
-                                            <span className="value">{dataUpgrade.name}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Correo</span>
-                                            <span className="value">{dataUpgrade.email}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            {
-                                                dataUpgrade.email_airtm !== null
-                                                    ? <span className="name">Id de manipulacion</span>
-                                                    : <span className="name">Hash de transaccion</span>
-                                            }
-
-                                            <span className="value copy" onClick={_ => copyData(dataUpgrade.hash)}>{dataUpgrade.hash}</span>
-                                        </div>
-
-                                        {
-                                            (dataUpgrade.aproximate_amount !== null) &&
-
-                                            <>
-                                                <div className="row">
-                                                    <span className="name">Deposito aproximado</span>
-                                                    <span className="value">$ {dataUpgrade.aproximate_amount}</span>
-                                                </div>
-
-                                                <div className="row">
-                                                    <span className="name">Correo de transaccion</span>
-                                                    <span className="value">{dataUpgrade.email_airtm}</span>
-                                                </div>
-                                            </>
-                                        }
-
-                                        <div className="row">
-                                            <span className="name">Monto Actual</span>
-                                            <span className="value">
-                                                {dataUpgrade.current_amount} {dataUpgrade.id_currency === 1 && 'BTC'} {dataUpgrade.id_currency === 2 && 'ETH'}
-                                            </span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Monto a Sumar</span>
-                                            <span className="value">
-                                                {dataUpgrade.amount_requested} {dataUpgrade.id_currency === 1 && 'BTC'} {dataUpgrade.id_currency === 2 && 'ETH'}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className={`col${dataUpgrade.id_sponsor === null ? ' empty' : ''}`}>
-                                        {
-                                            dataUpgrade.id_sponsor === null &&
-                                            <>
-                                                <h2>
-                                                    Sin Sponsor
-                                            </h2>
-                                            </>
-                                        }
-
-                                        {
-                                            dataUpgrade.id_sponsor !== null &&
-                                            <>
-                                                <h2>Sponsor</h2>
-
-                                                <div className="row">
-                                                    <span className="name">Nombre</span>
-                                                    <span className="value">{dataUpgrade.sponsor_name}</span>
-                                                </div>
-
-                                                <div className="row">
-                                                    <span className="name">Correo Electronico</span>
-                                                    <span className="value">{dataUpgrade.sponsor_email}</span>
-                                                </div>
-
-                                                <div className="row">
-                                                    <span className="name">Comision por Upgrade</span>
-                                                    <span className="value">{dataUpgrade.amount_requested * 0.05}</span>
-                                                </div>
-
-                                                <div className="row">
-                                                    <span className="name">
-                                                        Wallet en {dataUpgrade.id_currency === 1 && 'BTC'} {dataUpgrade.id_currency === 2 && 'ETH'}
-                                                    </span>
-
-                                                    <span className="value copy" onClick={_ => {
-                                                        copyData(dataUpgrade.id_currency === 1 ? dataUpgrade.sponsor_wallet_btc : dataUpgrade.sponsor_wallet_eth)
-                                                    }}>
-                                                        {dataUpgrade.id_currency === 1 && dataUpgrade.sponsor_wallet_btc}
-                                                        {dataUpgrade.id_currency === 2 && dataUpgrade.sponsor_wallet_eth}
-                                                    </span>
-                                                </div>
-
-                                                <div className="row">
-                                                    <span className="name">Hash de transaccion</span>
-                                                    <input
-                                                        type="text"
-                                                        value={hashForSponsor}
-                                                        onChange={e => setHashForSponsor(e.target.value)}
-                                                        placeholder="Transaccion a sponsor"
-                                                        className="text-input" />
-                                                </div>
-                                            </>
-                                        }
-                                    </div>
-                                </div>
-
-
-                                <div className="buttons">
-                                    <button className="button large" onClick={_ => confirmDeclineUpgrade(dataUpgrade.id)}>
-                                        Rechazar
-                                    </button>
-
-                                    <button className="button large secondary" onClick={_ => AcceptUpgrade(dataUpgrade)}>
-                                        Aprobar
-                                </button>
-                                </div>
-                            </>
-                        }
-
-                    </div>
-                </Modal>
+                <ModalUpgrade
+                    data={dataUpgrade}
+                    loader={loaderPetition}
+                    onClose={_ => setShowUpgrade(false)}
+                    onDecline={_ => confirmDeclineUpgrade(dataUpgrade.id)}
+                    onAccept={(hashForSponsor) => AcceptUpgrade(dataUpgrade, hashForSponsor)} />
             }
 
             {
-                showExchangeRequest &&
-                <Modal onClose={e => setExchangeRequestModal(false)}>
-                    <div className="content-modal exchange">
-
-                        {
-                            loaderPetition &&
-                            <ActivityIndicator size={48} />
-                        }
-
-                        {
-                            (!loaderPetition && !declineConfirm) &&
-                            <>
-                                <div className="content-col">
-                                    <div className="col">
-                                        <h2>Detalle de Compra</h2>
-
-                                        <div className="row">
-                                            <span className="name">Solicitud Procesada</span>
-                                            <span className="value">{moment(detailsRequestExchange.date).fromNow()}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Moneda a pagar</span>
-                                            <span className="value">{detailsRequestExchange.currency}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Precio de Moneda</span>
-                                            <span className="value">$ {detailsRequestExchange.coin_price}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Moneda a comprar</span>
-                                            <span className="value">{detailsRequestExchange.request_currency}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Cliente</span>
-                                            <span className="value">{detailsRequestExchange.email}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="col">
-                                        <h2>Detalle de Transaccion</h2>
-
-                                        <div className="row">
-                                            <span className="name">Hash de transaccion</span>
-                                            <span className="value">{detailsRequestExchange.hash}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Monto recibido</span>
-                                            <span className="value">{detailsRequestExchange.amount} {detailsRequestExchange.currency}</span>
-                                        </div>
-
-
-                                        <div className="row">
-                                            <span className="name">Monto aproximado de {detailsRequestExchange.request_currency}</span>
-                                            <span className="value">{detailsRequestExchange.approximate_amount} <b>{detailsRequestExchange.request_currency}</b></span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Direccion Wallet</span>
-                                            <span className="value copy" onClick={_ => copyData(detailsRequestExchange.wallet)}>{detailsRequestExchange.wallet}</span>
-                                        </div>
-
-                                        {
-                                            detailsRequestExchange.memo !== null &&
-                                            <div className="row">
-                                                <span className="name">Memo</span>
-                                                <span className="value">{detailsRequestExchange.memo}</span>
-                                            </div>
-                                        }
-
-                                        {
-                                            detailsRequestExchange.label !== null &&
-                                            <div className="row">
-                                                <span className="name">Label</span>
-                                                <span className="value">{detailsRequestExchange.label}</span>
-                                            </div>
-                                        }
-
-                                        <div className="row">
-                                            <span className="name">Hash de Pago</span>
-                                            <input
-                                                type="text"
-                                                value={hashExchangeRequest}
-                                                onChange={e => setHashExchangeRequest(e.target.value)}
-                                                placeholder="Hash de Transaccion"
-                                                className="text-input" />
-                                        </div>
-                                    </div>
-
-                                </div>
-
-
-                                <div className="buttons">
-                                    <button className="button large" onClick={_ => setDeclineConfirm(true)}>
-                                        Rechazar
-                                    </button>
-
-                                    <button className="button large secondary" onClick={acceptExhangeRequest}>
-                                        Responder
-                                    </button>
-                                </div>
-                            </>
-                        }
-
-                        {
-                            (declineConfirm && !loaderPetition) &&
-                            <div className="confirm-decline">
-                                <h1>Rechazar Solicitud de intercambio</h1>
-
-                                <div className="row-reason">
-                                    <span className="legend-decline">
-                                        Describa la razon de rechazo ({reasonDecline.length})
-                                    </span>
-
-                                    <textarea
-                                        className="text-input"
-                                        placeholder="Razon de rechazo"
-                                        value={reasonDecline}
-                                        rows="5"
-                                        onChange={e => setReasonDecline(e.target.value)} />
-                                </div>
-
-                                <div className="buttons">
-                                    <button className="button large" onClick={e => setDeclineConfirm(false)}>
-                                        Cancelar
-                                    </button>
-
-                                    <button onClick={declineExchangeRequest} className="button large secondary">
-                                        Rechazar
-                                    </button>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </Modal>
+                !showExchangeRequest &&
+                <ModalExchangeRequest
+                    data={detailsRequestExchange}
+                    loader={loaderPetition}
+                    onClose={_ => setExchangeRequestModal(false)}
+                    onAccept={acceptExhangeRequest}
+                    onDecline={declineExchangeRequest} />
             }
 
             {
