@@ -1,0 +1,54 @@
+@import "../../utils/constants.scss";
+
+.upgrade-modal {
+    width: 75vw !important;
+}
+
+.sponsors-col {
+    width: 55% !important;
+
+    &:hover {
+        .sponsor-container {
+            scrollbar-width: initial;
+            padding-right: .75rem;
+        }
+    }
+
+    h2 {
+        margin-bottom: .5rem;
+    }
+
+    .sponsor-container {
+        max-height: 70vh;
+        overflow-y: auto;
+        scrollbar-width: none;
+        padding-right: 0;
+        transition: padding-right .15s;
+    }
+}
+
+.sponsor-card {
+    border-bottom: 1px solid lighten($colorMain, 20);
+
+    &:last-child {
+        border: none;
+    }
+
+    .pay-with-alypay {
+        padding: .35rem 1rem;
+        color: $colorYellow;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+}
+
+.sponsor-info {
+    display: flex;
+    flex-direction: row !important;
+    justify-content: space-between;
+
+    div {
+        display: flex;
+        flex-direction: column;
+    }
+}

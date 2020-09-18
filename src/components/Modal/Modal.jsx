@@ -3,7 +3,7 @@ import React, { useEffect, useCallback } from 'react'
 // Import styles and asstes
 import "./Modal.scss"
 
-const Modal = ({ children, onlyChildren = false, onClose = () => { }, persist = false }) => {
+const Modal = ({ children, onlyChildren = false, onClose = () => { }, persist = false, className="" }) => {
     const onHandledCallback = useCallback(() => onClose(), [])
 
     /**Metodo que comprueba si la ventana modal es persistente */
@@ -35,7 +35,7 @@ const Modal = ({ children, onlyChildren = false, onClose = () => { }, persist = 
 
             {
                 !onlyChildren &&
-                <div className="container">
+                <div className={`container ${className}`}>
                     {children}
                 </div>
             }

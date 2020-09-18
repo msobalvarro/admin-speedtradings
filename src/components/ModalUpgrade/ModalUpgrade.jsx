@@ -20,8 +20,28 @@ const ModalUpgrade = ({ data=null, onClose=_=>{}, onAccept=_=>{}, onDecline=_=>{
     // Cuando un usuario hace una solicitud de inversion
     const [hashForSponsor, setHashForSponsor] = useState('')
 
+    data.sponsors = [
+        {
+            hash: "hfskjdfhkdsfhksdhfk",
+            name: "Harold Espinoza",
+            amount: 10.099,
+            wallet: "ndfbskjrkhdfsdgfdkj4"
+        },
+        {
+            hash: "hfskjdfhkdsfhksdhfk",
+            name: "Harold Espinoza",
+            amount: 10.099,
+            wallet: "ndfbskjrkhdfsdgfdkj4"
+        },
+        {
+            hash: null,
+            name: "Harold Espinoza",
+            amount: 10.099,
+            wallet: "ndfbskjrkhdfsdgfdkj4"
+        }
+    ]
     return (
-        <Modal onClose={_ => onClose()}>
+        <Modal onClose={_ => onClose()} className={"upgrade-modal"}>
             <div className="content-modal request">
                 {
                     loader &&
@@ -85,14 +105,70 @@ const ModalUpgrade = ({ data=null, onClose=_=>{}, onAccept=_=>{}, onDecline=_=>{
                                 </div>
                             </div>
 
-                            <div className={`col${data.id_sponsor === null ? ' empty' : ''}`}>
+                            <div className="col sponsors-col">
+                                <h2>Sponsor</h2>
+
+                                <div className="sponsor-container">
+                                    {
+                                        data.sponsors.map(item =>(
+                                            <div className="sponsor-card">
+                                                <div className="row sponsor-info">
+                                                    <div>
+                                                        <span className="name">Nombre</span>
+                                                        <span className="value">{item.name}</span>
+                                                    </div>
+
+                                                    <div>
+                                                        <span className="name">Comision por Upgrade</span>
+                                                        <span className="value">{item.amount * 0.05}</span>
+                                                    </div>
+                                                </div>
+
+                                                {
+                                                    item.hash !== null &&
+                                                    <>
+                                                        <div className="row">
+                                                            <span className="name">Wallet en</span>
+                                                            <span className="value">{item.wallet}</span>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <span className="name">Hash de transaccion</span>
+                                                            <input
+                                                                type="text"
+                                                                value={hashForSponsor}
+                                                                onChange={e => setHashForSponsor(e.target.value)}
+                                                                placeholder="Transaccion a sponsor"
+                                                                className="text-input" />
+                                                        </div>
+                                                    </>
+                                                }
+
+                                                {
+                                                    item.hash === null &&
+                                                    <>
+                                                        <div className="row">
+                                                            <span className="name">Hash de transacción</span>
+                                                            <span className="value">{item.wallet}</span>
+                                                        </div>
+
+                                                        <div className="row">
+                                                            <span className="pay-with-alypay">
+                                                                &#10004; Pagado con AlyPay
+                                                            </span>
+                                                        </div>
+                                                    </>
+                                                }
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            </div>
+
+                            {/*<div className={`col${data.id_sponsor === null ? ' empty' : ''}`}>
                                 {
                                     data.id_sponsor === null &&
-                                    <>
-                                        <h2>
-                                            Sin Sponsor
-                                    </h2>
-                                    </>
+                                    <h2>Sin Sponsor</h2>
                                 }
 
                                 {
@@ -139,7 +215,7 @@ const ModalUpgrade = ({ data=null, onClose=_=>{}, onAccept=_=>{}, onDecline=_=>{
                                         </div>
                                     </>
                                 }
-                            </div>
+                            </div>*/}
                         </div>
 
 

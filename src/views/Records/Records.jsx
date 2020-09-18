@@ -9,18 +9,25 @@ import Validator from "validator"
 
 // Import styles and assets
 import "./Records.scss"
-import Astronaut from '../../static/images/astronaut.png'
 import sounNotification from "../../static/sound/notification.mp3"
 
 // Import components
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
+import EmptyIndicator from "../../components/EmptyIndicator/EmptyIndicator"
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
+
 import ModalRequest from "../../components/ModalRequest/ModalRequest"
 import ModalUpgrade from "../../components/ModalUpgrade/ModalUpgrade"
 import ModalExchangeRequest from "../../components/ModalExchangeRequest/ModalExchangeRequest"
 import ModalMoneyChangerRequest from "../../components/ModalMoneyChangerRequest/ModalMoneyChangerRequest"
 import ModalRecord from "../../components/ModalRecord/ModalRecord"
+
 import RecordsList from "../../components/RecordsList/RecordsList"
+import MoneyChangerList from "../../components/MoneyChangerList/MoneyChangerList"
+import ExchangeList from "../../components/ExchangeList/ExchangeList"
+import UpgradeList from "../../components/UpgradeList/UpgradeList"
+import RequestList from "../../components/RequestList/RequestList"
+
 import Swal from "sweetalert2"
 
 const Records = () => {
@@ -230,84 +237,6 @@ const Records = () => {
                 setDataTrading(jsonTrading)
             }
         }
-    }
-
-    // Componente que representa un articulo de la lista
-    // de solicitudes de registro
-    const itemRequest = (item, index) => {
-        return (
-            <div className="row" key={index} onClick={_ => openDetailsRequest(item.id)}>
-                <span className="name">{item.name}</span>
-                <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
-                <span>
-                    {
-                        item.sponsor_email !== null
-                            ? item.sponsor_email
-                            : <i>Sin sponsor</i>
-                    }
-                </span>
-            </div>
-        )
-    }
-
-    // Componente que representa un articulo de la lista
-    // de solicitudes de Upgrade
-    const itemUpgrade = (item, index) => {
-        return (
-            <div className="row" key={index} onClick={_ => openDetailsUpgrade(item.id)}>
-                <span className="name">{item.name}</span>
-                <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
-                <span>
-                    {
-                        item.sponsor_email !== null
-                            ? item.sponsor_email
-                            : <i>Sin sponsor</i>
-                    }
-                </span>
-            </div>
-        )
-    }
-
-    // Componente que representa un articulo de la lista Exchange request
-    const itemExchnage = (item, index) => {
-        // Compra -- Venta -- Cantidad -- tiempo
-
-        return (
-            <div className="row" key={index} onClick={_ => openExchangeRequest(index)}>
-                <span>{item.request_currency}</span>
-                <span>{item.currency}</span>
-                <span>{item.amount}</span>
-                <span>{moment(item.date).fromNow()}</span>
-            </div>
-        )
-    }
-
-    // Componente que representa un articulo de la lista Exchange request
-    const itemMoneyChanger = (item, index) => {
-        // Tipo - Moneda - Monto - Solicitado
-
-        return (
-            <div className="row" key={index} onClick={_ => openMoneyChangerRequest(index)}>
-                {
-                    item.type === "buy" &&
-                    <span>Compra</span>
-                }
-
-                {
-                    item.type === "sell" &&
-                    <span>Venta</span>
-                }
-
-                {
-                    (item.type !== "sell" && item.type !== "buy") &&
-                    <span>No identificado</span>
-                }
-
-                <span>{item.coin_name}</span>
-                <span>$ {item.amount_usd}</span>
-                <span>{moment(item.date).fromNow()}</span>
-            </div>
-        )
     }
 
     // Funcion que abre detalles al hacer la peticion de
@@ -1077,32 +1006,14 @@ const Records = () => {
                         <>
                             {
                                 (allRequest.length === 0 && !loader) &&
-                                <>
-                                    <div className="empty">
-                                        <img src={Astronaut} alt="empty" />
-                                        <h2 className="title">No hay Solicitudes</h2>
-                                    </div>
-                                </>
+                                <EmptyIndicator message={"No hay Solicitudes"} />
                             }
 
                             {
                                 (allRequest.length > 0 && !loader) &&
-                                <>
-                                    <h2 className="title">Solicitudes de registros</h2>
-
-
-                                    <div className="table request">
-                                        <div className="header">
-                                            <span>Nombre</span>
-                                            <span>Monto</span>
-                                            <span>Sponsor</span>
-                                        </div>
-
-                                        {
-                                            allRequest.map(itemRequest)
-                                        }
-                                    </div>
-                                </>
+                                <RequestList
+                                    data={allRequest}
+                                    onDetail={(item_id) => openDetailsRequest(item_id)} />
                             }
                         </>
                     }
@@ -1112,35 +1023,14 @@ const Records = () => {
                         <>
                             {
                                 (allUpgrades.length === 0 && !loader) &&
-                                <>
-                                    <div className="empty">
-                                        <img src={Astronaut} alt="empty" />
-                                        <h2 className="title">No hay Solicitudes</h2>
-                                    </div>
-                                </>
+                                <EmptyIndicator message={"No hay Solicitudes"} />
                             }
 
                             {
                                 allUpgrades.length > 0 &&
-                                <>
-                                    <div className="separator" />
-
-                                    <h2 className="title">Solicitudes de UPGRADES</h2>
-
-
-                                    <div className="table request">
-                                        <div className="header">
-                                            <span>Nombre</span>
-                                            <span>Monto</span>
-                                            <span>Sponsor</span>
-                                        </div>
-
-                                        {
-                                            allUpgrades.map(itemUpgrade)
-                                        }
-                                    </div>
-
-                                </>
+                                <UpgradeList
+                                    data={allUpgrades}
+                                    onDetail={(item_id) => openDetailsUpgrade(item_id)} />
                             }
                         </>
                     }
@@ -1150,35 +1040,14 @@ const Records = () => {
                         <>
                             {
                                 (allExchange.length === 0 && !loader) &&
-                                <>
-                                    <div className="empty">
-                                        <img src={Astronaut} alt="empty" />
-                                        <h2 className="title">No hay Solicitudes</h2>
-                                    </div>
-                                </>
+                                <EmptyIndicator message={"No hay Solicitudes"} />
                             }
 
                             {
                                 allExchange.length > 0 &&
-                                <>
-                                    <div className="separator" />
-
-                                    <h2 className="title">Solicitudes de Exchange</h2>
-
-                                    <div className="table exchange">
-                                        <div className="header">
-                                            <span>Compra</span>
-                                            <span>Venta</span>
-                                            <span>Cantidad</span>
-                                            <span>Solicitado</span>
-                                        </div>
-
-                                        {
-                                            allExchange.map(itemExchnage)
-                                        }
-                                    </div>
-
-                                </>
+                                <ExchangeList
+                                    data={allExchange}
+                                    onDetail={(index) => openExchangeRequest(index)} />
                             }
 
                         </>
@@ -1189,35 +1058,14 @@ const Records = () => {
                         <>
                             {
                                 (allMoneyChanger.length === 0 && !loader) &&
-                                <>
-                                    <div className="empty">
-                                        <img src={Astronaut} alt="empty" />
-                                        <h2 className="title">No hay Solicitudes</h2>
-                                    </div>
-                                </>
+                                <EmptyIndicator message={"No hay Solicitudes"} />
                             }
 
                             {
                                 allMoneyChanger.length > 0 &&
-                                <>
-                                    <div className="separator" />
-
-                                    <h2 className="title">Solicitudes de Exchange</h2>
-
-                                    <div className="table exchange">
-                                        <div className="header">
-                                            <span>Tipo</span>
-                                            <span>Moneda</span>
-                                            <span>Monto</span>
-                                            <span>Solicitado</span>
-                                        </div>
-
-                                        {
-                                            allMoneyChanger.map(itemMoneyChanger)
-                                        }
-                                    </div>
-
-                                </>
+                                <MoneyChangerList 
+                                    data={getAllMoneyChanger}
+                                    onDetail={(index) => openMoneyChangerRequest(index)} />
                             }
 
                         </>
@@ -1233,12 +1081,7 @@ const Records = () => {
 
                     {
                         (allRecord.length === 0 && !loaderRecord) &&
-                        <>
-                            <div className="empty">
-                                <img src={Astronaut} alt="empty" />
-                                <h2 className="title">No hay Registos</h2>
-                            </div>
-                        </>
+                        <EmptyIndicator message={"No hay Registos"} />
                     }
 
                     {
@@ -1275,7 +1118,7 @@ const Records = () => {
 
             {
                 // Modal de detalle para las solicitudes de upgrades
-                showUpgrade &&
+                !showUpgrade &&
                 <ModalUpgrade
                     data={dataUpgrade}
                     loader={loaderPetition}
