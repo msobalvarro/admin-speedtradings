@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
-import { Link } from "react-router-dom"
-import { Petition, keySecret, copyData, setTittleDOM, WithDecimals } from "../../utils/constanst"
+import { Petition, keySecret, setTittleDOM } from "../../utils/constanst"
 
 // Import middlewares and validators
 import jwt from "jwt-simple"
@@ -15,11 +14,12 @@ import sounNotification from "../../static/sound/notification.mp3"
 
 // Import components
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
-import Modal from "../../components/Modal/Modal"
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import ModalRequest from "../../components/ModalRequest/ModalRequest"
 import ModalUpgrade from "../../components/ModalUpgrade/ModalUpgrade"
 import ModalExchangeRequest from "../../components/ModalExchangeRequest/ModalExchangeRequest"
+import ModalMoneyChangerRequest from "../../components/ModalMoneyChangerRequest/ModalMoneyChangerRequest"
+import ModalRecord from "../../components/ModalRecord/ModalRecord"
 import Swal from "sweetalert2"
 
 const Records = () => {
@@ -76,17 +76,6 @@ const Records = () => {
     // Estado que guarda la solcitud compora y venta (Money Changer)
     const [detailsRequestMoneyChanger, setDetailsMoneyChanger] = useState({})
 
-    // Estado que contiene el hash de pago en Compra (Money Changer)
-    const [hashMonyeChangerRequest, setHashMonyeChangerRequest] = useState("")
-
-    // Estado que muestra la ventana de confirmacion de rechazo
-    const [declineConfirm, setDeclineConfirm] = useState(false)
-
-    // Estado que guarda la razon del rechazo de intercambio exchange
-    const [reasonDecline, setReasonDecline] = useState("")
-
-    // Estado que indica si envia notificacion al correo del rechazo de solicitud en Money Changer
-    const [checkSendNotification, setCheckSendNotification] = useState(true)
 
     // Obtiene todas las solicitudes `allExchange` para obtener
     const getAllRequest = () => {
@@ -669,8 +658,11 @@ const Records = () => {
         }
     }
 
-    // Metodo que acepta la solicitud de Money Changer
-    const acceptMoneyChanger = async () => {
+    /**
+     * Metodo que acepta la solicitud de Money Changer
+     * @param {String} hashMonyeChangerRequest - Hash del request
+     */
+    const acceptMoneyChanger = async (hashMonyeChangerRequest) => {
         try {
             setLoaderPetition(true)
 
@@ -704,7 +696,6 @@ const Records = () => {
                         throw data.message
                     } else if (data.response === "success") {
                         // Verificamos que el servidor retorne la confirmacion
-                        setHashMonyeChangerRequest("")
                         setMoneyChagerRequestModal(false)
 
                         Swal.fire({
@@ -817,7 +808,10 @@ const Records = () => {
 
     }
 
-    // Metodo que ejecuta el rechazo de un intercambio de moneda
+    /**
+     * Metodo que ejecuta el rechazo de un intercambio de moneda
+     * @param {String} reasonDecline 
+     */
     const declineExchangeRequest = async (reasonDecline) => {
         try {
             if (reasonDecline.length < 10) {
@@ -865,13 +859,15 @@ const Records = () => {
             Swal.fire("Ha ocurrido un errro", error.toString(), "error")
         } finally {
             setLoaderPetition(false)
-
-            setDeclineConfirm(false)
         }
     }
 
-    // Metodo que ejecuta el rechazo de una solicitud de money changer
-    const declineMoneyChangerRequest = async () => {
+    /**
+     * Metodo que ejecuta el rechazo de una solicitud de money changer
+     * @param {String} reasonDecline 
+     * @param {Boolean} checkSendNotification 
+     */
+    const declineMoneyChangerRequest = async (reasonDecline, checkSendNotification) => {
         try {
             setLoaderPetition(true)
 
@@ -891,8 +887,6 @@ const Records = () => {
                     } else if (data.response === "success") {
                         // Verificamos si se rechazo correctamente
                         setReasonDecline("")
-
-                        setDeclineConfirm(false)
 
                         setMoneyChagerRequestModal(false)
 
@@ -1302,121 +1296,9 @@ const Records = () => {
 
             {
                 showRecord &&
-                <Modal onClose={e => setShowRecord(false)}>
-                    <div className="content-modal request">
-
-                        {
-                            loaderPetition &&
-                            <ActivityIndicator size={48} />
-                        }
-
-                        {
-                            !loaderPetition &&
-                            <>
-                                <div className="content-col">
-                                    <div className="col">
-                                        <h2>Detalles</h2>
-                                        <div className="row">
-                                            <span className="name">Nombre</span>
-                                            <span className="value">{dataRecord.name}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Correo</span>
-                                            <span className="value">{dataRecord.email}</span>
-                                        </div>
-
-
-                                        <div className="row">
-                                            <span className="name">Pais</span>
-                                            <span className="value">{dataRecord.country}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Telefono</span>
-                                            <span className="value">{dataRecord.phone}</span>
-                                        </div>
-
-                                        <div className="row color">
-                                            <span className="name">Sponsor</span>
-                                            {
-                                                dataRecord.email_sponsor !== null &&
-                                                < span className="value">{dataRecord.email_sponsor}</span>
-                                            }
-
-                                            {
-                                                dataRecord.email_sponsor === null &&
-                                                < span className="value">
-                                                    <i>SIN SPONSOR</i>
-                                                </span>
-                                            }
-                                        </div>
-
-                                    </div>
-
-                                    <div className="col">
-                                        <div className="rows border-bottom">
-                                            <div className="header">
-                                                <span className={`status ${dataRecord.amount_btc !== null ? 'active' : 'inactive'}`}>
-                                                    {dataRecord.amount_btc !== null ? 'Activo' : 'Inactivo'}
-                                                </span>
-                                                <h2>Plan en Bitcoin</h2>
-                                            </div>
-
-                                            <div className="row">
-                                                <span className="name">Monto Actual</span>
-                                                {
-                                                    dataRecord.amount_btc !== null
-                                                        ? <span className="value">{dataRecord.amount_btc} BTC</span>
-                                                        : <span className="value"> <i>SIN MONTO</i> </span>
-                                                }
-                                            </div>
-
-                                            <div className="row">
-                                                <span className="name">Wallet</span>
-                                                <span className="value copy" onClick={_ => copyData(dataRecord.wallet_btc)}>{dataRecord.wallet_btc}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="rows border-bottom">
-                                            <div className="header">
-                                                <span className={`status ${dataRecord.amount_eth !== null ? 'active' : 'inactive'}`}>
-                                                    {dataRecord.amount_eth !== null ? 'Activo' : 'Inactivo'}
-                                                </span>
-                                                <h2>Plan en Ethereum</h2>
-                                            </div>
-
-                                            <div className="row">
-                                                <span className="name">Monto Actual</span>
-                                                {
-                                                    dataRecord.amount_eth !== null
-                                                        ? <span className="value">{dataRecord.amount_eth} ETH</span>
-                                                        : <span className="value"> <i>SIN MONTO</i> </span>
-                                                }
-                                            </div>
-
-                                            <div className="row">
-                                                <span className="name">Wallet</span>
-                                                <span className="value copy" onClick={_ => copyData(dataRecord.wallet_eth)}>{dataRecord.wallet_eth}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div className="buttons">
-                                    <button className="button large" onClick={e => setShowRecord(false)}>
-                                        cerrar
-                                    </button>
-
-                                    <Link to={`/reports/${dataRecord.id}`} className="button large secondary">
-                                        Generar Reporte
-                                    </Link>
-                                </div>
-                            </>
-                        }
-                    </div>
-                </Modal>
+                <ModalRecord
+                    data={dataRecord}
+                    onClose={_ => setShowRecord(false)} />
             }
 
             {
@@ -1440,204 +1322,23 @@ const Records = () => {
             }
 
             {
-                !showExchangeRequest &&
+                showExchangeRequest &&
                 <ModalExchangeRequest
                     data={detailsRequestExchange}
                     loader={loaderPetition}
                     onClose={_ => setExchangeRequestModal(false)}
-                    onAccept={acceptExhangeRequest}
-                    onDecline={declineExchangeRequest} />
+                    onAccept={(hashExchangeRequest) => acceptExhangeRequest(hashExchangeRequest)}
+                    onDecline={(reasonDecline) => declineExchangeRequest(reasonDecline)} />
             }
 
             {
                 showMoneyChagerRequest &&
-                <Modal onClose={e => setMoneyChagerRequestModal(false)}>
-                    <div className="content-modal exchange">
-                        {
-                            loaderPetition &&
-                            <ActivityIndicator size={48} />
-                        }
-
-                        {
-                            (!loaderPetition && detailsRequestMoneyChanger !== null && !declineConfirm) &&
-                            <>
-                                <div className="content-col">
-                                    <div className="col">
-                                        {
-                                            detailsRequestMoneyChanger.type === "buy" &&
-                                            <h2>Detalles de Compra</h2>
-                                        }
-
-                                        {
-                                            detailsRequestMoneyChanger.type === "sell" &&
-                                            <h2>Detalles de Venta</h2>
-                                        }
-
-                                        {
-                                            (detailsRequestMoneyChanger.type !== "sell" && detailsRequestMoneyChanger.type !== "buy") &&
-                                            <h2>Detalles general</h2>
-                                        }
-
-                                        <div className="row">
-                                            <span className="name">Solicitud Procesada</span>
-                                            <span className="value">{moment(detailsRequestMoneyChanger.date).fromNow()}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Moneda</span>
-                                            <span className="value">{detailsRequestMoneyChanger.coin_name}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Precio moneda</span>
-                                            <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.price_coin)}>
-                                                $ {detailsRequestMoneyChanger.price_coin}
-                                            </span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Correo Airtm</span>
-                                            <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.email_airtm)}>{detailsRequestMoneyChanger.email_airtm}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="col">
-                                        <h2>Detalle de Transaccion</h2>
-
-                                        {
-                                            detailsRequestMoneyChanger.manipulation_id !== null &&
-                                            <div className="row">
-                                                <span className="name">ID de manipulacion</span>
-                                                <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.manipulation_id)}>{detailsRequestMoneyChanger.manipulation_id}</span>
-                                            </div>
-                                        }
-
-                                        {
-                                            detailsRequestMoneyChanger.wallet !== null &&
-                                            <div className="row">
-                                                <span className="name">Wallet</span>
-                                                <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.wallet)}>{detailsRequestMoneyChanger.wallet}</span>
-                                            </div>
-                                        }
-
-
-                                        <div className="row">
-                                            {
-                                                detailsRequestMoneyChanger.type === "buy" &&
-                                                <span className="name">Monto (USD) <b>A RECIBIR</b></span>
-                                            }
-
-                                            {
-                                                detailsRequestMoneyChanger.type === "sell" &&
-                                                <span className="name">Monto (USD) <b>A ENVIAR</b></span>
-                                            }
-
-                                            {
-                                                (detailsRequestMoneyChanger.type !== "sell" && detailsRequestMoneyChanger.type !== "buy") &&
-                                                <span className="name">Monto (USD)</span>
-                                            }
-                                            <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.amount_usd)}>
-                                                $ {WithDecimals(detailsRequestMoneyChanger.amount_usd)}
-                                            </span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Fracciones</span>
-                                            <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.amount_fraction)}>{detailsRequestMoneyChanger.amount_fraction}</span>
-                                        </div>
-
-                                        {
-                                            detailsRequestMoneyChanger.hash === null &&
-                                            <div className="row">
-                                                <span className="name">Hash de Pago</span>
-
-                                                <input
-                                                    type="text"
-                                                    value={hashMonyeChangerRequest}
-                                                    onChange={e => setHashMonyeChangerRequest(e.target.value)}
-                                                    placeholder="Hash de Transaccion"
-                                                    className="text-input" />
-                                            </div>
-                                        }
-
-                                        {
-                                            detailsRequestMoneyChanger.hash !== null &&
-                                            <div className="row">
-                                                <span className="name">Hash de transaccion</span>
-                                                <span className="value copy" onClick={_ => copyData(detailsRequestMoneyChanger.hash)}>{detailsRequestMoneyChanger.hash}</span>
-                                            </div>
-                                        }
-
-                                        {
-                                            detailsRequestMoneyChanger.manipulation_id === null &&
-                                            <div className="row">
-                                                <span className="name">ID de manipulacion</span>
-
-                                                <input
-                                                    type="text"
-                                                    value={hashMonyeChangerRequest}
-                                                    onChange={e => setHashMonyeChangerRequest(e.target.value)}
-                                                    placeholder="ID de manipulacion"
-                                                    className="text-input" />
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-
-                                <div className="buttons">
-                                    <button className="button large" onClick={_ => setDeclineConfirm(true)}>
-                                        Rechazar
-                                    </button>
-
-                                    <button className="button large secondary" onClick={acceptMoneyChanger}>
-                                        Aceptar
-                                    </button>
-                                </div>
-                            </>
-                        }
-
-                        {
-                            (declineConfirm && !loaderPetition) &&
-                            <div className="confirm-decline">
-                                <h1>Rechazar Solicitud de intercambio</h1>
-
-                                <div className="row-reason">
-                                    <div className="sub-row">
-                                        <span className="legend-decline">
-                                            Describa la razon de rechazo ({reasonDecline.length})
-                                        </span>
-
-                                        <div className="content-check">
-                                            <label htmlFor="check-send-email-decline">Enviar notificación</label>
-                                            <input
-                                                checked={checkSendNotification}
-                                                onChange={_ => setCheckSendNotification(!checkSendNotification)}
-                                                type="checkbox"
-                                                id="check-send-email-decline" />
-                                        </div>
-                                    </div>
-
-                                    <textarea
-                                        className="text-input"
-                                        placeholder="Razon de rechazo"
-                                        value={reasonDecline}
-                                        rows="5"
-                                        onChange={e => setReasonDecline(e.target.value)} />
-                                </div>
-
-                                <div className="buttons">
-                                    <button className="button large" onClick={e => setDeclineConfirm(false)}>
-                                        Cancelar
-                                    </button>
-
-                                    <button onClick={declineMoneyChangerRequest} className="button large secondary">
-                                        Rechazar
-                                    </button>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </Modal>
+                <ModalMoneyChangerRequest
+                    data={detailsRequestMoneyChanger}
+                    loader={loaderPetition}
+                    onClose={_ => setMoneyChagerRequestModal(false)}
+                    onAccept={(hashMoneyChangerRequest) => acceptMoneyChanger(hashMoneyChangerRequest)}
+                    onDecline={(reasonDecline, checkSendNotification) => declineMoneyChangerRequest(reasonDecline, checkSendNotification)} />
             }
 
         </div >
