@@ -17,6 +17,7 @@ const NavigationBar = () => {
 
             <div className="content-links">
                 <Link to="/" className={(location === '#/') ? 'active' : ''}>Registros</Link>
+                <Link to="/comissions" className={(location === '#/comissions') ? 'active' : ''}>Comisiones</Link>
                 <Link to="/reports" className={(location === '#/reports') ? 'active' : ''}>Reporte de pago</Link>
                 <Link to="/mailing" className={(location === '#/mailing') ? 'active' : ''}>Correo</Link>
                 <Link to="/logs" className={(location === '#/logs') ? 'active' : ''}>Consola</Link>

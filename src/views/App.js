@@ -11,6 +11,7 @@ import { DELETESTORAGE, SETSTORAGE, DELETSOCKET, SETSOCKET } from '../store/Acti
 import Login from './Login/Login'
 import Records from './Records/Records'
 import Report from './Report/Report'
+import Comissions from './Comissions/Comissions'
 import ReportDetail from './ReportDetail/ReportDetail'
 import Logs from './Logs/Logs'
 import Mailing from './Mail/Mail'
@@ -73,6 +74,7 @@ const App = () => {
                 <>
                     <Switch>
                         <Route path="/" exact component={Records} />
+                        <Route path="/comissions" component={Comissions}/>
                         <Route path="/reports" exact component={Report} />
                         <Route path="/reports/:id" exact component={ReportDetail} />
                         <Route path="/logs" exact component={Logs} />
