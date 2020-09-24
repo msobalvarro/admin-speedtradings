@@ -51,173 +51,66 @@ const ModalUpgrade = ({ data=null, onClose=_=>{}, onAccept=_=>{}, onDecline=_=>{
                     !loader && data !== null &&
                     <>
                         <div className="content-col">
-                            <div className="col">
+                            <div className="col body">
                                 <h2>Detalles de solicitud</h2>
 
-                                <div className="row">
-                                    <span className="name">Nombre</span>
-                                    <span className="value">{data.name}</span>
-                                </div>
-
-                                <div className="row">
-                                    <span className="name">Correo</span>
-                                    <span className="value">{data.email}</span>
-                                </div>
-
-                                <div className="row">
-                                    {
-                                        data.email_airtm !== null
-                                            ? <span className="name">Id de manipulacion</span>
-                                            : <span className="name">Hash de transaccion</span>
-                                    }
-
-                                    <span className="value copy" onClick={_ => copyData(data.hash)}>{data.hash}</span>
-                                </div>
-
-                                {
-                                    (data.aproximate_amount !== null) &&
-
-                                    <>
-                                        <div className="row">
-                                            <span className="name">Deposito aproximado</span>
-                                            <span className="value">$ {data.aproximate_amount}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">Correo de transaccion</span>
-                                            <span className="value">{data.email_airtm}</span>
-                                        </div>
-                                    </>
-                                }
-
-                                <div className="row">
-                                    <span className="name">Monto Actual</span>
-                                    <span className="value">
-                                        {data.current_amount} {data.id_currency === 1 && 'BTC'} {data.id_currency === 2 && 'ETH'}
-                                    </span>
-                                </div>
-
-                                <div className="row">
-                                    <span className="name">Monto a Sumar</span>
-                                    <span className="value">
-                                        {data.amount_requested} {data.id_currency === 1 && 'BTC'} {data.id_currency === 2 && 'ETH'}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="col sponsors-col">
-                                <h2>Sponsor</h2>
-
-                                <div className="sponsor-container">
-                                    {
-                                        data.sponsors.map(item =>(
-                                            <div className="sponsor-card">
-                                                <div className="row sponsor-info">
-                                                    <div>
-                                                        <span className="name">Nombre</span>
-                                                        <span className="value">{item.name}</span>
-                                                    </div>
-
-                                                    <div>
-                                                        <span className="name">Comision por Upgrade</span>
-                                                        <span className="value">{item.amount * 0.05}</span>
-                                                    </div>
-                                                </div>
-
-                                                {
-                                                    item.hash !== null &&
-                                                    <>
-                                                        <div className="row">
-                                                            <span className="name">Wallet en</span>
-                                                            <span className="value">{item.wallet}</span>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <span className="name">Hash de transaccion</span>
-                                                            <input
-                                                                type="text"
-                                                                value={hashForSponsor}
-                                                                onChange={e => setHashForSponsor(e.target.value)}
-                                                                placeholder="Transaccion a sponsor"
-                                                                className="text-input" />
-                                                        </div>
-                                                    </>
-                                                }
-
-                                                {
-                                                    item.hash === null &&
-                                                    <>
-                                                        <div className="row">
-                                                            <span className="name">Hash de transacción</span>
-                                                            <span className="value">{item.wallet}</span>
-                                                        </div>
-
-                                                        <div className="row">
-                                                            <span className="pay-with-alypay">
-                                                                &#10004; Pagado con AlyPay
-                                                            </span>
-                                                        </div>
-                                                    </>
-                                                }
-                                            </div>
-                                        ))
-                                    }
-                                </div>
-                            </div>
-
-                            {/*<div className={`col${data.id_sponsor === null ? ' empty' : ''}`}>
-                                {
-                                    data.id_sponsor === null &&
-                                    <h2>Sin Sponsor</h2>
-                                }
-
-                                {
-                                    data.id_sponsor !== null &&
-                                    <>
-                                        <h2>Sponsor</h2>
-
+                                <div className="container">
+                                    <div className="col">
                                         <div className="row">
                                             <span className="name">Nombre</span>
-                                            <span className="value">{data.sponsor_name}</span>
+                                            <span className="value">{data.name}</span>
+                                        </div>
+                                        
+                                        <div className="row">
+                                            {
+                                                data.email_airtm !== null
+                                                ? <span className="name">Id de manipulacion</span>
+                                                : <span className="name">Hash de transaccion</span>
+                                            }
+
+                                            <span className="value copy" onClick={_ => copyData(data.hash)}>{data.hash}</span>
                                         </div>
 
-                                        <div className="row">
-                                            <span className="name">Correo Electronico</span>
-                                            <span className="value">{data.sponsor_email}</span>
-                                        </div>
+                                        {
+                                            (data.aproximate_amount !== null) &&
+        
+                                            <>
+                                                <div className="row">
+                                                    <span className="name">Deposito aproximado</span>
+                                                    <span className="value">$ {data.aproximate_amount}</span>
+                                                </div>
+        
+                                                <div className="row">
+                                                    <span className="name">Correo de transaccion</span>
+                                                    <span className="value">{data.email_airtm}</span>
+                                                </div>
+                                            </>
+                                        }
 
                                         <div className="row">
-                                            <span className="name">Comision por Upgrade</span>
-                                            <span className="value">{data.amount_requested * 0.05}</span>
-                                        </div>
-
-                                        <div className="row">
-                                            <span className="name">
-                                                Wallet en {data.id_currency === 1 && 'BTC'} {data.id_currency === 2 && 'ETH'}
+                                            <span className="name">Monto Actual</span>
+                                            <span className="value">
+                                                {data.current_amount} {data.id_currency === 1 && 'BTC'} {data.id_currency === 2 && 'ETH'}
                                             </span>
+                                        </div>
+                                    </div>
 
-                                            <span className="value copy" onClick={_ => {
-                                                copyData(data.id_currency === 1 ? data.sponsor_wallet_btc : data.sponsor_wallet_eth)
-                                            }}>
-                                                {data.id_currency === 1 && data.sponsor_wallet_btc}
-                                                {data.id_currency === 2 && data.sponsor_wallet_eth}
-                                            </span>
+                                    <div className="col">
+                                        <div className="row">
+                                            <span className="name">Correo</span>
+                                            <span className="value">{data.email}</span>
                                         </div>
 
                                         <div className="row">
-                                            <span className="name">Hash de transaccion</span>
-                                            <input
-                                                type="text"
-                                                value={hashForSponsor}
-                                                onChange={e => setHashForSponsor(e.target.value)}
-                                                placeholder="Transaccion a sponsor"
-                                                className="text-input" />
+                                            <span className="name">Monto a Sumar</span>
+                                            <span className="value">
+                                                {data.amount_requested} {data.id_currency === 1 && 'BTC'} {data.id_currency === 2 && 'ETH'}
+                                            </span>
                                         </div>
-                                    </>
-                                }
-                            </div>*/}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
 
                         <div className="buttons">
                             <button className="button large" onClick={_ => onDecline()}>
@@ -226,7 +119,7 @@ const ModalUpgrade = ({ data=null, onClose=_=>{}, onAccept=_=>{}, onDecline=_=>{
 
                             <button className="button large secondary" onClick={_ => onAccept(hashForSponsor)}>
                                 Aprobar
-                        </button>
+                            </button>
                         </div>
                     </>
                 }

@@ -1118,7 +1118,7 @@ const Records = () => {
 
             {
                 // Modal de detalle para las solicitudes de upgrades
-                !showUpgrade &&
+                showUpgrade &&
                 <ModalUpgrade
                     data={dataUpgrade}
                     loader={loaderPetition}
