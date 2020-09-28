@@ -213,37 +213,43 @@
     }
 
     .editor {
-      #cke_editor1, .cke_inner, .cke_reset, [role="presentation"] {
-        background-color: transparent !important;
-        border: none !important;
-      }
-
-      .cke_reset_all, .cke_reset_all *, .cke_reset_all a, .cke_reset_all textarea {
+      .ql-toolbar {
         color: #000 !important;
         background-color: $colorSecondary;
         border-radius: 7px;
-        margin: 0;
-        margin-right: 5px;
-      }
+        margin-bottom: 1rem;
 
-      .cke_button {
-        transition: background-color .25s;
+        .ql-formats {
+          color: #000;
+          border-right: 1px solid darken($colorSecondary, 30);
+          padding: 0;
+          margin: 0;
+          padding-right: .5rem;
+          margin-right: .5rem;
 
-        &:hover {
-          background-color: darken($colorSecondary, 10) !important;
+          .ql-expanded {
+            color: #000;
+
+            .ql-picker-label {
+              color: darken($colorSecondary, 50);
+            }
+          }
         }
       }
 
-      .cke_button_on {
-        background-color: darken($colorSecondary, 30) !important;
-      }
+      .ql-container {
+        margin-bottom: 1.5rem;
+        border: none;
 
-      .cke_toolbar {
-        margin-bottom: 5px;
-      }
-
-      iframe {
-        border-radius: 7px;
+        .ql-editor {
+          background-color: #161616;
+          color: #fff;
+          min-height: 150px;
+          max-height: 250px;
+          margin-bottom: 1.5rem;
+          border-radius: 7px;
+          border: none;
+        }
       }
     }
   }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useReducer } from "react"
-import CKEditor4 from "ckeditor4-react"
+import ReactQuill from "react-quill"
+import "../../static/react-quill-snow.css"
 import "./Mail.scss"
 
 // Constant and redux store
@@ -49,6 +50,32 @@ const reducer = (state, action) => {
         [action.type]: action.payload
     }
 }
+
+// Lista de los elementos a mostrar en la barra de herramientas del editor
+var toolbarOptions = [
+    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['blockquote', 'code-block'],
+  
+    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+    [{ 'direction': 'rtl' }],                         // text direction
+  
+    [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+  
+    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+    [{ 'font': [] }],
+    [{ 'align': [] }],
+  
+    ['clean']                                         // remove formatting button
+  ];
+
+// Se establecen cuales serán las modificaciones de formato que permitirá el editor
+const toolbarFormats = [
+    'header', 'font', 'size', 'bold', 'italic', 'underline', 'strike', 'blockquote', 'list', 'bullet', 'indent', 'link', 'image', 'video', 'color', 'direction', 'script', 'background', 'align'
+]
 
 
 const Mail = () => {
@@ -217,14 +244,16 @@ const Mail = () => {
         }
     };
 
+    // Realiza el filtro de las sugerencias a medida que se va escribiendo en el campo de remitente
     const emailSuggestionFilter = (item => {
         if(state.searchUser.length === 0) return item
 
-        const { email } = item
+        const { email, fullname } = item
 
         if(
             !mailerToList.map(_item => _item.email).includes(email) &&
-            email.toLowerCase().search(state.searchUser) > -1 
+            (email.toLowerCase().search(state.searchUser) > -1 || 
+             fullname.toLowerCase().search(state.searchUser) > -1)
         ) {
             return item
         }
@@ -253,25 +282,6 @@ const Mail = () => {
         }
 
         return []
-    }
-
-    // Retorna el contenido del correo en forma de plantilla
-    const getEmailTemplate = (content='') => {
-        let _emailContent = `
-        <!DOCTYPE html>
-        <html lang="es" style="background-color: #2d2d2d;">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Admin SpeedTradings Email</title>
-        </head>
-        <body style="padding: 16px; font-size: 16px; color #fff; text-align: center">
-            ${content}
-        </body>
-        </html>
-        `
-
-        return _emailContent
     }
 
     // Función para reiniciar los campos 
@@ -309,7 +319,7 @@ const Mail = () => {
             setLoader(true)
 
             // Vaidamos si hay correos que enviar
-            if (emailSelected.length === 0) {
+            if (mailerToList.length === 0) {
                 throw String("Seleccione al menos un correo")
             }
 
@@ -326,8 +336,9 @@ const Mail = () => {
             const emails = await mailerToList.map(item => item.email)
 
             const dataSend = {
-                html: getEmailTemplate(state.emailContent),
+                html: state.emailContent,
                 subject: state.subject,
+                sender: state.mailerFrom,
                 emails
             }
 
@@ -489,9 +500,15 @@ const Mail = () => {
                 </div>
 
                 <div className="editor">
-                    <CKEditor4 
-                        data={state.emailContent}
-                        onChange={e => dispatch({ type: "emailContent", payload: e.editor.getData() })}/>
+                        <ReactQuill 
+                            theme={"snow"}
+                            onChange={html => dispatch({ type: "emailContent", payload: html })}
+                            value={state.emailContent}
+                            modules={{toolbar: toolbarOptions}}
+                            formats={toolbarFormats}
+                            bounds={'.app'}
+                            placeholder={""}
+                            />
                 </div>
 
                 <div className="email-buttons">
