@@ -17,8 +17,8 @@ const devPort = ":8080"
 
 export const keySecret = "testDevelop"
 
- export const urlServer = "https://ardent-medley-272823.appspot.com"
-//export const urlServer = "http://127.0.0.1" + devPort
+//export const urlServer = "https://ardent-medley-272823.appspot.com"
+export const urlServer = "http://192.168.11.238:9000"
 
 export const urlServerSocket = urlServer.replace("https", "wss").replace("http", "ws")
 // export const urlServerSocket = urlServer
@@ -58,6 +58,11 @@ export const copyData = (str = "") => {
 export const setTittleDOM = (title = "Back Office") => {
     document.title = title
 }
+
+/**
+ * Return a unique string to use how component key into react
+ * */
+export const randomKey = _ => ('_' + Math.random().toString(36).substr(2, 9))
 
 /**Config Axios for petition automatic */
 export const Petition = Axios.create({
