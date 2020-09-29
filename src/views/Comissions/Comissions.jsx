@@ -1,21 +1,55 @@
 import React, { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
 import "./Comissions.scss"
 
 // Import components
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
+import Swal from "sweetalert2"
 
-import dataset from "./data"
+// Import utils
+import { Petition, randomKey } from "../../utils/constanst"
+
 
 const Comissions = () => {
+    // Credenciales de acceso para realizar las peticiones
+    const { token } = useSelector((storage) => storage.globalStorage)
+    const header = {
+        headers: {
+            "x-auth-token": token
+        }
+    }
+
+    // Estado para almacenar la lista  de comisiones
     const [data, setData] = useState([])
+
+    // Estado para almacenar los datos de un detalle de comision
     const [dataDetail, setDataDetail] = useState({})
 
+    // Estado para controlar la visibilidad del indicador de carga
+    const [loader, setLoader] = useState(false)
+
+    // Función para obtener los datos de la lista de comisiones
+    const getComissionsData = async _ => {
+        try {
+            setLoader(true)
+
+            const { data } = await Petition.get('/admin/comission', header)
+
+            if(data.error) {
+                throw String(data.message)
+            }
+
+            setData(data)
+        } catch (error) {
+            Swal.fire('Ha ocurrido un error', error, 'error')
+        } finally {
+            setLoader(false)
+        }
+    }
+
     useEffect(_ => {
-        setTimeout(_ => {
-            setData(dataset)
-            setDataDetail(dataset[0])
-        }, 1000)
+        getComissionsData()
     }, [])
 
     return (
@@ -38,12 +72,17 @@ const Comissions = () => {
                     </div>
 
                     {
-                        data.length === 0 &&
+                        data.length === 0 && loader &&
                         <ActivityIndicator size={46}/>
                     }
 
                     {
-                        data.length > 0 &&
+                        data.length === 0 && !loader &&
+                        <p className="empty-detail">No hay comisiones para mostrar</p>
+                    }
+
+                    {
+                        data.length > 0 && !loader &&
                         <div className="table">
                             <div className="header">
                                 <span>Nombre</span>
@@ -54,11 +93,13 @@ const Comissions = () => {
                             <div className="body">
                                 {
                                     data.map(item => (
-                                        <div onClick={_ => setDataDetail(item)} className="row">
-                                            <span>{item.name}</span>
+                                        <div
+                                            key={randomKey()}
+                                            onClick={_ => setDataDetail(item)} className="row">
+                                            <span>{item.sponsor}</span>
                                             <span>{item.coin}</span>
                                             <span>{item.amount} {item.symbol}</span>
-                                            <span className={item.status ? 'ready' : 'pending'}></span>
+                                            <span className={item.active ? 'ready' : 'pending'}></span>
                                         </div>
                                     ))
                                 }
@@ -69,9 +110,13 @@ const Comissions = () => {
 
                 <div className="column Comissions-detail">
                     <h2>Vista previa de Sponsor</h2>
+                    {
+                        loader &&
+                        <ActivityIndicator size={24}/>
+                    }
 
                     {
-                        Object.keys(dataDetail).length === 0 &&
+                        Object.keys(dataDetail).length === 0 && !loader &&
                         <p className="empty-detail">No hay ningún elemento seleccionado</p>
                     }
 

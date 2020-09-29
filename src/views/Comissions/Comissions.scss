@@ -81,15 +81,17 @@
                     width: 30%;
                     padding: .5rem;
                     text-align: center;
+                    box-sizing: border-box;
                     cursor: pointer;
 
                     &:first-child {
+                        width: 55%;
                         text-align: left;
                     }
 
                     &:last-child {
                         text-align: right;
-                        width: 10%;
+                        width: 90px;
                     }
 
                     &.ready, &.pending {
