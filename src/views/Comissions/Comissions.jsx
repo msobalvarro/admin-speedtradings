@@ -26,13 +26,17 @@ const Comissions = () => {
     // Estado para almacenar los datos de un detalle de comision
     const [dataDetail, setDataDetail] = useState({})
 
+    // Estado para indicar sponsor se muestra en el detalle y así cambiar el color de su fila dentro de la tabla
+    const [activeDetail, setActiveDetail] = useState(-1)
+
     // Estado para controlar la visibilidad del indicador de carga
-    const [loader, setLoader] = useState(false)
+    const [loaderList, setLoaderList] = useState(false)
+    const [loaderDetail, setLoaderDetail] = useState(false)
 
     // Función para obtener los datos de la lista de comisiones
     const getComissionsData = async _ => {
         try {
-            setLoader(true)
+            setLoaderList(true)
 
             const { data } = await Petition.get('/admin/comission', header)
 
@@ -44,7 +48,30 @@ const Comissions = () => {
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error, 'error')
         } finally {
-            setLoader(false)
+            setLoaderList(false)
+        }
+    }
+
+    /**
+     * Función para obetener los detalles de un sponsor
+     * @param {Number} id - Id del sponsor 
+     */
+    const getComissionDetailData = async (id) => {
+        try {
+            setLoaderDetail(true)
+
+            const { data } = await Petition.get(`/admin/comission/${id}`, header)
+
+            if(data.error) {
+                throw String(data.message)
+            }
+
+            setDataDetail(data)
+            setActiveDetail(id)
+        } catch (error) {
+            Swal.fire('Ha ocurrido un error', error, 'error')
+        } finally {
+            setLoaderDetail(false)
         }
     }
 
@@ -72,17 +99,17 @@ const Comissions = () => {
                     </div>
 
                     {
-                        data.length === 0 && loader &&
+                        loaderList &&
                         <ActivityIndicator size={46}/>
                     }
 
                     {
-                        data.length === 0 && !loader &&
+                        data.length === 0 && !loaderList &&
                         <p className="empty-detail">No hay comisiones para mostrar</p>
                     }
 
                     {
-                        data.length > 0 && !loader &&
+                        data.length > 0 && !loaderList &&
                         <div className="table">
                             <div className="header">
                                 <span>Nombre</span>
@@ -95,7 +122,8 @@ const Comissions = () => {
                                     data.map(item => (
                                         <div
                                             key={randomKey()}
-                                            onClick={_ => setDataDetail(item)} className="row">
+                                            onClick={_ => getComissionDetailData(item.id)}
+                                            className={`row ${item.id === activeDetail ? 'active' : ''}`}>
                                             <span>{item.sponsor}</span>
                                             <span>{item.coin}</span>
                                             <span>{item.amount} {item.symbol}</span>
@@ -111,12 +139,12 @@ const Comissions = () => {
                 <div className="column Comissions-detail">
                     <h2>Vista previa de Sponsor</h2>
                     {
-                        loader &&
-                        <ActivityIndicator size={24}/>
+                        loaderDetail &&
+                        <ActivityIndicator size={46}/>
                     }
 
                     {
-                        Object.keys(dataDetail).length === 0 && !loader &&
+                        Object.keys(dataDetail).length === 0 && !loaderDetail &&
                         <p className="empty-detail">No hay ningún elemento seleccionado</p>
                     }
 
@@ -142,7 +170,7 @@ const Comissions = () => {
                                     <div className="detail-item">
                                         <span className="label">Comissión</span>
                                         <span className="value">
-                                            {dataDetail.comission} % | {(dataDetail.amount * dataDetail.comission) / 100} {dataDetail.symbol}
+                                            {dataDetail.percertage} % | {dataDetail.comission_amount} {dataDetail.symbol}
                                         </span>
                                     </div>
                                 </div>
@@ -154,7 +182,7 @@ const Comissions = () => {
                                     </div>
                                     <div className="detail-item">
                                         <span className="label">Estado</span>
-                                        <span className={`value ${dataDetail.status ? 'ready' : 'pending'}`}>
+                                        <span className={`value ${dataDetail.active ? 'ready' : 'pending'}`}>
                                             {
                                                 dataDetail.status === 1
                                                 ? 'Pagado'

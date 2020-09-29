@@ -106,7 +106,7 @@
                 border-color: currentColor;
             }
 
-            .row:hover {
+            .row:hover, .row.active {
                 background-color: lighten($colorMain, 10);
             }
         }
@@ -186,6 +186,14 @@
                     height: auto;
                     padding: 0;
                 }
+            }
+
+            .hash {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                min-width: 350px;
+                max-width: 500px;
             }
 
             .detail-buttons {
