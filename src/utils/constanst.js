@@ -18,7 +18,8 @@ const devPort = ":8080"
 export const keySecret = "testDevelop"
 
 //export const urlServer = "https://ardent-medley-272823.appspot.com"
-export const urlServer = "http://192.168.11.238:9000"
+//export const urlServer = "http://192.168.11.238:9000"
+export const urlServer = "http://192.168.11.224:8084"
 
 export const urlServerSocket = urlServer.replace("https", "wss").replace("http", "ws")
 // export const urlServerSocket = urlServer
@@ -36,18 +37,20 @@ export const Round = (number = 0) => Math.round(number * 100) / 100
 
 /**Copy string */
 export const copyData = (str = "") => {
-    navigator.clipboard.writeText(str).catch(_ => {
-        return false
-    })
+    let input = document.createElement('input');
 
+    input.setAttribute('value', str);
+    document.body.appendChild(input);
+    input.select();
 
-    copy(str, {
-        message: "Dato copiado",
-        onCopy: () => Swal.fire("Listo", "Copiado a portapapeles", "success")
-    })
+    let result = document.execCommand('copy');
+    document.body.removeChild(input);
 
-
-    // Swal.fire('Direccion Wallet copiada', '', 'success')
+    if(result) {
+        Swal.fire("¡Listo!", "Copiado a portapapeles", "success")
+    } else {
+        Swal("¡Opps!", "Error al copiar al portapapeles", "error")
+    }
 }
 
 /**
