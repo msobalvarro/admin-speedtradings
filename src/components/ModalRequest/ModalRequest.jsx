@@ -18,7 +18,7 @@ import { copyData } from "../../utils/constanst"
 const ModalRequest = ({ data=null, onClose=_=>{}, onAccept=_=>{}, onDecline=_=>{}, loader=false }) => {
 
     return (
-        <Modal onClose={_ => onClose()}>
+        <Modal onClose={_ => onClose()} className="ModalRequest">
             <div className="content-modal request">
                 {
                     loader &&

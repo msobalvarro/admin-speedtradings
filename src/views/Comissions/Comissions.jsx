@@ -76,7 +76,7 @@ const Comissions = () => {
             if(data.error) {
                 throw String(data.message)
             }
-
+console.log(data)
             setDataDetail(data)
             setActiveDetail(id)
             setTransactionHash('')
@@ -95,13 +95,12 @@ const Comissions = () => {
      */
     const removeItemList = (list, removeItem) => {
         list = Array.from(list)
-console.log(list)
+
         const indexItem = list.map(item => item.id).indexOf(removeItem)
         
         if(indexItem !== -1 )
             list.splice(indexItem, 1)
 
-            console.log(indexItem, list)
         return list
     }
 
@@ -304,14 +303,25 @@ console.log(list)
                     {
                         Object.keys(dataDetail).length > 0 && !loaderDetail &&
                         <>
-                            <div className="detail-item">
-                                <span className="label">Nombre</span>
-                                <span className="value">{dataDetail.name}</span>
-                            </div>
+                            <div className="detail-section">
+                                <div className="column">
+                                    <div className="detail-item">
+                                        <span className="label">Nombre</span>
+                                        <span className="value">{dataDetail.name}</span>
+                                    </div>
 
-                            <div className="detail-item">
-                                <span className="label">Correo electrónico</span>
-                                <span className="value">{dataDetail.email}</span>
+                                    <div className="detail-item">
+                                        <span className="label">Correo electrónico</span>
+                                        <span className="value">{dataDetail.email}</span>
+                                    </div>
+                                </div>
+
+                                <div className="column">
+                                    <div className="detail-item">
+                                        <span className="label">Nombre referido</span>
+                                        <span className="value">{dataDetail.client}</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="detail-section">
