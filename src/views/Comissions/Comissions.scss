@@ -175,6 +175,29 @@
                         width: 60%;
                     }
                 }
+
+                .alypay-payment {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    span {
+                        display: inline-block;
+                        width: 1.25rem;
+                        line-height: .75rem;
+                        padding: .15rem;
+                        border: 1px solid currentColor;
+                        border-radius: 15px;
+                        margin-right: .5rem;
+                        text-align: center;
+                        color: #fff;
+                    }
+
+                    img {
+                        display: inline-block;
+                        width: 7rem;
+                        margin-left: .5rem;
+                    }
+                }
             }
 
             .detail-section {
@@ -194,6 +217,8 @@
                 white-space: nowrap;
                 min-width: 350px;
                 max-width: 500px;
+                color: $colorSecondary;
+                cursor: pointer;
             }
 
             .detail-buttons {
