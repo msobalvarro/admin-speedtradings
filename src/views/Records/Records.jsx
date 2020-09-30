@@ -464,15 +464,12 @@ const Records = () => {
      * @param {Object} dataRequestItem -  Datos del request a enviar
      * @param {String} hashForSponsor - Hash del request
      */
-    const AcceptRequest = async (dataRequestItem = {}, hashForSponsor) => {
+    const AcceptRequest = async (dataRequestItem = {}) => {
         setLoaderPetition(true)
 
         try {
-            if (dataRequestItem.sponsor_username !== null && hashForSponsor.length === 0) {
-                throw String("El hash de transaccion a sponsor es requerido")
-            }
 
-            await Petition.post('/admin/request/accept', { data: dataRequestItem, hashSponsor: hashForSponsor }, {
+            await Petition.post('/admin/request/accept', { data: dataRequestItem }, {
                 headers: {
                     "x-auth-token": token
                 }
@@ -520,14 +517,11 @@ const Records = () => {
      * @param {Object} dataUpgrade - Datos del upgrade
      * @param {String} hashForSponsor - Hash del upgrade
      */
-    const AcceptUpgrade = async (dataUpgrade, hashForSponsor) => {
+    const AcceptUpgrade = async (dataUpgrade={}) => {
         setLoaderPetition(true)
         try {
-            if (dataUpgrade.sponsor_username !== null && hashForSponsor.length === 0) {
-                throw String("El hash de transaccion a sponsor es requerido")
-            }
 
-            await Petition.post('/admin/upgrades/accept', { data: dataUpgrade, hashSponsor: hashForSponsor }, {
+            await Petition.post('/admin/upgrades/accept', { data: dataUpgrade }, {
                 headers: {
                     "x-auth-token": token
                 }
@@ -1113,7 +1107,7 @@ const Records = () => {
                     loader={loaderPetition}
                     onClose={_ => setShowRequest(false)}
                     onDecline={_ => confirmDecline(dataRequest.id)}
-                    onAccept={(hashForSponsor) => AcceptRequest(dataRequest, hashForSponsor)} />
+                    onAccept={_ => AcceptRequest(dataRequest)} />
             }
 
             {
@@ -1124,7 +1118,7 @@ const Records = () => {
                     loader={loaderPetition}
                     onClose={_ => setShowUpgrade(false)}
                     onDecline={_ => confirmDeclineUpgrade(dataUpgrade.id)}
-                    onAccept={(hashForSponsor) => AcceptUpgrade(dataUpgrade, hashForSponsor)} />
+                    onAccept={_ => AcceptUpgrade(dataUpgrade)} />
             }
 
             {

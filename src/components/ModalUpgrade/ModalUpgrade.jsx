@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import "./ModalUpgrade.scss"
 
 // Import components
@@ -16,30 +16,7 @@ import { copyData } from "../../utils/constanst"
  * @param {Boolean} loader - Estado indicador de carga de los datos
  */
 const ModalUpgrade = ({ data=null, onClose=_=>{}, onAccept=_=>{}, onDecline=_=>{}, loader=false}) => {
-    // Estado que guarda el hash de transaccion al sponsor_email
-    // Cuando un usuario hace una solicitud de inversion
-    const [hashForSponsor, setHashForSponsor] = useState('')
-
-    data.sponsors = [
-        {
-            hash: "hfskjdfhkdsfhksdhfk",
-            name: "Harold Espinoza",
-            amount: 10.099,
-            wallet: "ndfbskjrkhdfsdgfdkj4"
-        },
-        {
-            hash: "hfskjdfhkdsfhksdhfk",
-            name: "Harold Espinoza",
-            amount: 10.099,
-            wallet: "ndfbskjrkhdfsdgfdkj4"
-        },
-        {
-            hash: null,
-            name: "Harold Espinoza",
-            amount: 10.099,
-            wallet: "ndfbskjrkhdfsdgfdkj4"
-        }
-    ]
+ 
     return (
         <Modal onClose={_ => onClose()} className={"upgrade-modal"}>
             <div className="content-modal request">
@@ -117,7 +94,7 @@ const ModalUpgrade = ({ data=null, onClose=_=>{}, onAccept=_=>{}, onDecline=_=>{
                                 Rechazar
                             </button>
 
-                            <button className="button large secondary" onClick={_ => onAccept(hashForSponsor)}>
+                            <button className="button large secondary" onClick={_ => onAccept("ddsnfksdnfksn")}>
                                 Aprobar
                             </button>
                         </div>
