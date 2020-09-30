@@ -95,11 +95,13 @@ const Comissions = () => {
      */
     const removeItemList = (list, removeItem) => {
         list = Array.from(list)
-
+console.log(list)
         const indexItem = list.map(item => item.id).indexOf(removeItem)
-            
-        list.splice(indexItem, 1)
+        
+        if(indexItem !== -1 )
+            list.splice(indexItem, 1)
 
+            console.log(indexItem, list)
         return list
     }
 
@@ -136,16 +138,17 @@ const Comissions = () => {
                 hash: transactionHash.length > 0 ? transactionHash : null
             }
 
-            const { data } = await Petition.post('/admin/commission/accept', dataSend, header)
+            const { data: result } = await Petition.post('/admin/comission/accept', dataSend, header)
 
-            if(data.error) {
-                throw String(data.message)
+            if(result.error) {
+                throw String(result.message)
             }
 
             Swal.fire('Listo', 'Pago aprovado con éxito', 'success')
 
             setData(removeItemList(data, activeDetail))
             setDataDetail({})
+            setActiveDetail(-1)
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error, 'error')
         } finally {
@@ -158,7 +161,7 @@ const Comissions = () => {
         try {
             setLoaderPayment(true)
 
-            const result = await Swal.fire({
+            const response = await Swal.fire({
                 title: "¿Rechazar pago de comisión?",
                 text: "La acción no se puede deshacer",
                 icon: "warning",
@@ -169,7 +172,7 @@ const Comissions = () => {
                 cancelButtonText: 'Cancelar',
             })
 
-            if (result.dismiss) {
+            if (response.dismiss) {
                 return
             }
 
@@ -178,16 +181,17 @@ const Comissions = () => {
                 id: activeDetail
             }
 
-            const { data } = await Petition.post('/admin/commission/decline', dataSend, header)
+            const { data: result } = await Petition.post('/admin/comission/decline', dataSend, header)
 
-            if(data.error) {
-                throw String(data.message)
+            if(result.error) {
+                throw String(result.message)
             }
 
             Swal.fire('Listo', 'Pago rechazado con éxito', 'success')
 
             setData(removeItemList(data, activeDetail))
             setDataDetail({})
+            setActiveDetail(-1)
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error, 'error')
         } finally {
