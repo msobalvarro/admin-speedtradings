@@ -76,7 +76,7 @@ const Comissions = () => {
             if(data.error) {
                 throw String(data.message)
             }
-console.log(data)
+
             setDataDetail(data)
             setActiveDetail(id)
             setTransactionHash('')

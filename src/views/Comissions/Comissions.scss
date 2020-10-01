@@ -19,7 +19,7 @@
             background-color: darken($colorMain, 5);
             font-size: .9rem;
             padding: .5rem 1rem;
-            border-radius: 7px;
+            border-radius: 3px;
             color: darken(#fff, 40)
         }
 
@@ -47,7 +47,7 @@
         }
 
         .column {
-            background-color: $colorMain;
+            background-color: rgba(0, 0, 0, 0.4);
             width: calc(50% - 1.5rem);
             height: 80vh;
             border-radius: 10px;
