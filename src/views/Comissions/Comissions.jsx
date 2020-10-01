@@ -10,6 +10,7 @@ import Swal from "sweetalert2"
 
 // Import utils
 import { Petition, randomKey, copyData } from "../../utils/constanst"
+import moment from "moment"
 
 // Import assets
 import AlypayLogo from "../../static/images/alypay.png"
@@ -76,7 +77,7 @@ const Comissions = () => {
             if(data.error) {
                 throw String(data.message)
             }
-
+console.log(data)
             setDataDetail(data)
             setActiveDetail(id)
             setTransactionHash('')
@@ -320,6 +321,11 @@ const Comissions = () => {
                                     <div className="detail-item">
                                         <span className="label">Nombre referido</span>
                                         <span className="value">{dataDetail.client}</span>
+                                    </div>
+
+                                    <div className="detail-item">
+                                        <span className="label">Fecha</span>
+                                        <span className="value">{moment(dataDetail.date).format('MMM. D YYYY, h:mm a')}</span>
                                     </div>
                                 </div>
                             </div>
