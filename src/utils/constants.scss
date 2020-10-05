@@ -1,3 +1,11 @@
+@import '~@sweetalert2/theme-dark/dark.scss';
+
+.swal2-actions {
+  button {
+    color: #1d1d1d !important;
+  }
+}
+
 // Colors theme
 $backgroundGradient: linear-gradient(
   288deg,

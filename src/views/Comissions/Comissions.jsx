@@ -14,6 +14,7 @@ import moment from "moment"
 
 // Import assets
 import AlypayLogo from "../../static/images/alypay.png"
+import { floor } from "lodash"
 
 
 const Comissions = () => {
@@ -227,6 +228,19 @@ const Comissions = () => {
         return filtered
     }
 
+    /**
+     * Retorna el tiempo restante de las 48 horas para el estado de pago de la comision
+     * @param {Date} _date - Fecha a evaluar 
+     * @return {Number} - Tiempo restante en horas
+     */
+    const getRestTime = (_date) => {
+        let now = moment(new Date())
+        let fromDate = moment(_date)
+        let duration = moment.duration(now.diff(fromDate))
+
+        return floor(48 - duration.asHours(), 0)
+    }
+
     useEffect(_ => {
         getComissionsData()
     }, [])
@@ -329,7 +343,19 @@ const Comissions = () => {
 
                                     <div className="detail-item">
                                         <span className="label">Fecha</span>
-                                        <span className="value">{moment(dataDetail.date).format('MMM. D YYYY, h:mm a')}</span>
+                                        <span className="value">
+                                            {
+                                                moment(dataDetail.date).format('MMM. D YYYY, h:mm a')
+                                            }
+
+                                            {
+                                                moment(new Date()).diff(moment(dataDetail.date), 'hours') < 48
+                                                ? `
+                                                (Restan ${getRestTime(dataDetail.date)} hrs.)
+                                                `
+                                                : ''
+                                            }
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -401,12 +427,12 @@ const Comissions = () => {
                             <div className="detail-buttons">
                                 <button
                                     onClick={onHandleDeclinePayment}
-                                    className="decline">
+                                    className="button decline">
                                     Rechazar &#10005;
                                 </button>
                                 <button
                                     onClick={onHandleAcceptPayment}
-                                    className="confirm">
+                                    className="button confirm">
                                     Aprobar &#10003;
                                 </button>
                             </div>

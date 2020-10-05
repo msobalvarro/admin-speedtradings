@@ -1,16 +1,9 @@
 import jwt from "jwt-simple"
 import Axios from "axios"
-import copy from "copy-to-clipboard"
 import Swal from "sweetalert2"
 
 // Constanst
 const keyStorage = "@storage"
-
-/**
- * Indica en que puerto donde corre el codigo backend 
- * cuando esta en desarollo
- * */
-const devPort = ":8080"
 
 /**Indica en que puerto correra el socket en backend */
 // const portSocket = ":2000"

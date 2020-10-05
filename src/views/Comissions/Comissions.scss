@@ -52,7 +52,8 @@
 
         .column {
             width: calc(50% - 1.5rem);
-            height: 80vh;
+            min-height: 532px;
+            max-height: 550px;
             border-radius: 10px;
             padding: 1rem;
         }
@@ -164,6 +165,8 @@
                 }
 
                 .value {
+                    display: flex;
+                    flex-direction: column;
                     &.ready, &.pending {
                         flex-direction: row-reverse;
                         justify-content: flex-end;
@@ -176,6 +179,15 @@
 
                     &.field-input {
                         width: 60%;
+                    }
+
+                    &.hash {
+                        display: inline-block;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        width: 100%;
+                        cursor: pointer;
                     }
                 }
 
@@ -214,14 +226,9 @@
                 }
             }
 
-            .hash {
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
-                min-width: 350px;
-                max-width: 500px;
-                color: $colorSecondary;
-                cursor: pointer;
+            .field-input {
+                width: 100%;
+                min-width: 100%;
             }
 
             .detail-buttons {
@@ -234,29 +241,19 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    border: none;
-                    outline: none;
-                    border-radius: 25px;
                     font-size: 1rem;
+                    line-height: 1.35;
                     font-weight: bold;
-                    line-height: 1;
-                    width: 150px;
-                    padding: .35rem 0;
                     color: #000;
 
                     &.decline {
                         background-color: $colorRed;
+                        box-shadow: rgba($colorRed, 0.5) 0px 0px 0px 0px;
+                        transition: box-shadow .25s;
 
                         &:hover {
                             background-color: lighten($colorRed, 3);
-                        }
-                    }
-
-                    &.confirm {
-                        background-color: $colorGreen;
-
-                        &:hover {
-                            background-color: lighten($colorGreen, 3);
+                            box-shadow: rgba($colorRed, 0.5) 0px 0px 0px 3px;
                         }
                     }
                 }

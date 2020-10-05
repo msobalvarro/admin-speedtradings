@@ -14,8 +14,8 @@ const RequestList = ({ data=[], onDetail=_=>{} }) => {
                 <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
                 <span>
                     {
-                        item.sponsor_email !== null
-                            ? item.sponsor_email
+                        item.sponsor !== null
+                            ? item.sponsor
                             : <i>Sin sponsor</i>
                     }
                 </span>
