@@ -149,7 +149,7 @@ const Comissions = () => {
                 throw String(result.message)
             }
 
-            Swal.fire('Listo', 'Pago aprovado con éxito', 'success')
+            Swal.fire('Listo', 'Pago aprobado con éxito', 'success')
 
             setData(removeItemList(data, activeDetail))
             setDataDetail({})
