@@ -1,0 +1,37 @@
+@import "../../utils/constants.scss";
+
+.content-col {
+    .body {
+        width: 100% !important;
+
+        h2 {
+            text-align: left;
+        }
+    }
+    .container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+
+        .col {
+            width: calc(50% - 2rem);
+        }
+
+        .row {
+            text-align: left;
+
+            .name {
+                color: $colorYellow;
+                margin-bottom: .25rem;
+            }
+            
+            .name, .value {
+                font-size: 1rem !important;
+            }
+        }
+    }
+}

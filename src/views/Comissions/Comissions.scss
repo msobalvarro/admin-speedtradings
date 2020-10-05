@@ -1,0 +1,263 @@
+@import "../../utils/constants.scss";
+
+.Comissions {
+    &-content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 1rem;
+        padding-top: 2rem;
+
+        h2 {
+            color: $colorYellow;
+        }
+
+        .field-input {
+            border: none;
+            outline: none;
+            width: 12rem;
+            background-color: darken($colorMain, 5);
+            font-size: .9rem;
+            padding: .5rem 1rem;
+            border-radius: 3px;
+            color: darken(#fff, 40)
+        }
+
+        .pending, .ready {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            &:after {
+                content: '';
+                display: block;
+                width: .5rem;
+                height: .5rem;
+                border-radius: 100px;
+                margin-left: .5rem;
+            }
+        }
+
+        .pending:after {
+            background-color: $colorRed;
+        } 
+
+        .ready:after {
+            background-color: $colorGreen;
+        }
+        
+        .Comissions-detail, .Comissions-list {
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .column {
+            width: calc(50% - 1.5rem);
+            min-height: 532px;
+            max-height: 550px;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .table {
+            display: flex;
+            flex-direction: column;
+            margin-top: 1.5rem;
+            
+            .body {
+                max-height: 390px;
+                overflow-y: hidden;
+
+                &:hover {
+                    overflow-y: auto;
+                }
+            }
+
+            .row, .header {
+                display: flex;
+                flex-direction: row;
+                background-color: transparent;
+                width: 100%;
+                border-bottom: 1px solid darken(#fff, 40);
+                transition: background-color .25s;
+
+                span {
+                    flex-grow: 1;
+                    width: 30%;
+                    padding: .5rem;
+                    text-align: center;
+                    box-sizing: border-box;
+                    cursor: pointer;
+
+                    &:first-child {
+                        width: 55%;
+                        text-align: left;
+                    }
+
+                    &:last-child {
+                        text-align: right;
+                        width: 90px;
+                    }
+
+                    &.ready, &.pending {
+                        justify-content: center;
+                    }
+                }
+            }
+
+            .header {
+                font-weight: bold;
+                color: $colorYellow;
+                border-color: currentColor;
+            }
+
+            .row:hover, .row.active {
+                background-color: lighten($colorMain, 10);
+            }
+        }
+
+        .Comissions-list {
+            &-header {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+
+                div {
+                    text-align: right;
+
+                    p {
+                        display: flex;
+                        flex-direction: row;
+                        margin-top: .5rem;
+                    }
+
+                    span {
+                        font-size: .75rem;
+                        margin-right: .5rem;
+
+                        &:last-child {
+                            margin-right: 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        .Comissions-detail {
+            h2 {
+                margin-bottom: 1.5rem;
+            }
+
+            .empty-detail {
+                color: darken(#fff, 40);
+                font-size: 1.25rem;
+                margin-top: 1rem;
+            }
+
+            .detail-item {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 1.5rem;
+
+                .label {
+                    color: $colorYellow;
+                    margin-bottom: .35rem;
+                }
+
+                .value {
+                    display: flex;
+                    flex-direction: column;
+                    &.ready, &.pending {
+                        flex-direction: row-reverse;
+                        justify-content: flex-end;
+
+                        &:after {
+                            margin-left: 0;
+                            margin-right: .5rem;
+                        }
+                    }
+
+                    &.field-input {
+                        width: 60%;
+                    }
+
+                    &.hash {
+                        display: inline-block;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        width: 100%;
+                        cursor: pointer;
+                    }
+                }
+
+                .alypay-payment {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    span {
+                        display: inline-block;
+                        width: 1.25rem;
+                        line-height: .75rem;
+                        padding: .15rem;
+                        border: 1px solid currentColor;
+                        border-radius: 15px;
+                        margin-right: .5rem;
+                        text-align: center;
+                        color: #fff;
+                    }
+
+                    img {
+                        display: inline-block;
+                        width: 7rem;
+                        margin-left: .5rem;
+                    }
+                }
+            }
+
+            .detail-section {
+                display: flex;
+                flex-direction: row;
+
+                .column {
+                    min-height: auto;
+                    height: auto;
+                    padding: 0;
+                }
+            }
+
+            .field-input {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .detail-buttons {
+                display: flex;
+                justify-content: space-between;
+                width: 60%;
+                margin: 0 auto;
+
+                button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1rem;
+                    line-height: 1.35;
+                    font-weight: bold;
+                    color: #000;
+
+                    &.decline {
+                        background-color: $colorRed;
+                        box-shadow: rgba($colorRed, 0.5) 0px 0px 0px 0px;
+                        transition: box-shadow .25s;
+
+                        &:hover {
+                            background-color: lighten($colorRed, 3);
+                            box-shadow: rgba($colorRed, 0.5) 0px 0px 0px 3px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

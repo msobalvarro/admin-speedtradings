@@ -1,3 +1,11 @@
+@import '~@sweetalert2/theme-dark/dark.scss';
+
+.swal2-actions {
+  button {
+    color: #1d1d1d !important;
+  }
+}
+
 // Colors theme
 $backgroundGradient: linear-gradient(
   288deg,
@@ -8,8 +16,8 @@ $backgroundGradient: linear-gradient(
 $colorMain: #273234;
 $colorSecondary: #9ed3da;
 $colorYellow: #ffcb08;
-$colorRed: #be0101;
-$colorGreen: #16a085;
+$colorRed: #C0392B;
+$colorGreen: #2E8B12;
 
 // Utils constants
 $transition: all 0.2s ease;

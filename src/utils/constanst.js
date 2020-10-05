@@ -1,16 +1,9 @@
 import jwt from "jwt-simple"
 import Axios from "axios"
-import copy from "copy-to-clipboard"
 import Swal from "sweetalert2"
 
 // Constanst
 const keyStorage = "@storage"
-
-/**
- * Indica en que puerto donde corre el codigo backend 
- * cuando esta en desarollo
- * */
-const devPort = ":8080"
 
 /**Indica en que puerto correra el socket en backend */
 // const portSocket = ":2000"
@@ -36,18 +29,20 @@ export const Round = (number = 0) => Math.round(number * 100) / 100
 
 /**Copy string */
 export const copyData = (str = "") => {
-    navigator.clipboard.writeText(str).catch(_ => {
-        return false
-    })
+    let input = document.createElement('input');
 
+    input.setAttribute('value', str);
+    document.body.appendChild(input);
+    input.select();
 
-    copy(str, {
-        message: "Dato copiado",
-        onCopy: () => Swal.fire("Listo", "Copiado a portapapeles", "success")
-    })
+    let result = document.execCommand('copy');
+    document.body.removeChild(input);
 
-
-    // Swal.fire('Direccion Wallet copiada', '', 'success')
+    if(result) {
+        Swal.fire("¡Listo!", "Copiado a portapapeles", "success")
+    } else {
+        Swal("¡Opps!", "Error al copiar al portapapeles", "error")
+    }
 }
 
 /**
@@ -58,6 +53,11 @@ export const copyData = (str = "") => {
 export const setTittleDOM = (title = "Back Office") => {
     document.title = title
 }
+
+/**
+ * Return a unique string to use how component key into react
+ * */
+export const randomKey = _ => ('_' + Math.random().toString(36).substr(2, 9))
 
 /**Config Axios for petition automatic */
 export const Petition = Axios.create({
