@@ -10,9 +10,11 @@ const keyStorage = "@storage"
 
 export const keySecret = "testDevelop"
 
+export const emailImageToken = "jRVFgyxiXKHxAWQL47jVzoMwj2m9DfG6-fLv8j9zBtLDMjpBd4QeLpXdTHM2Mnlyg-zZEfQrPoCn9yPUVaUQEvTl3B904h3xcY"
+
 //export const urlServer = "https://ardent-medley-272823.appspot.com"
-//export const urlServer = "http://192.168.11.238:9000"
-export const urlServer = "http://192.168.11.224:8084"
+export const urlServer = "http://192.168.11.238:9000"
+//export const urlServer = "http://192.168.11.224:8084"
 
 export const urlServerSocket = urlServer.replace("https", "wss").replace("http", "ws")
 // export const urlServerSocket = urlServer
@@ -44,6 +46,24 @@ export const copyData = (str = "") => {
     } else {
         Swal("¡Opps!", "Error al copiar al portapapeles", "error")
     }
+}
+
+/**
+ * Función para leer un archivo y retornarlo en base64
+ * @param {File} file - Archivo a leer y retornar en base64 
+ */
+export const readFile = (file) => {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader()
+  
+        reader.onload = () => {
+            resolve(reader.result)
+        };
+  
+        reader.onerror = reject
+  
+        reader.readAsDataURL(file)
+    })
 }
 
 /**
