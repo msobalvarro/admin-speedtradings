@@ -113,7 +113,7 @@ const Records = () => {
             headers: {
                 "x-auth-token": token
             }
-        }).then(({ data }) => { console.log(data)
+        }).then(({ data }) => {
             if (data.error) {
                 Swal.fire('Ha ocurrido un error', data.message, 'error')
             } else {
