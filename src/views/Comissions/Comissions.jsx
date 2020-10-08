@@ -111,7 +111,7 @@ const Comissions = () => {
     }
 
     // Función para aceptar un pago de comisión
-    const onHandleAcceptPayment = async () => {
+    const onHandleAcceptPayment = async _ => {
         try {
             setLoaderPayment(true)
 
@@ -162,7 +162,7 @@ const Comissions = () => {
     }
 
     // Función para rechazar un pago de comisión
-    const onHandleDeclinePayment = async _ => {
+    const onHandleDeclinePayment = async (id) => {
         try {
             setLoaderPayment(true)
 

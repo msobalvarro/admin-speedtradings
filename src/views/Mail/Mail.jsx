@@ -5,7 +5,12 @@ import "./Mail.scss"
 
 // Constant and redux store
 import { useSelector } from "react-redux"
-import { Petition, randomKey } from "../../utils/constanst"
+import { 
+    Petition, 
+    randomKey,
+    urlServer, 
+    emailImageToken 
+} from "../../utils/constanst"
 
 // Import assets
 import allSelect from "../../static/images/addAll.svg"
@@ -52,9 +57,9 @@ const reducer = (state, action) => {
 }
 
 // Lista de los elementos a mostrar en la barra de herramientas del editor
-var toolbarOptions = [
+var toolbarContainer = [
     ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-    ['blockquote', 'code-block'],
+    ['blockquote'],
   
     [{ 'header': 1 }, { 'header': 2 }],               // custom button values
     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
@@ -71,12 +76,53 @@ var toolbarOptions = [
     [{ 'align': [] }],
   
     ['clean']                                         // remove formatting button
-  ];
+]
 
 // Se establecen cuales serán las modificaciones de formato que permitirá el editor
 const toolbarFormats = [
     'header', 'font', 'size', 'bold', 'italic', 'underline', 'strike', 'blockquote', 'list', 'bullet', 'indent', 'link', 'image', 'video', 'color', 'direction', 'script', 'background', 'align'
 ]
+
+/**
+ * Capturador para añadir imagenes en el editar de plantillas de correo
+ * @param {ReactQuill} editor - instancia del editor 
+ * @param {Object} credentials - objeto con las credenciales de acceso al server 
+ * @param {Callback} loaderState - callback para modificar el valor del estado de carga
+ */
+const editorImageHandler = (editor, credentials, loaderState) => {
+    const input = document.createElement('input')
+
+    input.setAttribute('type', 'file')
+    input.setAttribute('accept', 'image/*')
+    input.click()
+    input.onchange = async function() {
+        try {
+            loaderState(true)
+
+            const file = input.files[0]
+            const datasender = new FormData()
+
+            datasender.append('image', file)
+
+            const {data} = await Petition.post('/file/email', datasender, credentials)
+            console.log(data)
+
+            if(data.error) {
+                throw String(data.message)
+            }
+
+            const range = editor.getEditorSelection(true);
+            const link = `${urlServer}/file/email/${data.filenameBucket}?token=${emailImageToken}`;
+
+            editor.getEditor().insertEmbed(range.index, 'image', link)
+            editor.getEditor().setSelection(range.index + 1)
+        } catch (error) {
+            Swal.fire("Ha ocurrido un error", error.toString(), "error")
+        } finally {
+            loaderState(false)
+        }
+    }
+  }
 
 
 const Mail = () => {
@@ -84,6 +130,11 @@ const Mail = () => {
 
     // get token auth from redux
     const { token } = useSelector(x => x.globalStorage)
+    const header = { 
+        headers: { 
+            "x-auth-token": token 
+        } 
+    }
 
     // Estado que almacena todos los correos
     const [allEmails, setEmails] = useState([])
@@ -94,23 +145,19 @@ const Mail = () => {
     // Estado que alamcena todos los correos seleccionados por el usuario
     const [emailSelected, setEmailSelect] = useState([])
 
-    // Estado que alamacena un proceso
+    // Estado que controla el indicador de carga
     const [loader, setLoader] = useState(false)
+    const [uploading, setUploading] = useState(false)
 
     const searchUserRef = useRef(null)
     const inputSearchUserRef = useRef(null)
     const mailerFromRef = useRef(null)
+    const editorRef = useRef(null)
 
 
     /**Metodo que obtiene todos los datos del servidor (emails) */
     const getData = async () => {
         try {
-            const header = { 
-                headers: { 
-                    "x-auth-token": token 
-                } 
-            }
-            
             const { data } = await Petition.get("/admin/email/all", header)
 
             if (data.error) {
@@ -120,6 +167,11 @@ const Mail = () => {
             setEmails(data)
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error.toString())
+        } finally {
+            editorRef.current
+                .getEditor()
+                .getModule('toolbar')
+                .addHandler('image', _ => editorImageHandler(editorRef.current, header, setUploading))
         }
     }
 
@@ -293,6 +345,7 @@ const Mail = () => {
 
         setMailerToList([])
         setEmailSelect([])
+        editorRef.current.getEditor().setContents([])
     }
 
     // Función para descartar un correo
@@ -307,7 +360,7 @@ const Mail = () => {
             confirmButtonText: 'Sí, descartar',
             cancelButtonText: 'Cancelar',
         }).then(result => {
-            if (result.isConfirmed) {
+            if (result.value) {
                 resetFields()
             }
         })
@@ -328,7 +381,7 @@ const Mail = () => {
                 throw String("Agrege un Subject para continuar")
             }
 
-            if (state.emailContent.trim() === "") {
+            if (editorRef.current.getEditorContents().trim() === "") {
                 throw String("Escriba un correo para continuar")
             }
 
@@ -337,7 +390,7 @@ const Mail = () => {
             const emails = await mailerToList.map(item => item.email)
 
             const dataSend = {
-                html: state.emailContent,
+                html: editorRef.current.getEditorContents(),
                 subject: state.subject,
                 sender: state.mailerFrom,
                 emails
@@ -502,13 +555,17 @@ const Mail = () => {
 
                 <div className="editor">
                         <ReactQuill 
+                            ref={editorRef}
                             theme={"snow"}
-                            onChange={html => dispatch({ type: "emailContent", payload: html })}
-                            value={state.emailContent}
-                            modules={{toolbar: toolbarOptions}}
+                            modules={{toolbar: toolbarContainer}}
                             formats={toolbarFormats}
-                            bounds={'.app'}
-                            placeholder={""}
+                            onBlur={_ => { 
+                                // Se carga el contenido del editor al estado
+                                dispatch({ 
+                                    type: 'emailContent', 
+                                    payload: editorRef.current.getEditorContents()
+                                })
+                            }}
                             />
                 </div>
 
@@ -519,7 +576,7 @@ const Mail = () => {
             </div>
 
             {
-                loader &&
+                (loader || uploading) &&
                 <Modal persist={true} onlyChildren>
                     <ActivityIndicator size={64} />
                 </Modal>

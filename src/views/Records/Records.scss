@@ -224,6 +224,42 @@ div.container-records {
         }
       }
     }
+
+    .collection.left {
+      position: relative;
+      padding-bottom: 5rem;
+
+      .reports {
+        position: absolute;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        bottom: 10px;
+        margin: 0 10px;
+        height: 4rem;
+        width: calc(100% - 20px);
+        left: 0;
+
+        .row {
+          display: flex;
+          flex-direction: column;
+          width: 30%;
+
+          span {
+            display: inline-block;
+            margin-bottom: 5px;
+          }
+        }
+
+        .button {
+          font-size: 14px;
+          width: 200px;
+          height: 2.5rem;
+          align-self: flex-end;
+          padding: 5px 10px;
+        }
+      }
+    }
   }
 
   .content-modal {
