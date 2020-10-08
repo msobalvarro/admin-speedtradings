@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
-import { Petition, keySecret, setTittleDOM } from "../../utils/constanst"
+import { Petition, keySecret, setTittleDOM, urlServer } from "../../utils/constanst"
 
 // Import middlewares and validators
 import jwt from "jwt-simple"
@@ -85,6 +85,10 @@ const Records = () => {
     // Estado que guarda la solcitud compora y venta (Money Changer)
     const [detailsRequestMoneyChanger, setDetailsMoneyChanger] = useState({})
 
+    // Estado para almacenar las fechas de inicio/fin con las cual se generará el reporte
+    const [reportFromDate, setReportFromDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
+    const [reportToDate, setReportToDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
+
 
     // Obtiene todas las solicitudes `allExchange` para obtener
     const getAllRequest = () => {
@@ -109,7 +113,7 @@ const Records = () => {
             headers: {
                 "x-auth-token": token
             }
-        }).then(({ data }) => {
+        }).then(({ data }) => { console.log(data)
             if (data.error) {
                 Swal.fire('Ha ocurrido un error', data.message, 'error')
             } else {
@@ -864,6 +868,14 @@ const Records = () => {
         }
     }
 
+    /**
+     * Función para obtener el archivo .xls que será el reporte
+     */
+    const getUpgradeReport = async _ => {
+        console.log(`${urlServer}/admin/reports/upgrades?from=${reportFromDate}&to=${reportToDate}`)
+        window.open(`${urlServer}/admin/reports/upgrades?from=${reportFromDate}&to=${reportToDate}`, '_blank')
+    }
+
     useEffect(() => {
         setTittleDOM()
 
@@ -940,7 +952,7 @@ const Records = () => {
             </div>
 
             <div className="content">
-                <div className="collection">
+                <div className={`collection ${tab === 2 ? 'left' : ''}`}>
                     <div className="menu-tab">
                         <div onClick={_ => setTab(1)} className={`item ${tab === 1 && "active"}`}>
                             Registros
@@ -1055,11 +1067,42 @@ const Records = () => {
                             {
                                 allMoneyChanger.length > 0 &&
                                 <MoneyChangerList 
-                                    data={getAllMoneyChanger}
+                                    data={allMoneyChanger}
                                     onDetail={(index) => openMoneyChangerRequest(index)} />
                             }
 
                         </>
+                    }
+
+                    {/**
+                     * Sección para generar los reportes
+                     */
+                        tab === 2 &&
+                        <div className="reports">
+                            <div className="row">
+                                <span>Fecha de inicio</span>
+                                <input 
+                                    value={reportFromDate}
+                                    onChange={e => {
+                                        setReportFromDate(e.target.value)
+                                    }}
+                                    type="date" 
+                                    className="text-input"/>
+                            </div>
+
+                            <div className="row">
+                                <span>Fecha de final</span>
+                                <input 
+                                    value={reportToDate}
+                                    onChange={e => {
+                                        setReportToDate(e.target.value)
+                                    }}
+                                    type="date" 
+                                    className="text-input"/>
+                            </div>
+
+                            <button onClick={getUpgradeReport} className="button">Obtener reporte</button>
+                        </div>
                     }
 
                 </div>

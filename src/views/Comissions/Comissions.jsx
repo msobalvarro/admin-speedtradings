@@ -56,7 +56,7 @@ const Comissions = () => {
             if(data.error) {
                 throw String(data.message)
             }
-console.log(data)
+
             setData(data)
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error, 'error')
