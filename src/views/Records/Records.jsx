@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
-import { Petition, keySecret, setTittleDOM, urlServer } from "../../utils/constanst"
+import { Petition, keySecret, setTittleDOM } from "../../utils/constanst"
 
 // Import middlewares and validators
 import jwt from "jwt-simple"
@@ -12,6 +12,7 @@ import "./Records.scss"
 import sounNotification from "../../static/sound/notification.mp3"
 
 // Import components
+import Modal from "../../components/Modal/Modal"
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
 import EmptyIndicator from "../../components/EmptyIndicator/EmptyIndicator"
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
@@ -88,6 +89,7 @@ const Records = () => {
     // Estado para almacenar las fechas de inicio/fin con las cual se generará el reporte
     const [reportFromDate, setReportFromDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
     const [reportToDate, setReportToDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
+    const [loaderReportDownload, setLoaderReportDownload] = useState(false)
 
 
     // Obtiene todas las solicitudes `allExchange` para obtener
@@ -320,7 +322,7 @@ const Records = () => {
                     "x-auth-token": token
                 }
             })
-                .then(({ data }) => { console.log(JSON.stringify(data))
+                .then(({ data }) => {
                     if (data.error) {
                         throw data.message
                     } else {
@@ -872,8 +874,37 @@ const Records = () => {
      * Función para obtener el archivo .xls que será el reporte
      */
     const getUpgradeReport = async _ => {
-        console.log(`${urlServer}/admin/reports/upgrades?from=${reportFromDate}&to=${reportToDate}`)
-        window.open(`${urlServer}/admin/reports/upgrades?from=${reportFromDate}&to=${reportToDate}`, '_blank')
+        try {
+            setLoaderReportDownload(true)
+
+            const {data} = await Petition.get(`/admin/reports/upgrades?from=${reportFromDate}&to=${reportToDate}`, {
+                responseType: 'arraybuffer',
+                headers: {
+                    'Content-Disposition': "attachment; filename=template.xlsx",
+                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    "x-auth-token": token
+            }})
+
+            if(data.error) {
+                throw String(data.message)
+            }
+            
+            const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
+    
+            let downloadLink = document.createElement('a')
+            downloadLink.href = URL.createObjectURL(blob)
+            downloadLink.download = `upgradeReport-${reportFromDate}_${reportToDate}.xlsx`;
+            document.body.appendChild(downloadLink)
+            downloadLink.click()
+    
+            // cleanup
+            downloadLink.remove();
+            URL.revokeObjectURL(blob);
+        } catch (error) {
+            Swal.fire("AlyExchange", error.toString(), "error")
+        } finally {
+            setLoaderReportDownload(false)
+        }
     }
 
     useEffect(() => {
@@ -1181,6 +1212,13 @@ const Records = () => {
                     onClose={_ => setMoneyChagerRequestModal(false)}
                     onAccept={(hashMoneyChangerRequest) => acceptMoneyChanger(hashMoneyChangerRequest)}
                     onDecline={(reasonDecline, checkSendNotification) => declineMoneyChangerRequest(reasonDecline, checkSendNotification)} />
+            }
+
+            {
+                loaderReportDownload &&
+                <Modal persist={true} onlyChildren>
+                    <ActivityIndicator size={64} />
+                </Modal>
             }
 
         </div >
