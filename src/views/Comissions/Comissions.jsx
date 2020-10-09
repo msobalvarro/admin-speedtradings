@@ -41,10 +41,14 @@ const Comissions = () => {
     // Estado para indicar sponsor se muestra en el detalle y así cambiar el color de su fila dentro de la tabla
     const [activeDetail, setActiveDetail] = useState(-1)
 
+    // Estado para almacenar las fechas para generar los reportes
+    const [reportFromDate, setReportFromDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
+    const [reportToDate, setReportToDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
     // Estado para controlar la visibilidad del indicador de carga
     const [loaderList, setLoaderList] = useState(false)
     const [loaderDetail, setLoaderDetail] = useState(false)
     const [loaderPayment, setLoaderPayment] = useState(false)
+    const [loaderReport, setLoaderReport] = useState(false)
 
     // Función para obtener los datos de la lista de comisiones
     const getComissionsData = async _ => {
@@ -241,6 +245,43 @@ const Comissions = () => {
         return floor(48 - duration.asHours(), 0)
     }
 
+    /**
+     * Función para obtener el archivo .xls que será el reporte
+     */
+    const getPaymentReport = async _ => {
+        try {
+            setLoaderReport(true)
+
+            const {data} = await Petition.get(`/admin/reports/?from=${reportFromDate}&to=${reportToDate}`, {
+                responseType: 'arraybuffer',
+                headers: {
+                    'Content-Disposition': "attachment; filename=template.xlsx",
+                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    "x-auth-token": token
+            }})
+
+            if(data.error) {
+                throw String(data.message)
+            }
+            
+            const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
+    
+            let downloadLink = document.createElement('a')
+            downloadLink.href = URL.createObjectURL(blob)
+            downloadLink.download = `paymentReport-${reportFromDate}_${reportToDate}.xlsx`;
+            document.body.appendChild(downloadLink)
+            downloadLink.click()
+    
+            // cleanup
+            downloadLink.remove();
+            URL.revokeObjectURL(blob);
+        } catch (error) {
+            Swal.fire("Reporte de pagos", error.toString(), "error")
+        } finally {
+            setLoaderReport(false)
+        }
+    }
+
     useEffect(_ => {
         getComissionsData()
     }, [])
@@ -305,6 +346,35 @@ const Comissions = () => {
                             </div>
                         </div>
                     }
+
+                    {/**
+                    * Sección para generar los reportes
+                    */}
+                    <div className="reports">
+                        <div className="row">
+                            <span>Fecha de inicio</span>
+                            <input 
+                                value={reportFromDate}
+                                onChange={e => {
+                                    setReportFromDate(e.target.value)
+                                }}
+                                type="date" 
+                                className="text-input"/>
+                        </div>
+
+                        <div className="row">
+                            <span>Fecha de final</span>
+                            <input 
+                                value={reportToDate}
+                                onChange={e => {
+                                    setReportToDate(e.target.value)
+                                }}
+                                type="date" 
+                                className="text-input"/>
+                        </div>
+
+                        <button onClick={getPaymentReport} className="button">Obtener reporte</button>
+                    </div>
                 </div>
 
                 <div className="column Comissions-detail">
@@ -442,7 +512,7 @@ const Comissions = () => {
             </div>
 
             {
-                loaderPayment &&
+                (loaderPayment || loaderReport) &&
                 <Modal persist={true} onlyChildren>
                     <ActivityIndicator size={64} />
                 </Modal>

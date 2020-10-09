@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useReducer } from "react"
+import moment from "moment"
 import { useSelector } from "react-redux"
 
 // import constants and functions
@@ -34,6 +35,11 @@ const initialState = {
 
 const Report = () => {
     const [state, dispatch] = useReducer(reducer, initialState)
+
+    // Estado para almacenar las fechas de inicio/fin con las cual se generará el reporte
+    const [reportFromDate, setReportFromDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
+    const [reportToDate, setReportToDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
+    const [loaderReport, setLoaderReport] = useState(false)
 
     // Contendra todos los hash escritos
     const hashs = []
@@ -185,6 +191,43 @@ const Report = () => {
         getAllData()
     }
 
+    /**
+     * Función para obtener el archivo .xls que será el reporte
+     */
+    const getReport = async _ => {
+        try {
+            setLoaderReport(true)
+
+            const {data} = await Petition.get(`/admin/reports/payments?from=${reportFromDate}&to=${reportToDate}`, {
+                responseType: 'arraybuffer',
+                headers: {
+                    'Content-Disposition': "attachment; filename=template.xlsx",
+                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    "x-auth-token": token
+            }})
+
+            if(data.error) {
+                throw String(data.message)
+            }
+            
+            const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
+    
+            let downloadLink = document.createElement('a')
+            downloadLink.href = URL.createObjectURL(blob)
+            downloadLink.download = `report-${reportFromDate}_${reportToDate}.xlsx`;
+            document.body.appendChild(downloadLink)
+            downloadLink.click()
+    
+            // cleanup
+            downloadLink.remove();
+            URL.revokeObjectURL(blob);
+        } catch (error) {
+            Swal.fire("Reporte de pagos", error.toString(), "error")
+        } finally {
+            setLoaderReport(false)
+        }
+    }
+
     useEffect(() => {
         getAllData()
     }, [])
@@ -196,6 +239,35 @@ const Report = () => {
             <div className="content">
                 <div className="header">
                     <input type="text" value={state.filter} onChange={e => dispatch({ type: "filter", payload: e.target.value })} className="text-input" placeholder="Filtrar.." />
+
+                    {/**
+                    * Sección para generar los reportes
+                    */}
+                    <div className="reports">
+                        <div className="row">
+                            <span>Fecha de inicio</span>
+                            <input 
+                                value={reportFromDate}
+                                onChange={e => {
+                                    setReportFromDate(e.target.value)
+                                }}
+                                type="date" 
+                                className="text-input"/>
+                        </div>
+
+                        <div className="row">
+                            <span>Fecha de final</span>
+                            <input 
+                                value={reportToDate}
+                                onChange={e => {
+                                    setReportToDate(e.target.value)
+                                }}
+                                type="date" 
+                                className="text-input"/>
+                        </div>
+
+                        <button onClick={getReport} className="button">Obtener reporte</button>
+                    </div>
 
                     <div className="selection">
                         <span className="total">
