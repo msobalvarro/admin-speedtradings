@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
-import { Petition, keySecret, setTittleDOM } from "../../utils/constanst"
+import { Petition, keySecret, setTittleDOM, downloadReport } from "../../utils/constanst"
 
 // Import middlewares and validators
 import jwt from "jwt-simple"
@@ -901,17 +901,7 @@ const Records = () => {
                 throw String(data.message)
             }
             
-            const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    
-            let downloadLink = document.createElement('a')
-            downloadLink.href = URL.createObjectURL(blob)
-            downloadLink.download = `${filename}-${reportFromDate}_${reportToDate}.xlsx`;
-            document.body.appendChild(downloadLink)
-            downloadLink.click()
-    
-            // cleanup
-            downloadLink.remove();
-            URL.revokeObjectURL(blob);
+            downloadReport(data, `${filename}-${reportFromDate}_${reportToDate}.xlsx`)
         } catch (error) {
             Swal.fire("AlyExchange", error.toString(), "error")
         } finally {

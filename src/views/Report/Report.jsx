@@ -3,7 +3,7 @@ import moment from "moment"
 import { useSelector } from "react-redux"
 
 // import constants and functions
-import { Petition, copyData, reducer } from "../../utils/constanst"
+import { Petition, copyData, reducer, downloadReport } from "../../utils/constanst"
 import _ from "lodash"
 
 // Imports styles and assets
@@ -210,17 +210,7 @@ const Report = () => {
                 throw String(data.message)
             }
             
-            const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    
-            let downloadLink = document.createElement('a')
-            downloadLink.href = URL.createObjectURL(blob)
-            downloadLink.download = `report-${reportFromDate}_${reportToDate}.xlsx`;
-            document.body.appendChild(downloadLink)
-            downloadLink.click()
-    
-            // cleanup
-            downloadLink.remove();
-            URL.revokeObjectURL(blob);
+            downloadReport(data, `report-${reportFromDate}_${reportToDate}.xlsx`)
         } catch (error) {
             Swal.fire("Reporte de pagos", error.toString(), "error")
         } finally {

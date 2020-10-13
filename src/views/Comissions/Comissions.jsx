@@ -9,7 +9,7 @@ import ActivityIndicator from "../../components/ActivityIndicator/Activityindica
 import Swal from "sweetalert2"
 
 // Import utils
-import { Petition, randomKey, copyData } from "../../utils/constanst"
+import { Petition, randomKey, copyData, downloadReport } from "../../utils/constanst"
 import moment from "moment"
 
 // Import assets
@@ -264,17 +264,7 @@ const Comissions = () => {
                 throw String(data.message)
             }
             
-            const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    
-            let downloadLink = document.createElement('a')
-            downloadLink.href = URL.createObjectURL(blob)
-            downloadLink.download = `paymentReport-${reportFromDate}_${reportToDate}.xlsx`;
-            document.body.appendChild(downloadLink)
-            downloadLink.click()
-    
-            // cleanup
-            downloadLink.remove();
-            URL.revokeObjectURL(blob);
+            downloadReport(data, `paymentReport-${reportFromDate}_${reportToDate}.xlsx`)
         } catch (error) {
             Swal.fire("Reporte de pagos", error.toString(), "error")
         } finally {
