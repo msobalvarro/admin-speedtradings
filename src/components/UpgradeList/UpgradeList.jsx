@@ -4,7 +4,7 @@ import React from "react"
  * @param {Array} data - Datos a renderizar
  * @param {Callback} onDetail - Función a ejecutar al abrir el detalle del registro
  */
-const UpgradeList = ({ data=[], onDetail=_=>{} }) => {
+const UpgradeList = ({ data = [], onDetail = _ => { } }) => {
     // Componente que representa un articulo de la lista
     // de solicitudes de Upgrade
     const itemUpgrade = (item, index) => {
@@ -27,7 +27,7 @@ const UpgradeList = ({ data=[], onDetail=_=>{} }) => {
         <>
             <div className="separator" />
 
-            <h2 className="title">Solicitudes de UPGRADES</h2>
+            <h2 className="title">Solicitudes de upgrades</h2>
 
 
             <div className="table request">
