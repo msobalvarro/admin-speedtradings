@@ -92,84 +92,99 @@ const Records = () => {
     const [loaderReportDownload, setLoaderReportDownload] = useState(false)
 
 
-    // Obtiene todas las solicitudes `allExchange` para obtener
-    const getAllRequest = () => {
-        Petition.get('/admin/request/', {
-            headers: {
-                "x-auth-token": token
-            }
-        }).then(({ data }) => {
-            if (data.error) {
-                Swal.fire('Ha ocurrido un error', data.message, 'error')
-            } else {
-                setRequests(data)
-            }
-        })
+    /**
+     * Constante que almacena los headers de las peticiones al server
+     */
+    const headersPetition = {
+        headers: {
+            "x-auth-token": token
+        }
     }
+
+
+    // Obtiene todas las solicitudes `allExchange` para obtener
+    const getAllRequest = () => new Promise(async (resolve, reject) => {
+        const { data } = await Petition.get('/admin/request/', headersPetition)
+
+
+        console.log(data)
+
+        if (data?.error) {
+            Swal.fire('Ha ocurrido un error', data.message, 'error')
+
+
+            reject(data)
+        } else {
+            setRequests(data)
+
+            resolve()
+        }
+    })
 
     // Obtiene todos los registros
-    const getAllRecords = () => {
+    const getAllRecords = () => new Promise(async (resolve, reject) => {
         setLoaderRecord(true)
 
-        Petition.get('/admin/records/', {
-            headers: {
-                "x-auth-token": token
-            }
-        }).then(({ data }) => {
-            if (data.error) {
-                Swal.fire('Ha ocurrido un error', data.message, 'error')
-            } else {
-                setRecords(data)
-            }
+        const { data } = await Petition.get('/admin/records/', headersPetition)
 
-            setLoaderRecord(false)
-        })
-    }
+        setLoaderRecord(false)
+
+        if (data.error) {
+            Swal.fire('Ha ocurrido un error', data.message, 'error')
+
+            reject(data)
+        } else {
+            setRecords(data)
+
+            resolve()
+        }
+    })
 
     // Obtiene todas las solicitudes de Upgrades
-    const getAllUpgrades = () => {
-        Petition.get('/admin/upgrades', {
-            headers: {
-                "x-auth-token": token
-            }
-        }).then(({ data }) => {
-            if (data.error) {
-                Swal.fire('Ha ocurrido un error', data.message, 'error')
-            } else {
-                setUpgrades(data)
-            }
-        })
-    }
+    const getAllUpgrades = () => new Promise(async (resolve, reject) => {
+        const { data } = await Petition.get('/admin/upgrades', headersPetition)
+
+        if (data.error) {
+            Swal.fire('Ha ocurrido un error', data.message, 'error')
+
+
+            reject(data)
+        } else {
+            setUpgrades(data)
+
+            resolve()
+        }
+    })
 
     // Obtiene todas las solcitudes de intercambio exchange
-    const getAllExchange = () => {
-        Petition.get('/exchange', {
-            headers: {
-                "x-auth-token": token
-            }
-        }).then(({ data }) => {
-            if (data.error) {
-                Swal.fire('Ha ocurrido un error', data.message, 'error')
-            } else {
-                setExchange(data)
-            }
-        })
-    }
+    const getAllExchange = () => new Promise(async (resolve, reject) => {
+        const { data } = await Petition.get('/exchange', headersPetition)
+
+        if (data.error) {
+            Swal.fire('Ha ocurrido un error', data.message, 'error')
+
+            reject(data)
+        } else {
+            setExchange(data)
+
+            resolve()
+        }
+    })
 
     // Obtiene todas las solcitudes de compra y venta en Money Changer
-    const getAllMoneyChanger = () => {
-        Petition.get('/money-changer', {
-            headers: {
-                "x-auth-token": token
-            }
-        }).then(({ data }) => {
-            if (data.error) {
-                Swal.fire('Ha ocurrido un error', data.message, 'error')
-            } else {
-                setMoneyChanger(data)
-            }
-        })
-    }
+    const getAllMoneyChanger = () => new Promise(async (resolve, reject) => {
+        const { data } = await Petition.get('/money-changer', headersPetition)
+
+        if (data.error) {
+            Swal.fire('Ha ocurrido un error', data.message, 'error')
+
+            reject(data)
+        } else {
+            setMoneyChanger(data)
+
+            resolve()
+        }
+    })
 
     // Ejecuta peticiones al servidor para obtener todos los datos de las tablas
     const ConfigurateComponent = async () => {
@@ -256,19 +271,14 @@ const Records = () => {
             setLoaderPetition(true)
 
             // get data for petition
-            await Petition.post('/admin/request/id', { id }, {
-                headers: {
-                    "x-auth-token": token
-                }
-            })
-                .then(({ data }) => {
-                    if (data.error) {
-                        throw data.message
-                    } else {
-                        setDataRequest(data)
-                        setLoaderPetition(false)
-                    }
-                })
+            const { data } = await Petition.post('/admin/request/id', { id }, headersPetition)
+
+            if (data.error) {
+                throw data.message
+            } else {
+                setDataRequest(data)
+                setLoaderPetition(false)
+            }
         } catch (error) {
             setShowRequest(false)
             Swal.fire('Ha ocurrido un error', error.toString(), 'error')
@@ -286,18 +296,13 @@ const Records = () => {
             setLoaderPetition(true)
 
             // get data for petition
-            await Petition.post('/admin/upgrades/id', { id }, {
-                headers: {
-                    "x-auth-token": token
-                }
-            })
-                .then(({ data }) => {
-                    if (data.error) {
-                        throw data.message
-                    } else {
-                        setDataUpgrade(data)
-                    }
-                })
+            const { data } = await Petition.post('/admin/upgrades/id', { id }, headersPetition)
+
+            if (data.error) {
+                throw data.message
+            } else {
+                setDataUpgrade(data)
+            }
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error.toString(), 'error')
             setShowUpgrade(false)
@@ -317,18 +322,14 @@ const Records = () => {
             setLoaderPetition(true)
 
             // get data for petition
-            await Petition.post('/admin/records/id', { id }, {
-                headers: {
-                    "x-auth-token": token
-                }
-            })
-                .then(({ data }) => {
-                    if (data.error) {
-                        throw data.message
-                    } else {
-                        setDataRecord(data)
-                    }
-                })
+            const { data } = await Petition.post('/admin/records/id', { id }, headersPetition)
+
+
+            if (data.error) {
+                throw data.message
+            } else {
+                setDataRecord(data)
+            }
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error.toString(), 'error')
             setShowRecord(false)
@@ -339,14 +340,14 @@ const Records = () => {
 
     // Funcion que abre ventana modal con detalles de solicitud exchange
     const openExchangeRequest = async (index = 0) => {
-        await setDetailsExchange(allExchange[index])
+        setDetailsExchange(allExchange[index])
 
         setExchangeRequestModal(true)
     }
 
     // Funcion que abre ventana modal con detalles de solicitud exchange
     const openMoneyChangerRequest = async (index = 0) => {
-        await setDetailsMoneyChanger(allMoneyChanger[index])
+        setDetailsMoneyChanger(allMoneyChanger[index])
 
         setMoneyChagerRequestModal(true)
     }
@@ -366,42 +367,23 @@ const Records = () => {
             if (result.value) {
                 setLoaderPetition(true)
 
-                await Petition.delete('/admin/request/decline', {
-                    data: { id },
-                    headers: {
-                        "x-auth-token": token
-                    }
-                }).then(({ status, data }) => {
-                    if (data.error) {
-                        Swal.fire('Se ha producido un error', data.message, 'error')
-                    } else {
-                        if (status === 200) {
-                            setShowRequest(false)
+                const { data } = await Petition.delete('/admin/request/decline', { ...headersPetition, data: { id } })
 
-                            Swal.fire({
-                                position: 'top-end',
-                                icon: 'success',
-                                title: 'Solicitud Rechazada',
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
+                if (data.error) {
+                    Swal.fire('Se ha producido un error', data.message, 'error')
+                } else {
+                    setShowRequest(false)
 
-                            ConfigurateComponent()
-                        } else {
-                            Swal.fire({
-                                position: 'top-end',
-                                icon: 'error',
-                                title: 'Se ha producido un error',
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-                        }
-                    }
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Solicitud Rechazada',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
 
-                }).catch(reason => {
-                    Swal.fire('Se ha producido un error', reason.toString(), 'error')
-                })
-
+                    ConfigurateComponent()
+                }
 
                 setLoaderPetition(false)
             }
@@ -423,42 +405,26 @@ const Records = () => {
             if (result.value) {
                 setLoaderPetition(true)
 
-                await Petition.delete('/admin/upgrades/decline', {
+                const { data } = await Petition.delete('/admin/upgrades/decline', {
+                    ...headersPetition,
                     data: { id },
-                    headers: {
-                        "x-auth-token": token
-                    }
-                }).then(({ status, data }) => {
-                    if (data.error) {
-                        Swal.fire('Se ha producido un error', data.message, 'error')
-                    } else {
-                        if (status === 200) {
-                            setShowUpgrade(false)
-
-                            Swal.fire({
-                                position: 'top-end',
-                                icon: 'success',
-                                title: 'Upgrade Rechazada',
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-
-                            ConfigurateComponent()
-                        } else {
-                            Swal.fire({
-                                position: 'top-end',
-                                icon: 'error',
-                                title: 'Se ha producido un error',
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-                        }
-                    }
-
-                }).catch(reason => {
-                    Swal.fire('Se ha producido un error', reason.toString(), 'error')
                 })
 
+                if (data.error) {
+                    Swal.fire('Se ha producido un error', data.message, 'error')
+                } else {
+                    setShowUpgrade(false)
+
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Upgrade Rechazada',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+
+                    ConfigurateComponent()
+                }
 
                 setLoaderPetition(false)
             }
@@ -475,40 +441,24 @@ const Records = () => {
 
         try {
 
-            await Petition.post('/admin/request/accept', { data: dataRequestItem }, {
-                headers: {
-                    "x-auth-token": token
-                }
-            }).then(({ status, data }) => {
-                if (data.error) {
-                    Swal.fire('Se ha producido un error', data.message, 'error')
-                } else {
-                    if (status === 200) {
-                        setShowRequest(false)
+            const { data } = await Petition.post('/admin/request/accept', { data: dataRequestItem }, headersPetition)
 
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Solicitud Aceptada',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
+            if (data.error) {
+                Swal.fire('Se ha producido un error', data.message, 'error')
+            } else {
+                // ceramos la ventana modal
+                setShowRequest(false)
 
-                        ConfigurateComponent()
-                    } else {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'error',
-                            title: 'Se ha producido un error',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
-                }
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Solicitud Aceptada',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
 
-            }).catch(reason => {
-                Swal.fire('Se ha producido un error', reason.toString(), 'error')
-            })
+                ConfigurateComponent()
+            }
 
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error.toString(), "warning")
@@ -523,44 +473,29 @@ const Records = () => {
      * @param {Object} dataUpgrade - Datos del upgrade
      * @param {String} hashForSponsor - Hash del upgrade
      */
-    const AcceptUpgrade = async (dataUpgrade={}) => {
+    const AcceptUpgrade = async (dataUpgrade = {}) => {
         setLoaderPetition(true)
         try {
 
-            await Petition.post('/admin/upgrades/accept', { data: dataUpgrade }, {
-                headers: {
-                    "x-auth-token": token
-                }
-            }).then(({ status, data }) => {
-                if (data.error) {
-                    Swal.fire('Se ha producido un error', data.message, 'error')
-                } else {
-                    if (status === 200) {
-                        setShowUpgrade(false)
+            const { data } = await Petition.post('/admin/upgrades/accept', { data: dataUpgrade }, headersPetition)
 
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Solicitud Aceptada',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
+            if (data.error) {
+                Swal.fire('Se ha producido un error', data.message, 'error')
+            } else {
+                // cerramos la ventana de upgrade
+                setShowUpgrade(false)
 
-                        ConfigurateComponent()
-                    } else {
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'error',
-                            title: 'Se ha producido un error',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
-                }
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Solicitud Aceptada',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
 
-            }).catch(reason => {
-                Swal.fire('Ha ocurrido un error', reason.toString(), 'error')
-            })
+                ConfigurateComponent()
+            }
+
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error.toString(), "warning")
         } finally {
@@ -592,40 +527,34 @@ const Records = () => {
                 throw String("Detalles de compra no definido, contacte a Samuel")
             }
 
-            const data = {
+            const dataParams = {
                 ...detailsRequestMoneyChanger,
                 hash: hashMonyeChangerRequest
             }
 
-            await Petition.post("/money-changer/accept", { data }, { headers: { "x-auth-token": token } })
-                .then(response => {
-                    const { data } = response
+            const { data } = await Petition.post("/money-changer/accept", dataParams, headersPetition)
 
-                    if (data.error) {
-                        // Verificamos si el server retorna un error
-                        throw data.message
-                    } else if (data.response === "success") {
-                        // Verificamos que el servidor retorne la confirmacion
-                        setMoneyChagerRequestModal(false)
+            if (data.error) {
+                // Verificamos si el server retorna un error
+                throw data.message
+            } else if (data.response === "success") {
+                // Verificamos que el servidor retorne la confirmacion
+                setMoneyChagerRequestModal(false)
 
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Solicitud Procesada',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-
-                        getAllMoneyChanger()
-
-                    } else {
-                        // Si el servidor no devuelve una respuesta valida
-                        throw String("La solicitud no pudo completarse, contacte a Samuel")
-                    }
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Solicitud Procesada',
+                    showConfirmButton: false,
+                    timer: 1500
                 })
-                .catch(reason => {
-                    throw reason
-                })
+
+                getAllMoneyChanger()
+
+            } else {
+                // Si el servidor no devuelve una respuesta valida
+                throw String("La solicitud no pudo completarse, contacte a Samuel")
+            }
 
 
         } catch (reason) {
@@ -653,52 +582,45 @@ const Records = () => {
 
                 const dataSend = { percentage, id_currency: Number(cryptoCurrency) }
 
-                await Petition.post('/admin/trading', dataSend, {
-                    headers: {
-                        "x-auth-token": token
-                    }
-                }).then(({ status, data }) => {
-                    if (data.error) {
-                        throw String(data.message)
-                    }
+                const { data, status } = await Petition.post('/admin/trading', dataSend, headersPetition)
 
-                    if (status === 200 && data.response === "success") {
-                        // debugger
+                if (data.error) {
+                    throw String(data.message)
+                }
 
-                        // Copiamos el arreglo de las cryptos procesadas
-                        const arr = dataTrading.crypto
-                        arr.push(cryptoCurrency)
+                if (status === 200 && data.response === "success") {
+                    // debugger
 
-                        // creamos un objeto exacto al que esta en el estado
-                        const data = {
-                            crypto: arr,
-                            day: moment().get('day')
-                        }
+                    // Copiamos el arreglo de las cryptos procesadas
+                    const arr = dataTrading.crypto
+                    arr.push(cryptoCurrency)
 
-                        // Modificamos con los nuevos datos
-                        setDataTrading(data)
-
-                        // lo agregamos al localstorare codificado
-                        localStorage.setItem('@trading', jwt.encode(data, keySecret))
-
-
-                        Swal.fire(
-                            `Trading procesado`,
-                            `
-                            Todos los planes de inversion en 
-                            ${cryptoCurrency === "1" ? 'BTC' : ''}
-                            ${cryptoCurrency === "2" ? 'ETH' : ''}
-                            fueron reportados
-                            `,
-                            "success"
-                        )
-
-                        setPercentage('')
+                    // creamos un objeto exacto al que esta en el estado
+                    const data = {
+                        crypto: arr,
+                        day: moment().get('day')
                     }
 
-                }).catch(reason => {
-                    throw String(reason)
-                })
+                    // Modificamos con los nuevos datos
+                    setDataTrading(data)
+
+                    // lo agregamos al localstorare codificado
+                    localStorage.setItem('@trading', jwt.encode(data, keySecret))
+
+
+                    Swal.fire(
+                        `Trading procesado`,
+                        `
+                        Todos los planes de inversion en 
+                        ${cryptoCurrency === "1" ? 'BTC' : ''}
+                        ${cryptoCurrency === "2" ? 'ETH' : ''}
+                        fueron reportados
+                        `,
+                        "success"
+                    )
+
+                    setPercentage('')
+                }
 
             } else {
                 Swal.fire(
@@ -735,33 +657,29 @@ const Records = () => {
                 reason: reasonDecline,
             }
 
-            await Petition.post("/exchange/decline", previousData, {
-                headers: {
-                    "x-auth-token": token
-                }
-            }).then(async ({ data }) => {
-                if (data.error) {
-                    throw String(data.message)
-                }
+            const { data } = await Petition.post("/exchange/decline", previousData, headersPetition)
 
-                if (data.response === "success") {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Solicitud Rechazada',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
+            if (data.error) {
+                throw String(data.message)
+            }
 
-                    setExchangeRequestModal(false)
+            if (data.response === "success") {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Solicitud Rechazada',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
 
-                    await getAllExchange()
+                setExchangeRequestModal(false)
+
+                await getAllExchange()
 
 
-                } else {
-                    throw String("Tu rechazo no se ha podido procesar")
-                }
-            })
+            } else {
+                throw String("Tu rechazo no se ha podido procesar")
+            }
 
         } catch (error) {
             Swal.fire("Ha ocurrido un errro", error.toString(), "error")
@@ -779,39 +697,36 @@ const Records = () => {
         try {
             setLoaderPetition(true)
 
-            const data = {
+            const dataParams = {
                 data: detailsRequestMoneyChanger,
                 send: checkSendNotification,
                 reason: reasonDecline,
             }
 
-            await Petition.post("/money-changer/decline", data, { headers: { "x-auth-token": token } })
-                .then(response => {
-                    const { data } = response
+            const { data } = await Petition.post("/money-changer/decline", dataParams, headersPetition)
 
-                    if (data.error) {
-                        // Verificamos si en la respuesta del servidor hay errores
-                        throw String(data.message)
-                    } else if (data.response === "success") {
-                        // Verificamos si se rechazo correctamente
+            if (data.error) {
+                // Verificamos si en la respuesta del servidor hay errores
+                throw String(data.message)
+            } else if (data.response === "success") {
+                // Verificamos si se rechazo correctamente
 
-                        setMoneyChagerRequestModal(false)
+                setMoneyChagerRequestModal(false)
 
-                        Swal.fire({
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Solicitud Rechazada',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-
-                        // Actualizamos la lista de solicitudes
-                        getAllMoneyChanger()
-                    } else {
-                        // Si la respuesta del servidor es desconocida
-                        throw String("No se ha podido ejecutar esta accion, contacte a Samuel.")
-                    }
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Solicitud Rechazada',
+                    showConfirmButton: false,
+                    timer: 1500
                 })
+
+                // Actualizamos la lista de solicitudes
+                getAllMoneyChanger()
+            } else {
+                // Si la respuesta del servidor es desconocida
+                throw String("No se ha podido ejecutar esta accion, contacte a Samuel.")
+            }
 
         } catch (error) {
             Swal.fire("Ha ocurrido un errro", error.toString(), "error")
@@ -837,33 +752,29 @@ const Records = () => {
                 hash: hashExchangeRequest,
             }
 
-            await Petition.post("/exchange/accept", previousData, {
-                headers: {
-                    "x-auth-token": token
-                }
-            }).then(async ({ data }) => {
-                if (data.error) {
-                    throw String(data.message)
-                }
+            const { data } = await Petition.post("/exchange/accept", previousData, headersPetition)
 
-                if (data.response === "success") {
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: 'Reporte enviado',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
+            if (data.error) {
+                throw String(data.message)
+            }
 
-                    setExchangeRequestModal(false)
+            if (data.response === "success") {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Reporte enviado',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
 
-                    await getAllExchange()
+                setExchangeRequestModal(false)
+
+                await getAllExchange()
 
 
-                } else {
-                    throw String("El reporte no se ha podido procesar")
-                }
-            })
+            } else {
+                throw String("El reporte no se ha podido procesar")
+            }
 
         } catch (error) {
             Swal.fire("AlyExchange", error.toString(), "error")
@@ -877,26 +788,27 @@ const Records = () => {
         try {
             setLoaderReportDownload(true)
 
-            const {data} = await Petition.get(`/admin/reports/upgrades?from=${reportFromDate}&to=${reportToDate}`, {
+            const { data } = await Petition.get(`/admin/reports/upgrades?from=${reportFromDate}&to=${reportToDate}`, {
                 responseType: 'arraybuffer',
                 headers: {
                     'Content-Disposition': "attachment; filename=template.xlsx",
                     'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     "x-auth-token": token
-            }})
+                }
+            })
 
-            if(data.error) {
+            if (data.error) {
                 throw String(data.message)
             }
-            
-            const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    
+
+            const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
             let downloadLink = document.createElement('a')
             downloadLink.href = URL.createObjectURL(blob)
             downloadLink.download = `upgradeReport-${reportFromDate}_${reportToDate}.xlsx`;
             document.body.appendChild(downloadLink)
             downloadLink.click()
-    
+
             // cleanup
             downloadLink.remove();
             URL.revokeObjectURL(blob);
@@ -935,7 +847,7 @@ const Records = () => {
     useEffect(() => {
         ConfigurateComponent()
 
-        configurateTrading()
+        // configurateTrading()
     }, [])
 
     return (
@@ -971,8 +883,10 @@ const Records = () => {
                     <button className="button secondary" disabled={dataTrading.crypto.length === 2 || loaderTrading} onClick={applyTrading}>
                         {
                             loaderTrading
-                                ? <>
-                                    <ActivityIndicator size={16} /> <span>Cargando..</span>
+                                ?
+                                <>
+                                    <ActivityIndicator size={16} />
+                                    <span>Cargando..</span>
                                 </>
                                 : <span>Aplicar Trading</span>
                         }
@@ -988,7 +902,7 @@ const Records = () => {
                         <div onClick={_ => setTab(1)} className={`item ${tab === 1 && "active"}`}>
                             Registros
 
-                        {
+                            {
                                 allRequest.length > 0 &&
                                 <span className="request">
                                     {allRequest.length}
@@ -999,7 +913,7 @@ const Records = () => {
                         <div onClick={_ => setTab(2)} className={`item ${tab === 2 && "active"}`}>
                             Upgrades
 
-                        {
+                            {
                                 allUpgrades.length > 0 &&
                                 <span className="request">
                                     {allUpgrades.length}
@@ -1097,7 +1011,7 @@ const Records = () => {
 
                             {
                                 allMoneyChanger.length > 0 &&
-                                <MoneyChangerList 
+                                <MoneyChangerList
                                     data={allMoneyChanger}
                                     onDetail={(index) => openMoneyChangerRequest(index)} />
                             }
@@ -1112,24 +1026,24 @@ const Records = () => {
                         <div className="reports">
                             <div className="row">
                                 <span>Fecha de inicio</span>
-                                <input 
+                                <input
                                     value={reportFromDate}
                                     onChange={e => {
                                         setReportFromDate(e.target.value)
                                     }}
-                                    type="date" 
-                                    className="text-input"/>
+                                    type="date"
+                                    className="text-input" />
                             </div>
 
                             <div className="row">
                                 <span>Fecha de final</span>
-                                <input 
+                                <input
                                     value={reportToDate}
                                     onChange={e => {
                                         setReportToDate(e.target.value)
                                     }}
-                                    type="date" 
-                                    className="text-input"/>
+                                    type="date"
+                                    className="text-input" />
                             </div>
 
                             <button onClick={getUpgradeReport} className="button">Obtener reporte</button>
@@ -1173,7 +1087,7 @@ const Records = () => {
             {
                 // Modal de detalle para los nuevos registros
                 showRequest &&
-                <ModalRequest 
+                <ModalRequest
                     data={dataRequest}
                     loader={loaderPetition}
                     onClose={_ => setShowRequest(false)}
@@ -1199,8 +1113,8 @@ const Records = () => {
                     data={detailsRequestExchange}
                     loader={loaderPetition}
                     onClose={_ => setExchangeRequestModal(false)}
-                    onAccept={(hashExchangeRequest) => acceptExhangeRequest(hashExchangeRequest)}
-                    onDecline={(reasonDecline) => declineExchangeRequest(reasonDecline)} />
+                    onAccept={acceptExhangeRequest}
+                    onDecline={declineExchangeRequest} />
             }
 
             {
@@ -1210,8 +1124,8 @@ const Records = () => {
                     data={detailsRequestMoneyChanger}
                     loader={loaderPetition}
                     onClose={_ => setMoneyChagerRequestModal(false)}
-                    onAccept={(hashMoneyChangerRequest) => acceptMoneyChanger(hashMoneyChangerRequest)}
-                    onDecline={(reasonDecline, checkSendNotification) => declineMoneyChangerRequest(reasonDecline, checkSendNotification)} />
+                    onAccept={acceptMoneyChanger}
+                    onDecline={declineMoneyChangerRequest} />
             }
 
             {
