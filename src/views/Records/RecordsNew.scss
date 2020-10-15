@@ -1,0 +1,152 @@
+@import '../../utils/constants.scss';
+
+.Records {
+    .container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 1rem 2rem;
+
+        .column {
+            position: relative;
+            box-sizing: border-box;
+            width: calc(50% - 1rem);
+            background-color: rgba(0, 0, 0, .4);
+            border-radius: 7px;
+            min-height: 500px;
+            height: calc(100vh - 9rem);
+            max-height: 700px;
+
+            .Activityindicator {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .list {
+            .tabs-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-evenly;
+                border: 2px solid $colorYellow;
+                border-radius: 7px;
+
+                .tab {
+                    position: relative;
+                    display: block;
+                    flex-grow: 1;
+                    background-color: transparent;
+                    color: $colorYellow;
+                    padding: .5rem 1rem;
+                    border-radius: 4px;
+                    text-align: center;
+                    cursor: pointer;
+                    transform: scale(1);
+                    user-select: none;
+                    transition: background-color .25s, color .25s, transform .25s;
+
+                    &.active {
+                        background-color: $colorYellow;
+                        color: #1d1d1d;
+                    }
+
+                    &:active {
+                        transform: scale(.96);
+                    }
+
+                    &[data-counter]:after {
+                        position: absolute;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        content: attr(data-counter);
+                        background-color: $colorRed;
+                        color: #fff;
+                        padding: .3rem;
+                        min-width: 14px;
+                        font-size: 12px;
+                        border-radius: 100px;
+                        top: -40%;
+                        right: 5px;
+
+                        &:empty {
+                            background-color: blue;
+                        }
+                    }
+                }
+            }
+
+            .list-content {
+                margin: 1rem 0;
+
+                .title {
+                    color: $colorYellow;
+                    font-weight: normal;
+                    text-align: center;
+                }
+
+                .empty {
+                    align-items: center;
+                    animation: fadeEffect 1s;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    margin-top: 25px;
+            
+                    img {
+                        width: 256px;
+                        margin-bottom: 10px;
+                    }
+                }
+            }
+        }
+    }
+
+    .table {
+        animation: fadeEffect 1s;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 1rem;
+        user-select: none;
+        height: 100%;
+        min-height: 400px;
+        max-height: 600px;
+        overflow-y: auto;
+
+        .header, .row {
+            padding: 10px 1rem;
+        }
+
+        .header {
+            border-bottom: 2px solid $colorYellow;
+            color: $colorYellow;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .row {
+            border-bottom: 1px solid #fff;
+            display: flex;
+            justify-content: space-between;
+            transition: $transition;
+  
+            span {
+              &.name {
+                text-transform: capitalize;
+              }
+  
+              i {
+                opacity: 0.5;
+              }
+            }
+  
+            &:hover {
+              background-color: rgba($color: #fff, $alpha: 0.1);
+              cursor: pointer;
+            }
+        }
+    }
+}

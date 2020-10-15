@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
-import { Petition, keySecret, setTittleDOM } from "../../utils/constanst"
+import { Petition, keySecret, setTittleDOM, downloadReport } from "../../utils/constanst"
 
 // Import middlewares and validators
 import jwt from "jwt-simple"
@@ -90,6 +90,16 @@ const Records = () => {
     const [reportFromDate, setReportFromDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
     const [reportToDate, setReportToDate] = useState(moment(new Date()).format("YYYY-MM-DD"))
     const [loaderReportDownload, setLoaderReportDownload] = useState(false)
+
+    /**
+     * Constantes para configurar el endpoint y el nombre del archivo a generar según la 
+     * pestaña que esté activa
+     */
+    const ReportsSource = [
+        { url: '/admin/reports/upgrades', filename: 'upgradesReport' },
+        { url: '/admin/reports/upgrades', filename: 'exchangeReport' },
+        { url: '/admin/reports/upgrades', filename: 'moneyChangerReport' },
+    ]
 
 
     /**
@@ -788,7 +798,9 @@ const Records = () => {
         try {
             setLoaderReportDownload(true)
 
-            const { data } = await Petition.get(`/admin/reports/upgrades?from=${reportFromDate}&to=${reportToDate}`, {
+            const { url, filename } = ReportsSource[tab - 2]
+
+            const { data } = await Petition.get(`${url}?from=${reportFromDate}&to=${reportToDate}`, {
                 responseType: 'arraybuffer',
                 headers: {
                     'Content-Disposition': "attachment; filename=template.xlsx",
@@ -801,17 +813,7 @@ const Records = () => {
                 throw String(data.message)
             }
 
-            const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-
-            let downloadLink = document.createElement('a')
-            downloadLink.href = URL.createObjectURL(blob)
-            downloadLink.download = `upgradeReport-${reportFromDate}_${reportToDate}.xlsx`;
-            document.body.appendChild(downloadLink)
-            downloadLink.click()
-
-            // cleanup
-            downloadLink.remove();
-            URL.revokeObjectURL(blob);
+            downloadReport(data, `${filename}-${reportFromDate}_${reportToDate}.xlsx`)
         } catch (error) {
             Swal.fire("AlyExchange", error.toString(), "error")
         } finally {
@@ -849,6 +851,11 @@ const Records = () => {
 
         // configurateTrading()
     }, [])
+
+    useEffect(_ => {
+        setReportFromDate(moment(new Date()).format("YYYY-MM-DD"))
+        setReportToDate(moment(new Date()).format("YYYY-MM-DD"))
+    }, [tab])
 
     return (
         <div className="container-records">
@@ -897,7 +904,7 @@ const Records = () => {
             </div>
 
             <div className="content">
-                <div className={`collection ${tab === 2 ? 'left' : ''}`}>
+                <div className={`collection ${[2, 3, 4].indexOf(tab) !== -1 ? 'left' : ''}`}>
                     <div className="menu-tab">
                         <div onClick={_ => setTab(1)} className={`item ${tab === 1 && "active"}`}>
                             Registros
@@ -1022,7 +1029,7 @@ const Records = () => {
                     {/**
                      * Sección para generar los reportes
                      */
-                        tab === 2 &&
+                        [2, 3, 4].indexOf(tab) !== -1 &&
                         <div className="reports">
                             <div className="row">
                                 <span>Fecha de inicio</span>

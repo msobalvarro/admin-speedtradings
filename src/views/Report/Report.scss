@@ -10,15 +10,51 @@ div.container-report {
       margin-bottom: 25px;
       display: flex;
       justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
 
       input {
-        width: 250px;
+        width: 200px;
         font-size: 1.2em;
+      }
+
+      .reports {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        height: 4rem;
+        left: 0;
+
+        .row {
+          display: flex;
+          flex-direction: column;
+          width: 30%;
+          margin-right: 16px;
+
+          span {
+            display: inline-block;
+            margin-bottom: 5px;
+          }
+
+          input {
+            width: 150px;
+          }
+        }
+
+        .button {
+          font-size: 14px;
+          width: 160px;
+          height: 2.1rem;
+          align-self: flex-end;
+          padding: 5px 10px !important;
+          margin-bottom: 3px;
+        }
       }
 
       .selection {
         align-items: center;
         display: flex;
+        margin-top: 15px;
 
         span.total {
           color: $colorYellow;
@@ -27,7 +63,7 @@ div.container-report {
         select {
           font-size: 1.2em;
           margin: 0 10px;
-          width: 250px;
+          width: 150px;
         }
       }
     }

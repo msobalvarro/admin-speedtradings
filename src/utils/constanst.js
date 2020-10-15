@@ -48,6 +48,20 @@ export const copyData = (str = "") => {
     }
 }
 
+export const downloadReport =(data, filename) => {
+    const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
+    
+    let downloadLink = document.createElement('a')
+    downloadLink.href = URL.createObjectURL(blob)
+    downloadLink.download = filename
+    document.body.appendChild(downloadLink)
+    downloadLink.click()
+
+    // cleanup
+    downloadLink.remove();
+    URL.revokeObjectURL(blob);
+}
+
 /**
  * Metodo para cambiar el nombre de la pagina
  * 
