@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 
 // Improt styles and assets
 import './index.scss'
+import 'toastr/toastr.scss'
 
 // Import components
 import App from './views/App'

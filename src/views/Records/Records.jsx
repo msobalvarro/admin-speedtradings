@@ -794,7 +794,7 @@ const Records = () => {
     /**
      * Función para obtener el archivo .xls que será el reporte
      */
-    const getUpgradeReport = async _ => {
+    const getReport = async _ => {
         try {
             setLoaderReportDownload(true)
 
@@ -849,7 +849,7 @@ const Records = () => {
     useEffect(() => {
         ConfigurateComponent()
 
-        // configurateTrading()
+        configurateTrading()
     }, [])
 
     useEffect(_ => {
@@ -1053,7 +1053,7 @@ const Records = () => {
                                     className="text-input" />
                             </div>
 
-                            <button onClick={getUpgradeReport} className="button">Obtener reporte</button>
+                            <button onClick={getReport} className="button">Obtener reporte</button>
                         </div>
                     }
 

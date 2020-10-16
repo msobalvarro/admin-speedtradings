@@ -72,6 +72,7 @@ div.container-report {
       background-color: rgba($color: #000, $alpha: 0.4);
       border-radius: 10px;
       height: 75vh;
+      position: relative;
       overflow: auto;
       scroll-behavior: smooth;
       padding: 10px;
@@ -85,18 +86,22 @@ div.container-report {
         padding: 10px 5px;
 
         span {
-          width: 25%;
+          width: 20%;
 
           &:nth-child(1) {
             text-align: left;
           }
 
           &:nth-child(3) {
-            text-align: right;
+            text-align: left;
           }
 
           &:nth-child(4) {
-            text-align: right;
+            text-align: center;
+          }
+
+          &:nth-child(5) {
+            text-align: center;
           }
         }
       }
@@ -114,8 +119,12 @@ div.container-report {
           background-color: rgba($color: $colorRed, $alpha: 0.2);
         }
 
+        input {
+          width: 20%;
+        }
+
         span {
-          width: 25%;
+          width: 20%;
 
           &:nth-child(1) {
             text-align: left;
@@ -128,9 +137,14 @@ div.container-report {
           }
 
           &:nth-child(3) {
-            text-align: right;
+            text-align: left;
           }
-        }
+
+          &:nth-child(4) {
+            text-align: left;
+            width: 20%;
+          }
+        }        
 
         span.alypay-verified {
           color: $colorGreen;
@@ -157,7 +171,7 @@ div.container-report {
         }
 
         div.hash-transaction {
-          width: 25%;
+          width: 15%;
           margin-left: 10px;
           text-align: right;
           font-size: 9px;
@@ -193,10 +207,30 @@ div.container-report {
             opacity: 1;
           }
         }
+      }
 
-        input {
-          width: 25%;
-          margin-left: 10px;
+
+      .download-report {
+        align-items: center;
+        background-color: $colorYellow;
+        border-radius: 50%;
+        bottom: 3%;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        height: 65px;
+        position: fixed;
+        padding: 10px;
+        right: 3%;
+        transition: $transition;
+        width: 65px;
+
+        &:hover {
+          box-shadow: $animationShadow;
+        }
+
+        img, svg {
+          max-width: 80%;
         }
       }
     }
