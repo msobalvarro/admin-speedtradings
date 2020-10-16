@@ -54,16 +54,29 @@ div.container-report {
       .selection {
         align-items: center;
         display: flex;
-        margin-top: 15px;
-
-        span.total {
-          color: $colorYellow;
-        }
+        margin-top: 15px;       
 
         select {
           font-size: 1.2em;
           margin: 0 10px;
           width: 150px;
+        }
+
+
+        .total-content {
+          display: flex;
+          align-items: flex-end;
+          flex-direction: column;
+
+          span.total {
+            color: $colorYellow;
+            font-size: 24px;
+          }
+
+          span.total-alypay {
+            font-size: 12px;
+            margin-top: 10px;
+          }
         }
       }
     }

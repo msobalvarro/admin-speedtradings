@@ -61,8 +61,10 @@ const Report = () => {
         try {
             dispatch({ type: "loader", payload: true })
 
+            // obtenemos el reporte de pago
             const { data } = await Petition.get(`/admin/payments/${_currency}`, { headers })
 
+            // verificamos si hay un error
             if (data.error) {
                 throw data.message
             }
@@ -70,6 +72,7 @@ const Report = () => {
             /**Alamacenara temporalmente la suma de total a pagar */
             const sum = []
 
+            // asignamos el reporte al estado
             dispatch({ type: "allData", payload: data })
 
             // Sumamos el total a pagar
@@ -83,6 +86,16 @@ const Report = () => {
             const total = _.sum(sum)
 
             dispatch({ type: "total", payload: _.floor(total, 8) })
+
+            // // obtenemos el saldo de alypay
+            const { data: dataCredit } = await Petition.get("/admin/payments/credit-alypay", { headers })
+
+            // verificamos si hay un error en la peticion
+            if (dataCredit.error) {
+                throw String(dataCredit.message)
+            }
+
+            setCreditAlypay(dataCredit)
 
         } catch (error) {
             Swal.fire(
@@ -306,9 +319,16 @@ const Report = () => {
                     {
                         state.allData.length > 0 &&
                         <div className="selection">
-                            <span className="total">
-                                Total {state.total.toString()} {state.currency === 1 ? "BTC" : "ETH"}
-                            </span>
+                            <div className="total-content">
+                                <span className="total">
+                                    Total {state.total.toString()} {state.currency === 1 ? "BTC" : "ETH"}
+                                </span>
+
+                                <span className="total-alypay">
+                                    Saldo AlyPay {state.currency === 1 ? creditAlyPay.btc : creditAlyPay.eth} {state.currency === 1 ? "BTC" : "ETH"}
+                                </span>
+                            </div>
+
 
                             <select disabled={state.loader} className="picker" value={state.currency} onChange={changeCurrency}>
                                 <option value={1}>Bitcoin</option>
