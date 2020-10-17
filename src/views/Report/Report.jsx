@@ -31,6 +31,8 @@ const initialState = {
     // estado que renderiza el loader
     loader: false,
 
+    loaderPayment: false,
+
     // estado que indica si el proceso de descarga exce
     loaderExcel: false,
 
@@ -177,7 +179,11 @@ const Report = () => {
         const dataSend = []
 
         try {
+            dispatch({ type: "loaderPayment", payload: false })
+
             for (let index = 0; index < state.allData.length; index++) {
+                const elementData = state.allData[index]
+
                 if (hashs[index] === undefined) {
                     hashs[index] = ""
                 }
@@ -187,9 +193,9 @@ const Report = () => {
 
                 // Construimos el objeto que necesitara el backend para procesar el retiro
                 const dataPush = {
-                    ...state.allData[index],
-                    hash:
-                        (state.allData[index].hash === null ? hash : state.allData[index].hash)
+                    ...elementData,
+                    paymented: elementData.hash !== null,
+                    hash: (elementData.hash === null ? hash : elementData.hash)
                 }
 
                 // Se lo agregamos a la constante que enviaremos al backend
@@ -197,23 +203,28 @@ const Report = () => {
             }
 
             // Ejecutamos la peticion para ejecutar reporte
-            const { data, status } = await Petition.post("/admin/payments/apply", { data: dataSend, id_currency: state.currency }, { headers })
+            const { data } = await Petition.post("/admin/payments/apply", { data: dataSend, id_currency: state.currency }, { headers })
 
             if (data.error) {
                 throw String(data.message)
             }
 
-            if (data.response && status === 200) {
+            if (data.response === "success") {
+                // Swal.fire("Reporte ejecutado", "Su reporte de pago ha sido recibido", "success")
 
-                Swal.fire("Reporte ejecutado", "Su reporte de pago ha sido recibido", "success")
+                toastr.info("El reporte ha sido ejecutado", "Reporte", { positionClass: "toast-bottom-right" })
+
+
+                // refrescamos los datos
+                getAllData()
             }
 
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error.toString(), "warning")
+        } finally {
+            dispatch({ type: "loaderPayment", payload: false })
+
         }
-
-
-        getAllData()
     }
 
     /**
@@ -330,12 +341,21 @@ const Report = () => {
                             </div>
 
 
-                            <select disabled={state.loader} className="picker" value={state.currency} onChange={changeCurrency}>
+                            <select disabled={state.loaderPayment} className="picker" value={state.currency} onChange={changeCurrency}>
                                 <option value={1}>Bitcoin</option>
                                 <option value={2}>Ethereum</option>
                             </select>
 
-                            <button disabled={state.loader} className="button" onClick={onReport}>Enviar reporte</button>
+                            {
+                                !state.loaderPayment &&
+                                <button disabled={state.loaderPayment} className="button" onClick={onReport}>Enviar reporte</button>
+                            }
+
+
+                            {
+                                state.loaderPayment &&
+                                <ActivityIndicator size={36} />
+                            }
                         </div>
                     }
 
