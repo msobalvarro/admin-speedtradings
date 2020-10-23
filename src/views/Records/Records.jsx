@@ -116,9 +116,6 @@ const Records = () => {
     const getAllRequest = () => new Promise(async (resolve, reject) => {
         const { data } = await Petition.get('/admin/request/', headersPetition)
 
-
-        console.log(data)
-
         if (data?.error) {
             Swal.fire('Ha ocurrido un error', data.message, 'error')
 
