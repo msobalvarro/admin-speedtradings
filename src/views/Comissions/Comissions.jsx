@@ -57,7 +57,7 @@ const Comissions = () => {
 
             const { data } = await Petition.get('/admin/comission', header)
 
-            if(data.error) {
+            if (data.error) {
                 throw String(data.message)
             }
 
@@ -74,7 +74,7 @@ const Comissions = () => {
      * @param {Number} id - Id del sponsor 
      */
     const getComissionDetailData = async (id) => {
-        if(loaderDetail) {
+        if (loaderDetail) {
             return
         }
 
@@ -83,7 +83,7 @@ const Comissions = () => {
 
             const { data } = await Petition.get(`/admin/comission/${id}`, header)
 
-            if(data.error) {
+            if (data.error) {
                 throw String(data.message)
             }
 
@@ -107,8 +107,8 @@ const Comissions = () => {
         list = Array.from(list)
 
         const indexItem = list.map(item => item.id).indexOf(removeItem)
-        
-        if(indexItem !== -1 )
+
+        if (indexItem !== -1)
             list.splice(indexItem, 1)
 
         return list
@@ -149,7 +149,7 @@ const Comissions = () => {
 
             const { data: result } = await Petition.post('/admin/comission/accept', dataSend, header)
 
-            if(result.error) {
+            if (result.error) {
                 throw String(result.message)
             }
 
@@ -192,7 +192,7 @@ const Comissions = () => {
 
             const { data: result } = await Petition.post('/admin/comission/decline', dataSend, header)
 
-            if(result.error) {
+            if (result.error) {
                 throw String(result.message)
             }
 
@@ -215,7 +215,7 @@ const Comissions = () => {
      * @returns {Array} - Resultado del filtro
      */
     const filterData = (dataSet) => {
-        if(filter.length === 0) {
+        if (filter.length === 0) {
             return dataSet
         }
 
@@ -252,18 +252,19 @@ const Comissions = () => {
         try {
             setLoaderReport(true)
 
-            const {data} = await Petition.get(`/admin/reports/?from=${reportFromDate}&to=${reportToDate}`, {
+            const { data } = await Petition.get(`/admin/reports/?from=${reportFromDate}&to=${reportToDate}`, {
                 responseType: 'arraybuffer',
                 headers: {
                     'Content-Disposition': "attachment; filename=template.xlsx",
                     'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     "x-auth-token": token
-            }})
+                }
+            })
 
-            if(data.error) {
+            if (data.error) {
                 throw String(data.message)
             }
-            
+
             downloadReport(data, `paymentReport-${reportFromDate}_${reportToDate}.xlsx`)
         } catch (error) {
             Swal.fire("Reporte de pagos", error.toString(), "error")
@@ -278,7 +279,7 @@ const Comissions = () => {
 
     return (
         <div className="Comissions">
-            <NavigationBar/>
+            <NavigationBar />
 
             <div className="Comissions-content">
                 <div className="column Comissions-list">
@@ -291,7 +292,7 @@ const Comissions = () => {
                                 onChange={e => setFilter(e.target.value)}
                                 type="text"
                                 placeholder="Escribe para buscar..."
-                                className="field-input"/>
+                                className="field-input" />
                             <p>
                                 <span className="pending">Pendiente</span>
                                 <span>|</span>
@@ -302,7 +303,7 @@ const Comissions = () => {
 
                     {
                         loaderList &&
-                        <ActivityIndicator size={46}/>
+                        <ActivityIndicator size={46} />
                     }
 
                     {
@@ -343,24 +344,24 @@ const Comissions = () => {
                     <div className="reports">
                         <div className="row">
                             <span>Fecha de inicio</span>
-                            <input 
+                            <input
                                 value={reportFromDate}
                                 onChange={e => {
                                     setReportFromDate(e.target.value)
                                 }}
-                                type="date" 
-                                className="text-input"/>
+                                type="date"
+                                className="text-input" />
                         </div>
 
                         <div className="row">
                             <span>Fecha de final</span>
-                            <input 
+                            <input
                                 value={reportToDate}
                                 onChange={e => {
                                     setReportToDate(e.target.value)
                                 }}
-                                type="date" 
-                                className="text-input"/>
+                                type="date"
+                                className="text-input" />
                         </div>
 
                         <button onClick={getPaymentReport} className="button">Obtener reporte</button>
@@ -371,7 +372,7 @@ const Comissions = () => {
                     <h2>Vista previa de Sponsor</h2>
                     {
                         loaderDetail &&
-                        <ActivityIndicator size={46}/>
+                        <ActivityIndicator size={46} />
                     }
 
                     {
@@ -410,10 +411,10 @@ const Comissions = () => {
 
                                             {
                                                 moment(new Date()).diff(moment(dataDetail.date), 'hours') < 48
-                                                ? `
+                                                    ? `
                                                 (Restan ${getRestTime(dataDetail.date)} hrs.)
                                                 `
-                                                : ''
+                                                    : ''
                                             }
                                         </span>
                                     </div>
@@ -444,8 +445,8 @@ const Comissions = () => {
                                         <span className={`value ${dataDetail.active ? 'ready' : 'pending'}`}>
                                             {
                                                 dataDetail.active
-                                                ? 'Listo para pagar'
-                                                : 'Pendiente'
+                                                    ? 'Listo para pagar'
+                                                    : 'Pendiente'
                                             }
                                         </span>
                                     </div>
@@ -471,7 +472,7 @@ const Comissions = () => {
                                         onChange={e => setTransactionHash(e.target.value)}
                                         type="text"
                                         placeholder="Hash de transacción"
-                                        className="value field-input"/>
+                                        className="value field-input" />
                                 </div>
                             }
 
@@ -479,7 +480,7 @@ const Comissions = () => {
                                 dataDetail.alypay &&
                                 <div className="detail-item">
                                     <div className="alypay-payment">
-                                        <span>&#10003;</span> Pagar con <img src={AlypayLogo} alt="AlyPay"/>
+                                        <span>&#10003;</span> Pagar con <img src={AlypayLogo} alt="AlyPay" />
                                     </div>
                                 </div>
                             }

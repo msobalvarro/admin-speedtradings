@@ -66,9 +66,9 @@
             
             .body {
                 max-height: 390px;
-                overflow-y: hidden;
+                overflow-y: auto;
 
-                &:hover {
+                &:hover, &:focus, &:active {
                     overflow-y: auto;
                 }
             }

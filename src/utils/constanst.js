@@ -13,7 +13,7 @@ export const keySecret = "testDevelop"
 export const emailImageToken = "jRVFgyxiXKHxAWQL47jVzoMwj2m9DfG6-fLv8j9zBtLDMjpBd4QeLpXdTHM2Mnlyg-zZEfQrPoCn9yPUVaUQEvTl3B904h3xcY"
 
 //export const urlServer = "https://ardent-medley-272823.appspot.com"
-export const urlServer = "http://192.168.1.238:9000"
+export const urlServer = "http://192.168.1.238:8084"
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
 
@@ -33,25 +33,25 @@ export const Round = (number = 0) => Math.round(number * 100) / 100
 
 /**Copy string */
 export const copyData = (str = "") => {
-    let input = document.createElement('input');
+    let input = document.createElement('input')
 
-    input.setAttribute('value', str);
-    document.body.appendChild(input);
-    input.select();
+    input.setAttribute('value', str)
+    document.body.appendChild(input)
+    input.select()
 
-    let result = document.execCommand('copy');
-    document.body.removeChild(input);
+    let result = document.execCommand('copy')
+    document.body.removeChild(input)
 
-    if(result) {
+    if (result) {
         Swal.fire("¡Listo!", "Copiado a portapapeles", "success")
     } else {
         Swal("¡Opps!", "Error al copiar al portapapeles", "error")
     }
 }
 
-export const downloadReport =(data, filename) => {
-    const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-    
+export const downloadReport = (data, filename) => {
+    const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
     let downloadLink = document.createElement('a')
     downloadLink.href = URL.createObjectURL(blob)
     downloadLink.download = filename
@@ -59,8 +59,8 @@ export const downloadReport =(data, filename) => {
     downloadLink.click()
 
     // cleanup
-    downloadLink.remove();
-    URL.revokeObjectURL(blob);
+    downloadLink.remove()
+    URL.revokeObjectURL(blob)
 }
 
 /**
@@ -88,7 +88,7 @@ export const Petition = Axios.create({
             // LogOut()
         }
 
-        return status >= 200 && status < 300;
+        return status >= 200 && status < 300
     }
 })
 
