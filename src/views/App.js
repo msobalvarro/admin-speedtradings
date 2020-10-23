@@ -9,7 +9,7 @@ import { DELETESTORAGE, SETSTORAGE, DELETSOCKET, SETSOCKET } from '../store/Acti
 
 // Import Views
 import Login from './Login/Login'
-import Records from './Records/RecordsNew'
+import Records from './Records/Records'
 import Report from './Report/Report'
 import Comissions from './Comissions/Comissions'
 import ReportDetail from './ReportDetail/ReportDetail'
