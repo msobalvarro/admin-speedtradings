@@ -193,6 +193,14 @@ const Records = () => {
         }
     })
 
+    // Reproduce el sonido de notificación
+    const dispatchNotification = _ => {
+        const audioNotification = new Audio(sounNotification)
+
+        audioNotification.muted = false
+        audioNotification.play()
+    }
+
     // Ejecuta peticiones al servidor para obtener todos los datos de las tablas
     const ConfigurateComponent = async () => {
         setLoader(true)
@@ -208,8 +216,6 @@ const Records = () => {
             await getAllMoneyChanger()
 
             if (socket !== null) {
-                const audioNotification = new Audio(sounNotification)
-
                 socket.addEventListener("message", async (response) => {
                     const { data: typeEvent } = response
 
@@ -235,9 +241,7 @@ const Records = () => {
 
                     await window.focus()
 
-                    audioNotification.muted = false
-
-                    audioNotification.play()
+                    dispatchNotification()
                 })
             }
 

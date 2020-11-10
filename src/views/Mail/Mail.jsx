@@ -5,11 +5,11 @@ import "./Mail.scss"
 
 // Constant and redux store
 import { useSelector } from "react-redux"
-import { 
-    Petition, 
+import {
+    Petition,
     randomKey,
-    urlServer, 
-    emailImageToken 
+    urlServer,
+    emailImageToken
 } from "../../utils/constanst"
 
 // Import assets
@@ -60,21 +60,21 @@ const reducer = (state, action) => {
 var toolbarContainer = [
     ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
     ['blockquote'],
-  
+
     [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+    [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
     [{ 'direction': 'rtl' }],                         // text direction
-  
+
     [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
     ['link', 'image'],
-  
+
     [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
     [{ 'font': [] }],
     [{ 'align': [] }],
-  
+
     ['clean']                                         // remove formatting button
 ]
 
@@ -95,7 +95,7 @@ const editorImageHandler = (editor, credentials, loaderState) => {
     input.setAttribute('type', 'file')
     input.setAttribute('accept', 'image/*')
     input.click()
-    input.onchange = async function() {
+    input.onchange = async function () {
         try {
             loaderState(true)
 
@@ -104,15 +104,15 @@ const editorImageHandler = (editor, credentials, loaderState) => {
 
             datasender.append('image', file)
 
-            const {data} = await Petition.post('/file/email', datasender, credentials)
+            const { data } = await Petition.post('/admin/file/email', datasender, credentials)
             console.log(data)
 
-            if(data.error) {
+            if (data.error) {
                 throw String(data.message)
             }
 
-            const range = editor.getEditorSelection(true);
-            const link = `${urlServer}/file/email/${data.filenameBucket}?token=${emailImageToken}`;
+            const range = editor.getEditorSelection(true)
+            const link = `${urlServer}/admin/file/email/${data.fileId}?token=${emailImageToken}`
 
             editor.getEditor().insertEmbed(range.index, 'image', link)
             editor.getEditor().setSelection(range.index + 1)
@@ -122,7 +122,7 @@ const editorImageHandler = (editor, credentials, loaderState) => {
             loaderState(false)
         }
     }
-  }
+}
 
 
 const Mail = () => {
@@ -130,10 +130,10 @@ const Mail = () => {
 
     // get token auth from redux
     const { token } = useSelector(x => x.globalStorage)
-    const header = { 
-        headers: { 
-            "x-auth-token": token 
-        } 
+    const header = {
+        headers: {
+            "x-auth-token": token
+        }
     }
 
     // Estado que almacena todos los correos
@@ -191,17 +191,17 @@ const Mail = () => {
     const onHandledChangeSearch = ({ target }) => {
         const { value: payload } = target
 
-        if(payload === ',') return
+        if (payload === ',') return
 
         dispatch({ type: "searchUser", payload })
 
-        if(payload.length > 3) {
+        if (payload.length > 3) {
             dispatch({ type: "showList", payload: true })
         } else {
             dispatch({ type: "showList", payload: false })
         }
     }
-    
+
     /**
      * Función que detecta cuando se presiona ',' en el campo del ingreso remitentes.
      * Cuando se detecta el ingreso de la ',', se verifica si hay correos seleccionados 
@@ -211,10 +211,10 @@ const Mail = () => {
      */
     const onHandledMailerToListUpdate = (e) => {
         // Verifica si la tecla presionada es una ','
-        if(e.which === 44 || e.key === ',') {
+        if (e.which === 44 || e.key === ',') {
 
             // Se verifican si hay elementos seleccinados de la lista de sugerencias
-            if(emailSelected.length > 0) {
+            if (emailSelected.length > 0) {
                 setMailerToList([...mailerToList, ...emailSelected])
                 setEmailSelect([])
             } else {
@@ -222,9 +222,9 @@ const Mail = () => {
                  * De no haber elementos seleccionados de la lista, se añade el correo
                  * ingresado manualmente
                  */
-                let customEmail = { 
-                    fullname: state.searchUser, 
-                    email: state.searchUser 
+                let customEmail = {
+                    fullname: state.searchUser,
+                    email: state.searchUser
                 }
 
                 setMailerToList([...mailerToList, customEmail])
@@ -242,12 +242,12 @@ const Mail = () => {
      */
     const onHandledChangeSelectedMail = (item) => {
         // Si el elemento no está en la lista se seleccionados, se añade a la lista
-        if(!emailSelected.map(({email}) => email).includes(item.email)) {
+        if (!emailSelected.map(({ email }) => email).includes(item.email)) {
             setEmailSelect([...emailSelected, item])
         } else {
             // Si el elemento está actualmente añadido a la lista de seleccionados, se remueve
-            let indexDelete = emailSelected.map(({email}) => email).indexOf(item.email)
-            
+            let indexDelete = emailSelected.map(({ email }) => email).indexOf(item.email)
+
             emailSelected.splice(indexDelete, 1)
             setEmailSelect([...emailSelected])
         }
@@ -263,7 +263,7 @@ const Mail = () => {
      */
     const onHandledRemoveSelectedMail = (item) => {
         // Se obtiene la posición del elemento dentro de la lista de destinatarios
-        let indexDelete = mailerToList.map(({email}) => email).indexOf(item.email)
+        let indexDelete = mailerToList.map(({ email }) => email).indexOf(item.email)
 
         // Se remueve el elemento y se actualiza la  lista de destinatarios
         mailerToList.splice(indexDelete, 1)
@@ -284,29 +284,29 @@ const Mail = () => {
      */
     const handleBlur = (e) => {
         // Ocultar la lista  para la sección de los correos destinatarios
-        if(
-            !searchUserRef.current.contains(e.target) && 
+        if (
+            !searchUserRef.current.contains(e.target) &&
             !e.target.classList.contains("mailerTo-item")
         ) {
             dispatch({ type: "showList", payload: false })
         }
 
         // Oculta la lista de los correos remitentes
-        if(!mailerFromRef.current.contains(e.target)) {
+        if (!mailerFromRef.current.contains(e.target)) {
             dispatch({ type: "showMailerFromList", payload: false })
         }
-    };
+    }
 
     // Realiza el filtro de las sugerencias a medida que se va escribiendo en el campo de remitente
     const emailSuggestionFilter = (item => {
-        if(state.searchUser.length === 0) return item
+        if (state.searchUser.length === 0) return item
 
         const { email, fullname } = item
 
-        if(
+        if (
             !mailerToList.map(_item => _item.email).includes(email) &&
-            (email.toLowerCase().search(state.searchUser) > -1 || 
-             fullname.toLowerCase().search(state.searchUser) > -1)
+            (email.toLowerCase().search(state.searchUser) > -1 ||
+                fullname.toLowerCase().search(state.searchUser) > -1)
         ) {
             return item
         }
@@ -322,16 +322,16 @@ const Mail = () => {
          * registro, se retorna una lista con todos aquellos correos ingresados de manera
          * manual
          */
-        if(data.length > allEmails.length) {
+        if (data.length > allEmails.length) {
             let _data = Array.from(data)
-                            .splice(allEmails.length, data.length - allEmails.length)
+                .splice(allEmails.length, data.length - allEmails.length)
 
             return _data
         }
 
         // Retorna la lista de correos destinatarios
-        if(mailerToList.length < allEmails.length) {
-            return data 
+        if (mailerToList.length < allEmails.length) {
+            return data
         }
 
         return []
@@ -428,16 +428,16 @@ const Mail = () => {
     useEffect(_ => {
         getData()
 
-        window.addEventListener('click', handleBlur);
+        window.addEventListener('click', handleBlur)
 
         return () => {
-            window.removeEventListener('click', handleBlur);
+            window.removeEventListener('click', handleBlur)
         }
     }, [])
 
     return (
         <div className="Mail">
-            <NavigationBar/>
+            <NavigationBar />
 
             <div className="Mail-content">
                 <h2 className="title">Enviar correo electrónico</h2>
@@ -448,8 +448,8 @@ const Mail = () => {
                         <div onClick={_ => dispatch({ type: "showMailerFromList", payload: true })}>
                             {
                                 state.mailerFrom.length > 0
-                                ? state.mailerFrom
-                                : <p className="placeholder">Selecccionar correo aquí...</p>
+                                    ? state.mailerFrom
+                                    : <p className="placeholder">Selecccionar correo aquí...</p>
                             }
                         </div>
 
@@ -457,11 +457,11 @@ const Mail = () => {
                             {
                                 Object.entries(state.mailersFromList)
                                     .map(([key, email]) => (
-                                        <span 
+                                        <span
                                             key={randomKey()}
                                             onClick={_ => onHandledChangeMailerFrom(email)}
                                             className="mailerFrom-item">
-                                            { key } ({ email })
+                                            { key} ({ email})
                                         </span>
                                     ))
                             }
@@ -478,7 +478,7 @@ const Mail = () => {
                             mailerToList.length >= allEmails.length &&
                             <div className="selected-mail mailerTo-item">
                                 <span>Se seleccionaron todos los correos registrados</span>
-                                <span 
+                                <span
                                     onClick={_ => setMailerToList([])}
                                     className="remove">
                                     &#8855;
@@ -487,13 +487,13 @@ const Mail = () => {
                         }
 
                         {
-                            
+
                             mailerToListRender(mailerToList).map(item => (
                                 <div
                                     key={randomKey()}
                                     className="selected-mail">
-                                    <span>{ item.fullname }</span>
-                                    <span 
+                                    <span>{item.fullname}</span>
+                                    <span
                                         onClick={_ => onHandledRemoveSelectedMail(item)}
                                         className="remove">
                                         &#8855;
@@ -509,9 +509,9 @@ const Mail = () => {
                             type="text"
                             value={state.searchUser}
                             placeholder="Ingresar remitente..."
-                            className="input-mail searchUserMail"/>
+                            className="input-mail searchUserMail" />
 
-                        <button 
+                        <button
                             title={"Seleccionar todos los correos"}
                             disabled={mailerToList.length >= allEmails.length}
                             className="select-all"
@@ -529,15 +529,15 @@ const Mail = () => {
 
                             {
                                 allEmails
-                                .filter(emailSuggestionFilter)
-                                .map(item => (
-                                    <span 
-                                        key={randomKey()}
-                                        onClick={_ => onHandledChangeSelectedMail(item)}
-                                        className={`mailerTo-item ${emailSelected.map(({email}) => email).includes(item.email) ? 'active' : ''}`}>
-                                        { item.email }
-                                    </span>
-                                ))
+                                    .filter(emailSuggestionFilter)
+                                    .map(item => (
+                                        <span
+                                            key={randomKey()}
+                                            onClick={_ => onHandledChangeSelectedMail(item)}
+                                            className={`mailerTo-item ${emailSelected.map(({ email }) => email).includes(item.email) ? 'active' : ''}`}>
+                                            { item.email}
+                                        </span>
+                                    ))
                             }
                         </div>
                     </div>
@@ -548,25 +548,25 @@ const Mail = () => {
                     <input
                         value={state.subject}
                         onChange={e => dispatch({ type: "subject", payload: e.target.value })}
-                        type="text" 
-                        placeholder="Agregar asunto..." 
-                        className="value input-mail subject"/>
+                        type="text"
+                        placeholder="Agregar asunto..."
+                        className="value input-mail subject" />
                 </div>
 
                 <div className="editor">
-                        <ReactQuill 
-                            ref={editorRef}
-                            theme={"snow"}
-                            modules={{toolbar: toolbarContainer}}
-                            formats={toolbarFormats}
-                            onBlur={_ => { 
-                                // Se carga el contenido del editor al estado
-                                dispatch({ 
-                                    type: 'emailContent', 
-                                    payload: editorRef.current.getEditorContents()
-                                })
-                            }}
-                            />
+                    <ReactQuill
+                        ref={editorRef}
+                        theme={"snow"}
+                        modules={{ toolbar: toolbarContainer }}
+                        formats={toolbarFormats}
+                        onBlur={_ => {
+                            // Se carga el contenido del editor al estado
+                            dispatch({
+                                type: 'emailContent',
+                                payload: editorRef.current.getEditorContents()
+                            })
+                        }}
+                    />
                 </div>
 
                 <div className="email-buttons">
