@@ -81,11 +81,12 @@ export const randomKey = _ => ('_' + Math.random().toString(36).substr(2, 9))
 export const Petition = Axios.create({
     baseURL: urlServer,
     headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "ignore-release-date": true
     },
     validateStatus: (status) => {
         if (status === 401) {
-            // LogOut()
+            LogOut()
         }
 
         return status >= 200 && status < 300

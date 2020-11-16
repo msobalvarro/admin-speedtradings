@@ -116,9 +116,6 @@ const Records = () => {
     const getAllRequest = () => new Promise(async (resolve, reject) => {
         const { data } = await Petition.get('/admin/request/', headersPetition)
 
-
-        console.log(data)
-
         if (data?.error) {
             Swal.fire('Ha ocurrido un error', data.message, 'error')
 
@@ -196,6 +193,14 @@ const Records = () => {
         }
     })
 
+    // Reproduce el sonido de notificación
+    const dispatchNotification = _ => {
+        const audioNotification = new Audio(sounNotification)
+
+        audioNotification.muted = false
+        audioNotification.play()
+    }
+
     // Ejecuta peticiones al servidor para obtener todos los datos de las tablas
     const ConfigurateComponent = async () => {
         setLoader(true)
@@ -211,8 +216,6 @@ const Records = () => {
             await getAllMoneyChanger()
 
             if (socket !== null) {
-                const audioNotification = new Audio(sounNotification)
-
                 socket.addEventListener("message", async (response) => {
                     const { data: typeEvent } = response
 
@@ -238,9 +241,7 @@ const Records = () => {
 
                     await window.focus()
 
-                    audioNotification.muted = false
-
-                    audioNotification.play()
+                    dispatchNotification()
                 })
             }
 
@@ -542,7 +543,7 @@ const Records = () => {
                 hash: hashMonyeChangerRequest
             }
 
-            const { data } = await Petition.post("/money-changer/accept", dataParams, headersPetition)
+            const { data } = await Petition.post("/money-changer/accept", { data: dataParams }, headersPetition)
 
             if (data.error) {
                 // Verificamos si el server retorna un error

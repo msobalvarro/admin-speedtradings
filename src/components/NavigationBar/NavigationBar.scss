@@ -15,6 +15,8 @@ nav.navigation-bar {
 
     div.content-links {
         display: flex;
+        position: relative;
+        align-items: center;
 
         a {
             text-decoration: none;
@@ -31,6 +33,70 @@ nav.navigation-bar {
             &.active {
                 color: $colorSecondary;
             }
+        }
+    }
+
+    .dropdown {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        outline: none;
+        padding: .5rem 1rem;
+        border-radius: 25px;
+        font-size: inherit;
+        background-color: transparent;
+        color: $colorSecondary;
+        border: 2px solid $colorSecondary;
+
+        svg {
+            height: 1rem;
+            margin-left: .5rem;
+            transition: transform .25s;
+        }
+
+        .arrow {
+            transform: rotate(-90deg);
+            polygon {
+                fill: $colorSecondary;
+                stroke: $colorSecondary;
+            }
+        }
+
+        .verifyBadget {
+            path {
+                fill: #2E8B12;
+            }
+        }
+
+        &.active {
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+    }
+
+    .dropdown-content {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        top: calc(100% + 5px);
+        right: 0;
+        padding: .5rem 0;
+        border-radius: 7px;
+        text-align: right;
+        background-color: $colorMain;
+        transform: scaleY(0);
+        transform-origin: top center;
+        transition: transform .25s;
+
+        a {
+            padding: .25rem .75rem;
+        }
+
+        &.active {
+            transform: scaleY(1);
         }
     }
 }
