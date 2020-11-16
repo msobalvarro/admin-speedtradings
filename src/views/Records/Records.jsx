@@ -543,7 +543,7 @@ const Records = () => {
                 hash: hashMonyeChangerRequest
             }
 
-            const { data } = await Petition.post("/money-changer/accept", dataParams, headersPetition)
+            const { data } = await Petition.post("/money-changer/accept", { data: dataParams }, headersPetition)
 
             if (data.error) {
                 // Verificamos si el server retorna un error
