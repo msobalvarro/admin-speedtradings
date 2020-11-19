@@ -90,6 +90,7 @@ nav.navigation-bar {
         transform: scaleY(0);
         transform-origin: top center;
         transition: transform .25s;
+        z-index: 1000;
 
         a {
             padding: .25rem .75rem;

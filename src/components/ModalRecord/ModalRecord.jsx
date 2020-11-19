@@ -14,7 +14,7 @@ import { copyData } from "../../utils/constanst"
  * @param {Callback} onClose - Función a ejecutar al cerrar el modal
  * @param {Boolean} loader - Estado del indicador de carga
  */
-const ModalRecord = ({data=null, onClose=_=>{}, loader=false}) => {
+const ModalRecord = ({ data = null, onClose = _ => { }, loader = false }) => {
     return (
         <Modal onClose={_ => onClose()}>
             <div className="content-modal request">

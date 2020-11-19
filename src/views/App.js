@@ -15,6 +15,7 @@ import Comissions from './Comissions/Comissions'
 import ReportDetail from './ReportDetail/ReportDetail'
 import Logs from './Logs/Logs'
 import Mailing from './Mail/Mail'
+import Configuration from './Configuration/Configuration'
 import NotFound from './404/404'
 
 const App = () => {
@@ -74,11 +75,12 @@ const App = () => {
                 <>
                     <Switch>
                         <Route path="/" exact component={Records} />
-                        <Route path="/comissions" component={Comissions}/>
+                        <Route path="/comissions" component={Comissions} />
                         <Route path="/reports" exact component={Report} />
                         <Route path="/reports/:id" exact component={ReportDetail} />
                         <Route path="/logs" exact component={Logs} />
                         <Route path="/mailing" exact component={Mailing} />
+                        <Route path="/configuration" exact component={Configuration} />
                         <Route path="*" component={NotFound} />
                     </Switch>
                 </>

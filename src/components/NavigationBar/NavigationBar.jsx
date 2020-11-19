@@ -67,9 +67,9 @@ const NavigationBar = () => {
                     ref={showMoreContainerRef}
                     className={`dropdown-content ${showMore ? 'active' : ''}`}>
                     <Link
-                        to="/terms"
-                        className={(location === '#/terms') ? 'active' : ''}>
-                        Términos y Condiciones
+                        to="/configuration"
+                        className={(location === '#/configuration') ? 'active' : ''}>
+                        Configuración
                 </Link>
                     <Link
                         to="/logs"

@@ -149,4 +149,24 @@
             }
         }
     }
+
+    .detail {
+        .empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+        
+            img {
+                margin: 0 auto;
+                margin-bottom: 1rem;
+                width: 200px;
+            }
+        
+            h2 {
+                font-size: 1.25rem;
+                color: darken(#fff, 30);
+            }
+        }
+    }
 }

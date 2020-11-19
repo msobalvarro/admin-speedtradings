@@ -79,7 +79,11 @@ a {
     }
 
     &.secondary {
-      background-color: $colorYellow;
+      background-color: $colorSecondary;
+
+      &:hover {
+        box-shadow: 0 0 0 3px rgba($colorSecondary, .4);
+      }
     }
 
     &.large {

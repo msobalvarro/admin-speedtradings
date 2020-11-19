@@ -1,0 +1,25 @@
+@import '../../utils/constants.scss';
+
+.request {
+
+    .row {
+        span {
+          width: 33%;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+
+          &:nth-child(1) {
+            text-align: left;
+          }
+
+          &:nth-child(2) {
+            text-align: center;
+          }
+
+          &:nth-child(3) {
+            text-align: right;
+          }
+        }
+      }
+}
