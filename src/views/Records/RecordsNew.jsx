@@ -260,10 +260,8 @@ const Records = () => {
                             // Listado de registros
                             checkActiveTab(1) &&
                             <RequestList
-                                onDetail={requestId => {
-                                    console.log(requestId)
-                                    setDetailRequest(requestId)
-                                }}
+                                activeDetail={detailRequest}
+                                onDetail={requestId => setDetailRequest(requestId)}
                                 data={allRequest} />
                         }
 
@@ -293,7 +291,12 @@ const Records = () => {
                 <div className="column detail">
                     {
                         tab === 1 &&
-                        <DetailRequest id={detailRequest} />
+                        <DetailRequest
+                            id={detailRequest}
+                            onRemove={_id => {
+                                setRequests(allRequest.filter(item => item.id !== _id))
+                                setDetailRequest(-1)
+                            }} />
                     }
                 </div>
             </div>

@@ -4,12 +4,15 @@ import React from "react"
  * @param {Array} data - Datos a renderizar
  * @param {Callback} onDetail - Función a ejecutar al abrir el detalle del registro
  */
-const RequestList = ({ data=[], onDetail=_=>{} }) => {
+const RequestList = ({ data = [], activeDetail = -1, onDetail = _ => { } }) => {
     // Componente que representa un articulo de la lista
     // de solicitudes de registro
     const itemRequest = (item, index) => {
         return (
-            <div className="row" key={index} onClick={_ => onDetail(item.id)}>
+            <div
+                className={`row ${activeDetail === item.id ? 'active' : ''}`}
+                key={index}
+                onClick={_ => onDetail(item.id)}>
                 <span className="name">{item.name}</span>
                 <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
                 <span>

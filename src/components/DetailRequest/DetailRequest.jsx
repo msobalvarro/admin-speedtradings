@@ -11,13 +11,10 @@ import EmptyIndicator from "../EmptyIndicator/EmptyIndicator"
 import { copyData, Petition } from "../../utils/constanst"
 
 /**
- * @param {Object} data - Datos a renderizar
- * @param {Callback} onClose - Función a ejecutar al cerrar el modal
- * @param {Callback} onAccept - Función a ejecutar al hacer click en el botón de aprobar
- * @param {Callback} onDecline - Función a ejecutar al hacer click en el botón de rechazar
- * @param {Boolean} loader - Estado indicador de carga de los datos
+ * @param {Number} id - id de la solicitud de registro
+ * @param {Callback} onRemove - función a ejecutar cuando se rechaza un registro
  */
-const DetailRequest = ({ id = -1 }) => {
+const DetailRequest = ({ id = -1, onRemove = _ => { } }) => {
     const { token } = useSelector((storage) => storage.globalStorage)
     const credentials = {
         headers: {
@@ -28,6 +25,7 @@ const DetailRequest = ({ id = -1 }) => {
     const [loader, setLoader] = useState(false)
     const [data, setData] = useState({})
 
+    // Obtiene el detalle de una solicitud de registro
     const fetchDetail = async _ => {
         try {
             // Show loader
@@ -39,7 +37,7 @@ const DetailRequest = ({ id = -1 }) => {
             if (data.error) {
                 throw data.message
             }
-            window.alert('fetched')
+
             setData(data)
         } catch (error) {
             Swal.fire('Ha ocurrido un error', error.toString(), 'error')
@@ -48,8 +46,78 @@ const DetailRequest = ({ id = -1 }) => {
         }
     }
 
-    const onAccept = _ => { }
-    const onDecline = _ => { }
+    const onRemoveDetail = _id => {
+        onRemove(_id)
+        setData({})
+    }
+
+    // Acepta una solicitud de registro
+    const onAccept = async (dataSend = {}) => {
+        try {
+            setLoader(true)
+
+            const { data } = await Petition.post('/admin/request/accept', dataSend, credentials)
+
+            if (data.error) {
+                throw String(data.message)
+            }
+
+            onRemoveDetail(id)
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Solicitud Aceptada',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        } catch (error) {
+            Swal.fire("Ha ocurrido un error", error.toString(), "warning")
+        } finally {
+            setLoader(false)
+        }
+    }
+
+    // Rechaza una solicitud de registro
+    const onDecline = _ => {
+        Swal.fire({
+            title: 'Rechazar',
+            text: "¿Esta seguro que quiere ejecutar esta Accion? No se podra revertir",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Si, Rechazar!'
+        }).then(async (result) => {
+            if (result.value) {
+                try {
+                    setLoader(true)
+
+                    const { data } = await Petition.delete('/admin/request/decline', {
+                        ...credentials,
+                        data: { id }
+                    })
+
+                    if (data.error) {
+                        throw String(data.message)
+                    }
+
+                    onRemoveDetail(id)
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Solicitud Rechazada',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                } catch (error) {
+                    console.error(error)
+                    Swal.fire('Se ha producido un error', error.toString(), 'error')
+                } finally {
+                    setLoader(false)
+                }
+            }
+        })
+    }
 
     useEffect(_ => {
         if (id !== -1) {
@@ -74,18 +142,22 @@ const DetailRequest = ({ id = -1 }) => {
                 <>
                     <div className="content-col">
                         <div className="col body">
-                            <h2>Detalle de solicitud</h2>
+                            <h2>Detalle solicitud de registro</h2>
 
                             <div className="container">
                                 <div className="col">
                                     <div className="row">
                                         <span className="name">Nombre</span>
-                                        <span className="value">{data.name}</span>
+                                        <span
+                                            onClick={_ => copyData(data.name)}
+                                            className="value">{data.name}</span>
                                     </div>
 
                                     <div className="row">
                                         <span className="name">Correo</span>
-                                        <span className="value">{data.email}</span>
+                                        <span
+                                            onClick={_ => copyData(data.email)}
+                                            className="value">{data.email}</span>
                                     </div>
 
                                     <div className="row">
@@ -97,6 +169,14 @@ const DetailRequest = ({ id = -1 }) => {
 
                                         <span className="value copy" onClick={_ => copyData(data.hash)}>{data.hash}</span>
                                     </div>
+
+                                    {
+                                        data.sponsor_name &&
+                                        <div className="row">
+                                            <span className="name">Nombre sponsor</span>
+                                            <span className="value">{data.sponsor_name}</span>
+                                        </div>
+                                    }
                                 </div>
 
                                 <div className="col">
@@ -111,7 +191,9 @@ const DetailRequest = ({ id = -1 }) => {
 
                                             <div className="row">
                                                 <span className="name">Correo de transaccion</span>
-                                                <span className="value">{data.email_airtm}</span>
+                                                <span
+                                                    onClick={_ => data.email_airtm}
+                                                    className="value">{data.email_airtm}</span>
                                             </div>
                                         </>
                                     }
@@ -122,6 +204,14 @@ const DetailRequest = ({ id = -1 }) => {
                                             {data.amount} {data.id_currency === 1 && 'BTC'} {data.id_currency === 2 && 'ETH'}
                                         </span>
                                     </div>
+
+                                    {
+                                        data.sponsor_email &&
+                                        <div className="row">
+                                            <span className="name">Correo sponsor</span>
+                                            <span className="value">{data.sponsor_email}</span>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -132,7 +222,7 @@ const DetailRequest = ({ id = -1 }) => {
                             Rechazar
                         </button>
 
-                        <button className="button large secondary" onClick={_ => onAccept()}>
+                        <button className="button large secondary" onClick={_ => onAccept(data)}>
                             Aprobar
                         </button>
                     </div>

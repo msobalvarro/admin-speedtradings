@@ -46,6 +46,12 @@ div.container-records {
     }
   }
 
+  .list-content {
+    .table .row.active {
+      background-color: $colorSecondary;
+    }
+  }
+
   .content {
     display: flex;
     justify-content: space-between;

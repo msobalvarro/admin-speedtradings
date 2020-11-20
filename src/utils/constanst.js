@@ -16,8 +16,8 @@ export const emailImageToken = "jRVFgyxiXKHxAWQL47jVzoMwj2m9DfG6-fLv8j9zBtLDMjpB
 //export const urlServer = "http://192.168.1.238:8084"
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
-//export const urlServer = "http://192.168.0.119:8084"
-export const urlServer = "http://192.168.0.106:8084"
+export const urlServer = "http://192.168.0.119:8084"
+//export const urlServer = "http://192.168.0.106:8084"
 
 export const urlServerSocket = urlServer.replace("https", "wss").replace("http", "ws")
 // export const urlServerSocket = urlServer
