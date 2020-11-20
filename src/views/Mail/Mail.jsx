@@ -104,7 +104,7 @@ const editorImageHandler = (editor, credentials, loaderState) => {
 
             datasender.append('image', file)
 
-            const { data } = await Petition.post('/admin/file/email', datasender, credentials)
+            const { data } = await Petition.post('/file-admin/email', datasender, credentials)
             console.log(data)
 
             if (data.error) {
@@ -112,7 +112,7 @@ const editorImageHandler = (editor, credentials, loaderState) => {
             }
 
             const range = editor.getEditorSelection(true)
-            const link = `${urlServer}/admin/file/email/${data.fileId}?token=${emailImageToken}`
+            const link = `${urlServer}/file-admin/email/${data.fileId}?token=${emailImageToken}`
 
             editor.getEditor().insertEmbed(range.index, 'image', link)
             editor.getEditor().setSelection(range.index + 1)
