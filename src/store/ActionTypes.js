@@ -9,3 +9,10 @@ export const SETSOCKET = "SETSOCKET"
 
 /**Elimina la instancia del socket guardado*/
 export const DELETSOCKET = "DELETSOCKET"
+
+export const SETSOCKETEVENTS = "SETSOCKETEVENTS"
+
+// Aumenta en 1 el contador de usuarios admins conectados
+export const SETADMINCONNECTED = "SETADMINCONNECTED"
+
+export const SETADMINCONNECTEDEMAILS = "SETADMINCONNECTEDEMAILS"

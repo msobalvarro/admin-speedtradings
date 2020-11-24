@@ -1,6 +1,15 @@
-import { DELETESTORAGE, SETSTORAGE } from "../ActionTypes"
+import {
+    DELETESTORAGE,
+    SETSTORAGE,
+    SETADMINCONNECTED,
+    SETADMINCONNECTEDEMAILS,
+    SETSOCKETEVENTS
+} from "../ActionTypes"
 
-const INITIAL_STATE = {}
+const INITIAL_STATE = {
+    adminConnected: 1,
+    adminConnectedEmails: []
+}
 
 export const globalStorage = (state = INITIAL_STATE, action) => {
     switch (action.type) {
@@ -12,6 +21,27 @@ export const globalStorage = (state = INITIAL_STATE, action) => {
         }
         case DELETESTORAGE: {
             return INITIAL_STATE
+        }
+
+        case SETSOCKETEVENTS: {
+            return {
+                ...state,
+                socketEvents: action.payload
+            }
+        }
+
+        case SETADMINCONNECTED: {
+            return {
+                ...state,
+                adminConnected: action.payload
+            }
+        }
+
+        case SETADMINCONNECTEDEMAILS: {
+            return {
+                ...state,
+                adminConnectedEmails: action.payload
+            }
         }
 
         default: {
