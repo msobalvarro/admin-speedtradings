@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import { HashRouter, Route, Switch } from "react-router-dom"
 import { useDispatch } from "react-redux"
+import socketIoClient from "socket.io-client"
 // Import Assets
 
 // Redux configurations
-import { getStorage, urlServerSocket } from '../utils/constanst'
-import { DELETESTORAGE, SETSTORAGE, DELETSOCKET, SETSOCKET } from '../store/ActionTypes'
+import { getStorage, urlServerSocket, Petition } from '../utils/constanst'
+import {
+    DELETESTORAGE,
+    SETSTORAGE,
+    DELETSOCKET,
+    SETSOCKET,
+    SETSOCKETEVENTS
+} from '../store/ActionTypes'
 
 // Import Views
 import Login from './Login/Login'
 import Records from './Records/Records'
+import Users from './Users/Users'
 import Report from './Report/Report'
 import Comissions from './Comissions/Comissions'
 import ReportDetail from './ReportDetail/ReportDetail'
@@ -23,10 +31,27 @@ const App = () => {
     const [loged, setLogin] = useState(false)
 
     // Configura y esta a la esucha del servidor con soket
-    const ConfigurateSoket = (token = "") => {
+    const ConfigurateSoket = async (token = "") => {
         try {
-            const socket = new WebSocket(urlServerSocket)
+            const { data } = await Petition.get('/admin/utils', {
+                headers: {
+                    'x-auth-token': token
+                }
+            })
 
+            const socket = socketIoClient(urlServerSocket, {
+                query: {
+                    token: token
+                },
+                forceNew: true,
+                transports: ['websocket']
+            })
+
+            socket.on('connect', _ => {
+                console.log('Socket connected')
+            })
+
+            dispatch({ type: SETSOCKETEVENTS, payload: data.eventSocketNames })
             dispatch({ type: SETSOCKET, payload: socket })
         } catch (error) {
             console.log(error)
@@ -75,6 +100,7 @@ const App = () => {
                 <>
                     <Switch>
                         <Route path="/" exact component={Records} />
+                        <Route path="/users" exact component={Users} />
                         <Route path="/comissions" component={Comissions} />
                         <Route path="/reports" exact component={Report} />
                         <Route path="/reports/:id" exact component={ReportDetail} />

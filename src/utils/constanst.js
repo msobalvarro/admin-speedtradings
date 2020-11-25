@@ -1,6 +1,11 @@
+import React from "react"
 import jwt from "jwt-simple"
 import Axios from "axios"
 import Swal from "sweetalert2"
+import moment from "moment"
+import 'moment/locale/es'
+
+import soundNotification from '../static/sound/notification.mp3'
 
 // Constanst
 const keyStorage = "@storage"
@@ -17,7 +22,7 @@ export const urlServer = "https://ardent-medley-272823.appspot.com"
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
 //export const urlServer = "http://192.168.0.119:8084"
-//export const urlServer = "http://192.168.0.106:8084"
+//export const urlServer = "http://192.168.0.117:8084"
 
 export const urlServerSocket = urlServer.replace("https", "wss").replace("http", "ws")
 // export const urlServerSocket = urlServer
@@ -63,6 +68,40 @@ export const downloadReport = (data, filename) => {
     // cleanup
     downloadLink.remove()
     URL.revokeObjectURL(blob)
+}
+
+/**
+* Wrapper for MomentJS component with locale preconfigure
+*/
+export const Moment = ({
+    date = new Date(),
+    fromNow = false,
+    format = 'YYYY-MM-DD HH:mm',
+    ...rest
+}) => {
+    const checkHoursOffset = _ => {
+        const NOW = moment(new Date())
+        const fromDate = moment(date)
+
+        return (moment.duration(NOW.diff(fromDate)).asHours() > 24 && !fromNow)
+            ? fromDate.format(format)
+            : fromDate.fromNow()
+    }
+
+    return (
+        <time {...rest} locale="es">
+            {checkHoursOffset()}
+        </time>
+    )
+}
+
+// Reproduce el sonido de notificación
+export const dispatchNotification = _ => {
+    const audioNotification = new Audio(soundNotification)
+
+    audioNotification.muted = false
+    audioNotification.pause()
+    audioNotification.play().catch(_ => { })
 }
 
 /**

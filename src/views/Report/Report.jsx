@@ -15,6 +15,7 @@ import iconExcel from "../../static/images/excel.png"
 // Import Components
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
 import NavigationBar from "../../components/NavigationBar/NavigationBar"
+import ConfirmPassword from "../../components/ConfirmPassword/ConfirmPassword"
 import Swal from "sweetalert2"
 
 const initialState = {
@@ -47,6 +48,8 @@ const Report = () => {
     const [reportFromDate, setReportFromDate] = useState(moment().format("YYYY-MM-DD"))
     const [reportToDate, setReportToDate] = useState(moment().format("YYYY-MM-DD"))
     const [creditAlyPay, setCreditAlypay] = useState({ btc: 0, eth: 0 })
+
+    const [showModalPassword, setShowModalPassword] = useState(false)
 
     // Contendra todos los hash escritos
     const hashs = []
@@ -173,7 +176,7 @@ const Report = () => {
     }
 
     /**Ejecuta el reporte de pago */
-    const onReport = async () => {
+    const onReport = async (_password) => {
         // Creamos la constante que tendra los datos preparados
         // Para enviar al backend
         const dataSend = []
@@ -203,7 +206,7 @@ const Report = () => {
             }
 
             // Ejecutamos la peticion para ejecutar reporte
-            const { data } = await Petition.post("/admin/payments/apply", { data: dataSend, id_currency: state.currency }, { headers })
+            const { data } = await Petition.post("/admin/payments/apply", { data: dataSend, id_currency: state.currency, password: _password }, { headers })
 
             if (data.error) {
                 throw String(data.message)
@@ -217,6 +220,7 @@ const Report = () => {
 
                 // refrescamos los datos
                 getAllData()
+                setShowModalPassword(false)
             }
 
         } catch (error) {
@@ -328,7 +332,7 @@ const Report = () => {
                     </div>
 
                     {
-                        state.allData.length > 0 &&
+                        state.allData.length === 0 &&
                         <div className="selection">
                             <div className="total-content">
                                 <span className="total">
@@ -348,7 +352,7 @@ const Report = () => {
 
                             {
                                 !state.loaderPayment &&
-                                <button disabled={state.loaderPayment} className="button" onClick={onReport}>Enviar reporte</button>
+                                <button disabled={state.loaderPayment} className="button" onClick={_ => setShowModalPassword(true)}>Enviar reporte</button>
                             }
 
 
@@ -400,6 +404,13 @@ const Report = () => {
                         <img src={astronaut} alt="empty" />
                         <h2>No hay reportes todavia</h2>
                     </div>
+                }
+
+                {
+                    showModalPassword &&
+                    <ConfirmPassword
+                        onCancel={_ => setShowModalPassword(false)}
+                        onSubmit={_password => onReport(_password)} />
                 }
             </div>
         </div>

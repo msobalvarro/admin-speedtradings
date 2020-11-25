@@ -43,30 +43,54 @@ nav.navigation-bar {
         align-items: center;
         border: none;
         outline: none;
-        padding: .5rem 1rem;
+        padding: .25rem;
         border-radius: 25px;
         font-size: inherit;
-        background-color: transparent;
-        color: $colorSecondary;
-        border: 2px solid $colorSecondary;
+        background-color: $colorSecondary;
+        color: $colorMain;
+        //border: 2px solid $colorSecondary;
+
+        span {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            strong {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: $colorMain;
+                color: $colorSecondary;
+                padding: .15rem;
+                min-width: 1.5rem;
+                border-radius: 100px;
+                margin-left: .5rem;
+            }
+        }
+
+        &.admin-connect {
+            padding: .5rem 1rem;
+            margin-right: .25rem;
+            background-color: transparent;
+            border: 2px solid $colorGreen;
+            color: $colorGreen;
+
+            strong {
+                background-color: $colorGreen;
+                color: #fff;
+            }
+        }
 
         svg {
             height: 1rem;
-            margin-left: .5rem;
             transition: transform .25s;
         }
 
         .arrow {
             transform: rotate(-90deg);
             polygon {
-                fill: $colorSecondary;
-                stroke: $colorSecondary;
-            }
-        }
-
-        .verifyBadget {
-            path {
-                fill: #2E8B12;
+                fill: currentColor;
+                stroke: currentColor;
             }
         }
 
@@ -90,10 +114,31 @@ nav.navigation-bar {
         transform: scaleY(0);
         transform-origin: top center;
         transition: transform .25s;
+        box-shadow: 0 0 10px -1px rgba(#fff, .3);
         z-index: 1000;
 
-        a {
+        &.admin-connect {
+            right: 1.5rem;
+        }
+
+        a, span {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
             padding: .25rem .75rem;
+        }
+
+        &.admin-connect {
+            span:after {
+                content: '';
+                display: block;
+                width: .5rem;
+                height: .5rem;
+                border-radius: 100px;
+                background-color: $colorGreen;
+                margin-left: .5rem;
+            }
         }
 
         &.active {
