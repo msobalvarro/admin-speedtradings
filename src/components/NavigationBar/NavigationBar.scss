@@ -50,11 +50,6 @@ nav.navigation-bar {
         color: $colorMain;
         //border: 2px solid $colorSecondary;
 
-        &.admin-connect {
-            padding: .5rem 1rem;
-            margin-right: .25rem;
-        }
-
         span {
             display: flex;
             flex-direction: row;
@@ -73,6 +68,19 @@ nav.navigation-bar {
             }
         }
 
+        &.admin-connect {
+            padding: .5rem 1rem;
+            margin-right: .25rem;
+            background-color: transparent;
+            border: 2px solid $colorGreen;
+            color: $colorGreen;
+
+            strong {
+                background-color: $colorGreen;
+                color: #fff;
+            }
+        }
+
         svg {
             height: 1rem;
             transition: transform .25s;
@@ -83,12 +91,6 @@ nav.navigation-bar {
             polygon {
                 fill: currentColor;
                 stroke: currentColor;
-            }
-        }
-
-        .verifyBadget {
-            path {
-                fill: #2E8B12;
             }
         }
 
@@ -112,6 +114,7 @@ nav.navigation-bar {
         transform: scaleY(0);
         transform-origin: top center;
         transition: transform .25s;
+        box-shadow: 0 0 10px -1px rgba(#fff, .3);
         z-index: 1000;
 
         &.admin-connect {

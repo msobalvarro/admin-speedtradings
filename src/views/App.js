@@ -16,7 +16,7 @@ import {
 
 // Import Views
 import Login from './Login/Login'
-import Records from './Records/RecordsNew'
+import Records from './Records/Records'
 import Users from './Users/Users'
 import Report from './Report/Report'
 import Comissions from './Comissions/Comissions'

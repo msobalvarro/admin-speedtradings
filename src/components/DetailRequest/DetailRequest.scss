@@ -31,7 +31,7 @@
     }
   }
 
-    .row {
+    .row, .row-reason {
       display: flex;
       flex-direction: column;
       margin-bottom: 2rem;
@@ -65,6 +65,32 @@
           &:nth-child(3) {
             text-align: right;
           }
+        }
+        .sub-row  {
+          .legend-decline {
+            display: block;
+            margin-bottom: .5rem;
+          }
+
+          .content-check {
+            display:  flex;
+            flex-direction: row;
+            align-items: center;
+
+            input[type="checkbox"] {
+              margin-left: .5rem;
+            }
+          }
+        }
+      }
+
+      .row-reason {
+        margin: 0 auto;
+        margin-top: 1rem;
+        width: 116%;
+
+        .text-input {
+          margin-top: 1rem;
         }
       }
 }

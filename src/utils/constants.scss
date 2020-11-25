@@ -31,3 +31,13 @@ $animationShadow: rgba($color: $colorYellow, $alpha: 0.5) 0px 0px 0px 3px;
     opacity: 1;
   }
 }
+
+// text overflow
+@mixin text-overflow {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 150px;
+  max-width: 210px;
+  cursor: pointer;
+}

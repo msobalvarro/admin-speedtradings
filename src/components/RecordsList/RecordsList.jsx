@@ -1,10 +1,11 @@
-import React from "react"
-import moment from "moment"
+import React, { useState } from "react"
 
-// Import components
-import ActivityIndicator from "../ActivityIndicator/Activityindicator"
+// Import constant
+import { Moment } from '../../utils/constanst'
 
-const RecordsList = ({ data=[], filter='', onChangeFilter=_=>{}, onDetail=_=>{}, loader=false }) => {
+const RecordsList = ({ data = [], activeDetail = -1, onDetail = _ => { } }) => {
+    const [filter, setFilter] = useState('')
+
     // Componente que representa un articulo de la lista
     // Registos
     const itemRecord = (item, index) => {
@@ -13,8 +14,10 @@ const RecordsList = ({ data=[], filter='', onChangeFilter=_=>{}, onDetail=_=>{},
             item.country.length > 0 && item.country.toLowerCase().search(filter) > -1
         ) {
             return (
-                <div className="row" key={index} onClick={_ => onDetail(item.id_user)}>
-                    <span>{moment(item.start_date).format('MMM. D, YYYY')}</span>
+                <div
+                    className={`row ${activeDetail === item.id_user ? 'active' : ''}`}
+                    key={index}
+                    onClick={_ => onDetail(item.id_user)}>
                     <span className="name">{item.name}</span>
                     <span>{item.country}</span>
                     <span>
@@ -24,6 +27,7 @@ const RecordsList = ({ data=[], filter='', onChangeFilter=_=>{}, onDetail=_=>{},
                                 : <i>Sin sponsor</i>
                         }
                     </span>
+                    <span><Moment date={item.start_date} /></span>
                 </div>
             )
         }
@@ -32,42 +36,32 @@ const RecordsList = ({ data=[], filter='', onChangeFilter=_=>{}, onDetail=_=>{},
     // Componente contenedor de la lista
     return (
         <>
-            {
-                loader &&
-                <ActivityIndicator size={48} />
-            }
+            <div className="sub-header">
+                <h2 className="title">Lista de usuarios</h2>
 
-            {
-                !loader &&
-                <>
-                    <div className="sub-header">
-                        <h2 className="title">Registros</h2>
+                <input
+                    value={filter}
+                    onChange={e => setFilter(e.target.value)}
+                    placeholder="Escribe para buscar.."
+                    type="text"
+                    className="text-input" />
+            </div>
 
-                        <input
-                            value={filter}
-                            onChange={e => onChangeFilter(e.target.value)}
-                            placeholder="Escribe para buscar.."
-                            type="text"
-                            className="text-input" />
-                    </div>
+            <div className="table records">
+                <div className="header">
+                    <span>Nombre</span>
+                    <span>Pais</span>
+                    <span>Sponsor</span>
+                    <span>Fecha</span>
+                </div>
 
-                    <div className="table records">
-                        <div className="header">
-                            <span>Fecha</span>
-                            <span>Nombre</span>
-                            <span>Pais</span>
-                            <span>Sponsor</span>
-                        </div>
-
-                        {
-                            data
-                                .sort((a, b) => 
-                                    (new Date(b.start_date) - new Date(a.start_date)))
-                                .map(itemRecord)
-                        }
-                    </div>
-                </>
-            }
+                {
+                    data
+                        .sort((a, b) =>
+                            (new Date(b.start_date) - new Date(a.start_date)))
+                        .map(itemRecord)
+                }
+            </div>
         </>
     )
 }

@@ -36,14 +36,14 @@ const NavigationBar = () => {
     }
 
     useEffect(_ => {
-        if (socket !== null) {
+        if (socket !== null && !socket._callbacks[`$${socketEvents.adminCounter}`]) {
             // Se estable el listener para detectar los admins conectados
             socket.on(socketEvents.adminCounter, response => {
                 dispatch({ type: SETADMINCONNECTED, payload: response.length })
                 dispatch({ type: SETADMINCONNECTEDEMAILS, payload: response })
             })
         }
-    })
+    }, [socket])
 
     useEffect(_ => {
         window.addEventListener('click', handleBlur)

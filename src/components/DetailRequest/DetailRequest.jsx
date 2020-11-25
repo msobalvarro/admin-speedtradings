@@ -32,7 +32,7 @@ const DetailRequest = ({ id = -1, onRemove = _ => { } }) => {
             setLoader(true)
 
             // get data for petition
-            const { data } = await Petition.post('/admin/request/id', { id }, credentials)
+            const { data } = await Petition.get(`/admin/request/details/${id}`, credentials)
 
             if (data.error) {
                 throw data.message
@@ -51,12 +51,15 @@ const DetailRequest = ({ id = -1, onRemove = _ => { } }) => {
         setData({})
     }
 
-    // Acepta una solicitud de registro
+    /**
+     * Acepta una solicitud de registro
+     * @param {Object} dataSend - datos de la solicitud de registro
+     */
     const onAccept = async (dataSend = {}) => {
         try {
             setLoader(true)
 
-            const { data } = await Petition.post('/admin/request/accept', dataSend, credentials)
+            const { data } = await Petition.post('/admin/request/accept', { data: dataSend }, credentials)
 
             if (data.error) {
                 throw String(data.message)

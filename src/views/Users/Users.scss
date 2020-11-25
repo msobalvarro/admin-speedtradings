@@ -1,0 +1,127 @@
+@import '../../utils/constants.scss';
+
+.Users {
+    .content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 1rem 2rem;
+
+        .content-list, .content-detail {
+            position: relative;
+            box-sizing: border-box;
+            background-color: rgba(#000, .4);
+            border-radius: 7px;
+            min-height: 500px;
+            height: calc(100vh - 5rem);
+            max-height: 800px;
+        }
+
+        .content-list {
+            width: calc(60% - 1rem);
+
+            .sub-header {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                color: $colorYellow;
+                padding: 1rem;
+                padding-bottom: 0;
+            }
+
+            .table {
+                max-height: calc(100% - 4.5rem);
+            }
+        }
+
+        .content-detail {
+            width: calc(40% - 1rem);
+            padding: 1rem;
+
+            .content-col {
+                padding: 0;
+                margin-top: 1rem;
+                
+                h2 {
+                    color: $colorSecondary !important;
+                }
+            }
+
+            .DetailRecords {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                height: 100%;
+
+                h2 {
+                    color: $colorYellow;
+                    font-size: 1.1rem;
+                }
+
+                .button {
+                    font-size: 1rem;
+                }
+            }
+        }
+    }
+
+    .table {
+        animation: fadeEffect 1s;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 1rem;
+        user-select: none;
+        height: 100%;
+        overflow-y: auto;
+
+        .header, .row {
+            padding: 10px 1rem;
+            display: flex;
+            justify-content: space-between;
+
+            span {
+                @include text-overflow;
+                text-align: center;
+                width: calc(100% / 4);
+                
+                &:first-child {
+                    text-align: left;
+                }
+
+                &:last-child {
+                    text-align: right;
+                }
+            }
+        }
+
+        .header {
+            border-bottom: 2px solid $colorYellow;
+            color: $colorYellow;
+        }
+
+        .row {
+            border-bottom: 1px solid #fff;
+            transition: $transition;
+  
+            span {
+              &.name {
+                text-transform: capitalize;
+              }
+  
+              i {
+                opacity: 0.5;
+              }
+            }
+  
+            &:hover {
+              background-color: rgba($color: #fff, $alpha: 0.1);
+              cursor: pointer;
+            }
+
+            &.active {
+                background-color: rgba($color: #fff, $alpha: 0.2);
+            }
+        }
+    }
+}
