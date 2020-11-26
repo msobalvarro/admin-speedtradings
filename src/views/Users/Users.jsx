@@ -6,7 +6,6 @@ import './Users.scss'
 // Import components
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
 import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
-import NavigationBar from '../../components/NavigationBar/NavigationBar'
 import RecordsList from '../../components/RecordsList/RecordsList'
 import DetailRecords from '../../components/DetailRecords/DetailRecords'
 
@@ -51,8 +50,6 @@ const Users = () => {
 
     return (
         <div className="Users">
-            <NavigationBar />
-
             <div className="content">
                 <div className="content-list">
                     {

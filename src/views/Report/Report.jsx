@@ -14,7 +14,6 @@ import iconExcel from "../../static/images/excel.png"
 
 // Import Components
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
-import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import ConfirmPassword from "../../components/ConfirmPassword/ConfirmPassword"
 import Swal from "sweetalert2"
 
@@ -296,8 +295,6 @@ const Report = () => {
 
     return (
         <div className="container-report">
-            <NavigationBar />
-
             <div className="content">
                 <div className="header">
                     <input type="text" value={state.filter} onChange={e => dispatch({ type: "filter", payload: e.target.value })} className="text-input" placeholder="Filtrar.." />

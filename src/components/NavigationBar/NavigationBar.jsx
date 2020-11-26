@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react"
 import { useSelector, useDispatch } from 'react-redux'
-import { Link } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import { LogOut } from "../../utils/constanst"
 
 // Import Assets
@@ -21,8 +21,6 @@ const NavigationBar = () => {
         socketEvents
     } = useSelector(storage => storage.globalStorage)
     const dispatch = useDispatch()
-
-    const location = window.location.hash
 
     const [showMore, setShowMore] = useState(false)
     const [showConnected, setShowConnected] = useState(false)
@@ -59,31 +57,32 @@ const NavigationBar = () => {
             <img src={Logo} className="brand-logo" alt="logo" />
 
             <div className="content-links">
-                <Link
+                <NavLink
                     to="/"
-                    className={(location === '#/') ? 'active' : ''}>
+                    exact
+                    activeClassName='active'>
                     Registros
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                     to="/users"
-                    className={(location === '#/users') ? 'active' : ''}>
+                    activeClassName='active'>
                     Usuarios
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                     to="/comissions"
-                    className={(location === '#/comissions') ? 'active' : ''}>
+                    activeClassName='active'>
                     Comisiones
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                     to="/reports"
-                    className={(location === '#/reports') ? 'active' : ''}>
+                    activeClassName='active'>
                     Reporte de pago
-                </Link>
-                <Link
+                </NavLink>
+                <NavLink
                     to="/mailing"
-                    className={(location === '#/mailing') ? 'active' : ''}>
+                    activeClassName='active'>
                     Correo
-                </Link>
+                </NavLink>
 
                 <button
                     onMouseEnter={_ => setShowConnected(true)}
@@ -112,16 +111,16 @@ const NavigationBar = () => {
                 <div
                     ref={showMoreContainerRef}
                     className={`dropdown-content ${showMore ? 'active' : ''}`}>
-                    <Link
+                    <NavLink
                         to="/configuration"
-                        className={(location === '#/configuration') ? 'active' : ''}>
+                        activeClassName='active'>
                         Configuración
-                </Link>
-                    <Link
+                    </NavLink>
+                    <NavLink
                         to="/logs"
-                        className={(location === '#/logs') ? 'active' : ''}>
+                        activeClassName='active'>
                         Consola
-                </Link>
+                    </NavLink>
                     <a href="/#" onClick={LogOut}>Cerrar sesion</a>
                 </div>
             </div>

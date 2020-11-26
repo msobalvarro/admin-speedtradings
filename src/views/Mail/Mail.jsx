@@ -16,7 +16,6 @@ import {
 import allSelect from "../../static/images/addAll.svg"
 
 // Import components
-import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import Swal from "sweetalert2"
 import Modal from "../../components/Modal/Modal"
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
@@ -437,8 +436,6 @@ const Mail = () => {
 
     return (
         <div className="Mail">
-            <NavigationBar />
-
             <div className="Mail-content">
                 <h2 className="title">Enviar correo electrónico</h2>
 

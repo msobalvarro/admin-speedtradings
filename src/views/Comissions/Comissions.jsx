@@ -3,7 +3,6 @@ import { useSelector } from "react-redux"
 import "./Comissions.scss"
 
 // Import components
-import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import Modal from "../../components/Modal/Modal"
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
 import Swal from "sweetalert2"
@@ -279,8 +278,6 @@ const Comissions = () => {
 
     return (
         <div className="Comissions">
-            <NavigationBar />
-
             <div className="Comissions-content">
                 <div className="column Comissions-list">
                     <div className="Comissions-list-header">

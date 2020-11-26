@@ -23,7 +23,6 @@ import "./Records.scss"
 // Import components
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
 import EmptyIndicator from "../../components/EmptyIndicator/EmptyIndicator"
-import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import ConfirmPassword from "../../components/ConfirmPassword/ConfirmPassword"
 import Modal from '../../components/Modal/Modal'
 
@@ -442,8 +441,6 @@ const Records = () => {
 
     return (
         <div className="Records">
-            <NavigationBar />
-
             <header className="header-content">
                 {/**
                      * Sección para generar los reportes
