@@ -115,9 +115,9 @@ const Report = () => {
     /**Componente para renderizar los datos */
     const ItemComponent = (item, index) => {
         if (
-            item.name.length > 0 && item.name.toLowerCase().search(state.filter) > -1 ||
-            item.wallet.length > 0 && item.wallet.toLowerCase().search(state.filter) > -1 ||
-            item.amount.length > 0 && item.amount.toLowerCase().search(state.filter) > -1
+            (item.name.length > 0 && item.name.toLowerCase().search(state.filter) > -1) ||
+            (item.wallet.length > 0 && item.wallet.toLowerCase().search(state.filter) > -1) ||
+            (item.amount.length > 0 && item.amount.toLowerCase().search(state.filter) > -1)
         ) {
             return (
                 <div className="row" id={"row-" + index} key={index}>
