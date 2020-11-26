@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
+import moment from 'moment'
 import './Users.scss'
 
 // Import components
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
 import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
-import NavigationBar from '../../components/NavigationBar/NavigationBar'
 import RecordsList from '../../components/RecordsList/RecordsList'
 import DetailRecords from '../../components/DetailRecords/DetailRecords'
 
@@ -22,10 +22,16 @@ const Users = () => {
         }
     }
 
+    // Estado que almacena la lista de los usuarios
     const [allUsers, setAllUsers] = useState([])
+    // Estado que almacena el id del usuario a mostrar en detalle
     const [activeDetail, setActiveDetail] = useState(-1)
+    // Estado que almacena la fecha con la que generarán los reportes
+    const [dateReport, setDateReport] = useState(moment(new Date()).format('YYYY-MM'))
+    // Estado que almacena el status del indicador de carga
     const [loader, setLoader] = useState(false)
 
+    // Se obtiene la lista de los usuarios
     const fetchData = async _ => {
         try {
             setLoader(true)
@@ -51,7 +57,23 @@ const Users = () => {
 
     return (
         <div className="Users">
-            <NavigationBar />
+            <header className="header">
+                <div className="row">
+                    <span className="label">Fecha Reporte</span>
+                    <input
+                        type="month"
+                        className="text-input"
+                        value={dateReport}
+                        onChange={e => {
+                            const { value } = e.target
+
+                            if (value) {
+                                console.log('calue', value)
+                                setDateReport(value)
+                            }
+                        }} />
+                </div>
+            </header>
 
             <div className="content">
                 <div className="content-list">
@@ -75,7 +97,7 @@ const Users = () => {
                 </div>
 
                 <div className="content-detail">
-                    <DetailRecords id={activeDetail} />
+                    <DetailRecords id={activeDetail} dateReport={dateReport} />
                 </div>
             </div>
         </div>

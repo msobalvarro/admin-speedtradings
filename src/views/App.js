@@ -14,6 +14,9 @@ import {
     SETSOCKETEVENTS
 } from '../store/ActionTypes'
 
+// import components
+import NavigationBar from '../components/NavigationBar/NavigationBar'
+
 // Import Views
 import Login from './Login/Login'
 import Records from './Records/Records'
@@ -98,6 +101,7 @@ const App = () => {
             {
                 loged &&
                 <>
+                    <NavigationBar />
                     <Switch>
                         <Route path="/" exact component={Records} />
                         <Route path="/users" exact component={Users} />

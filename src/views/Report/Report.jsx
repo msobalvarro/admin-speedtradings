@@ -14,7 +14,6 @@ import iconExcel from "../../static/images/excel.png"
 
 // Import Components
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
-import NavigationBar from "../../components/NavigationBar/NavigationBar"
 import ConfirmPassword from "../../components/ConfirmPassword/ConfirmPassword"
 import Swal from "sweetalert2"
 
@@ -116,9 +115,9 @@ const Report = () => {
     /**Componente para renderizar los datos */
     const ItemComponent = (item, index) => {
         if (
-            item.name.length > 0 && item.name.toLowerCase().search(state.filter) > -1 ||
-            item.wallet.length > 0 && item.wallet.toLowerCase().search(state.filter) > -1 ||
-            item.amount.length > 0 && item.amount.toLowerCase().search(state.filter) > -1
+            (item.name.length > 0 && item.name.toLowerCase().search(state.filter) > -1) ||
+            (item.wallet.length > 0 && item.wallet.toLowerCase().search(state.filter) > -1) ||
+            (item.amount.length > 0 && item.amount.toLowerCase().search(state.filter) > -1)
         ) {
             return (
                 <div className="row" id={"row-" + index} key={index}>
@@ -296,8 +295,6 @@ const Report = () => {
 
     return (
         <div className="container-report">
-            <NavigationBar />
-
             <div className="content">
                 <div className="header">
                     <input type="text" value={state.filter} onChange={e => dispatch({ type: "filter", payload: e.target.value })} className="text-input" placeholder="Filtrar.." />

@@ -1,4 +1,5 @@
 import React from "react"
+import { useLocation } from 'react-router-dom'
 import jwt from "jwt-simple"
 import Axios from "axios"
 import Swal from "sweetalert2"
@@ -93,6 +94,13 @@ export const Moment = ({
             {checkHoursOffset()}
         </time>
     )
+}
+
+/**
+ * Hook para obtener los parámetros de ruta
+ */
+export const useQueryParams = _ => {
+    return new URLSearchParams(useLocation().search)
 }
 
 // Reproduce el sonido de notificación

@@ -12,7 +12,7 @@ import ActivityIndicator from '../../components/ActivityIndicator/Activityindica
 import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
 
 
-const DetailRecords = ({ id = -1 }) => {
+const DetailRecords = ({ id = -1, dateReport = '' }) => {
     const { token } = useSelector(storage => storage.globalStorage)
     const credentials = {
         headers: {
@@ -157,7 +157,9 @@ const DetailRecords = ({ id = -1 }) => {
 
 
                     <div className="buttons">
-                        <Link to={`/reports/${data.id}`} className="button large secondary">
+                        <Link
+                            to={`/reports/${data.id}?date=${dateReport}`}
+                            className="button large secondary">
                             Generar Reporte
                         </Link>
                     </div>

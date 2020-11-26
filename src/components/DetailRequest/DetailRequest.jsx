@@ -55,14 +55,14 @@ const DetailRequest = ({ id = -1, onRemove = _ => { } }) => {
      * Acepta una solicitud de registro
      * @param {Object} dataSend - datos de la solicitud de registro
      */
-    const onAccept = async (dataSend = {}) => {
+    const onAccept = async _ => {
         try {
             setLoader(true)
 
-            const { data } = await Petition.post('/admin/request/accept', { data: dataSend }, credentials)
+            const { dataResult } = await Petition.post('/admin/request/accept', { data }, credentials)
 
-            if (data.error) {
-                throw String(data.message)
+            if (dataResult.error) {
+                throw String(dataResult.message)
             }
 
             onRemoveDetail(id)
@@ -225,7 +225,7 @@ const DetailRequest = ({ id = -1, onRemove = _ => { } }) => {
                             Rechazar
                         </button>
 
-                        <button className="button large secondary" onClick={_ => onAccept(data)}>
+                        <button className="button large secondary" onClick={_ => onAccept()}>
                             Aprobar
                         </button>
                     </div>

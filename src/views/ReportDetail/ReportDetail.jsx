@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, withRouter } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import './ReportDetail.scss'
+
+// import constants
+import { useQueryParams, Petition } from '../../utils/constanst'
 
 // assets
 import Logo from '../../static/images/logo.png'
-import Astronaut from '../../static/images/astronaut.png'
-import {dataBasicInfo, dataCommissions, dataInverstmentPlan} from './data'
+import { dataBasicInfo, dataCommissions, dataInverstmentPlan } from './data'
 
-
-const EmptyMessage = ({title}) => (
-    <div className="empty-message">
-        <img src={Astronaut} alt=""/>
-        <h3>{title}</h3>
-    </div>
-)
+// import components
+import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
 
 
 // Elemento del la sección de información básica del cliente
-const BasicInfoItem = ({title, value}) => (
+const BasicInfoItem = ({ title, value }) => (
     <p className='section--item'>
         <span>{title}</span>
         <strong>{value}</strong>
@@ -25,57 +23,58 @@ const BasicInfoItem = ({title, value}) => (
 )
 
 // Renderiza la sección de la información básica del cliente
-const BasicInfo = ({data}) => {
-return( 
-    <div className='ReportDetail-basicInfo'>
-        <div className='ReportDetail-bacicInfo__section'>
-            <BasicInfoItem title='nombre' value={data.name}/>
-            <BasicInfoItem title='producto' value={data.product}/>
-            <BasicInfoItem title='criptomoneda' value={data.coin}/>
-            <BasicInfoItem title='billetera' value={data.wallet}/>
-        </div>
+const BasicInfo = ({ data }) => {
+    return (
+        <div className='ReportDetail-basicInfo'>
+            <div className='ReportDetail-bacicInfo__section'>
+                <BasicInfoItem title='nombre' value={data.name} />
+                <BasicInfoItem title='producto' value={data.product} />
+                <BasicInfoItem title='criptomoneda' value={data.coin} />
+                <BasicInfoItem title='billetera' value={data.wallet} />
+            </div>
 
-        <div>
-            <BasicInfoItem title='fecha inicial' value={data.startDate}/>
-            <BasicInfoItem title='fecha final' value={data.lastDate}/>
-            <BasicInfoItem title='precio btc' value={data.priceCoin}/>
-            <BasicInfoItem title='rango' value={data.range}/>
-        </div>
+            <div>
+                <BasicInfoItem title='fecha inicial' value={data.startDate} />
+                <BasicInfoItem title='fecha final' value={data.lastDate} />
+                <BasicInfoItem title='precio btc' value={data.priceCoin} />
+                <BasicInfoItem title='rango' value={data.range} />
+            </div>
 
-        <div>
-            <BasicInfoItem title='plan de inversión' value={data.inverstmentPlan}/>
-            <BasicInfoItem title='total a duplicar' value={data.totalDuplication}/>
-            <BasicInfoItem title='saldo final en btc' value={data.lastPriceCoin}/>
-            <BasicInfoItem title='no. referidos' value={data.nSponsors}/>
+            <div>
+                <BasicInfoItem title='plan de inversión' value={data.inverstmentPlan} />
+                <BasicInfoItem title='total a duplicar' value={data.totalDuplication} />
+                <BasicInfoItem title='saldo final en btc' value={data.lastPriceCoin} />
+                <BasicInfoItem title='no. referidos' value={data.nSponsors} />
+            </div>
         </div>
-    </div>
-)}
+    )
+}
 
 // Renderizado para cada columna de la tabla de planes de inversión
 const inverstmentPlanItem = (item, index) => (
     <div key={index} className='row'>
-        <span>{ item.day }</span>
-        <span>{ item.date }</span>
-        <span>{ item.code }</span>
-        <span>{ item.description }</span>
-        <span>{ item.rendiment ?? ''  }</span>
-        <span>{ item.int ?? '' }</span>
-        <span>{ item.debit ?? '' }</span>
-        <span>{ item.credit ?? '' }</span>
-        <span>{ item.balance }</span>
+        <span>{item.day}</span>
+        <span>{item.date}</span>
+        <span>{item.code}</span>
+        <span>{item.description}</span>
+        <span>{item.rendiment ?? ''}</span>
+        <span>{item.int ?? ''}</span>
+        <span>{item.debit ?? ''}</span>
+        <span>{item.credit ?? ''}</span>
+        <span>{item.balance}</span>
     </div>
-) 
+)
 
 // Renderizado para cada columna de la tabla de comisiones
 const commissionItem = (item, index) => (
     <div key={index} className='row'>
-        <span>{ item.date }</span>
-        <span>{ item.code }</span>
-        <span>{ item.sponsoredName }</span>
-        <span>{ item.inverstment ?? ''  }</span>
-        <span>{ item.bono ?? '' }</span>
-        <span>{ item.price ?? '' }</span>
-        <span>{ item.amountUSD ?? '' }</span>
+        <span>{item.date}</span>
+        <span>{item.code}</span>
+        <span>{item.sponsoredName}</span>
+        <span>{item.inverstment ?? ''}</span>
+        <span>{item.bono ?? ''}</span>
+        <span>{item.price ?? ''}</span>
+        <span>{item.amountUSD ?? ''}</span>
     </div>
 )
 
@@ -92,31 +91,56 @@ const summaryItem = (item, index) => (
 
 
 // vista de los reportes
-const ReportDetail = ({history}) => {
+const ReportDetail = ({ history }) => {
+    const { token } = useSelector(storage => storage.globalStorage)
+    const credentials = {
+        headers: {
+            'x-auth-token': token
+        }
+    }
+
+    const QueryParams = useQueryParams()
     const [commissionsBTC, setCommissionsBTC] = useState([])
     const [commissionsETH, setCommissionsETH] = useState([])
     const [summary, setSummary] = useState([])
 
     // Estado para controlar la pestaña que se muestra dentro de la vista de reportes
     const [tab, setTab] = useState(1)
+    const [dateReport, setDateReport] = useState('')
     const { id } = useParams()
 
     // Variables para almacenar la lista de los montos para cada tipo de comisión
     const amountCommissionBTC = { coin: [], usd: [] }
     const amountCommissionETH = { coin: [], usd: [] }
 
-    const onClickTab = ({e, tabNumber}) => {
+    const fetchData = async _ => {
+        try {
+            const dataSend = {
+                id,
+                date: dateReport,
+                coinType: 1
+            }
+
+            const { data } = await Petition.get('/admin/reports-users', dataSend, credentials)
+
+            console.log(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const onClickTab = ({ e, tabNumber }) => {
         e.preventDefault()
         setTab(tabNumber)
     }
 
     useEffect(_ => {
-        setCommissionsBTC(dataCommissions.filter(item => item.code === 'CBTC'))
-        setCommissionsETH(dataCommissions.filter(item => item.code === 'CETH'))
+        /* setCommissionsBTC(dataCommissions.filter(item => item.code === 'CBTC'))
+        setCommissionsETH(dataCommissions.filter(item => item.code === 'CETH')) */
     }, [])
 
     useEffect(_ => {
-        // Variable donde se almecenará la data del resumen antes de asignarle al estado
+        /* // Variable donde se almecenará la data del resumen antes de asignarle al estado
         const summaryData = [];
 
         ['INV', 'NCR', 'INT', 'RET'].forEach(item => {
@@ -149,7 +173,6 @@ const ReportDetail = ({history}) => {
 
                 default:
                     return
-                    break
             }
 
             let response = {
@@ -165,29 +188,31 @@ const ReportDetail = ({history}) => {
 
         // Guradando los datos del resumen en el estado
         setSummary(summaryData)
+        setDateReport(QueryParams.get('date')) */
+        //console.log(moment(QueryParams.get('date')))
     }, [])
 
     return (
         <div className='ReportDetail'>
             <header className='ReportDetail-header'>
-                <img src={Logo} alt=""/>
+                <img src={Logo} alt="" />
 
                 <nav className="navigation">
-                    <span onClick={ e => onClickTab({e, tabNumber: 1}) } className={tab === 1 ? 'active' : ''}>
+                    <span onClick={e => onClickTab({ e, tabNumber: 1 })} className={tab === 1 ? 'active' : ''}>
                         Plan de inversión
                     </span>
 
-                    <span onClick={ e => onClickTab({e, tabNumber: 2}) } className={tab === 2 ? 'active' : ''}>
+                    <span onClick={e => onClickTab({ e, tabNumber: 2 })} className={tab === 2 ? 'active' : ''}>
                         Comisiones referidos
                     </span>
 
-                    <span onClick={ e => onClickTab({e, tabNumber: 3}) } className={tab === 3 ? 'active' : ''}>
+                    <span onClick={e => onClickTab({ e, tabNumber: 3 })} className={tab === 3 ? 'active' : ''}>
                         Resumen transacciones
                     </span>
                 </nav>
             </header>
 
-            <BasicInfo data={dataBasicInfo}/>
+            <BasicInfo data={dataBasicInfo} />
 
             {
                 tab === 1 &&
@@ -209,7 +234,7 @@ const ReportDetail = ({history}) => {
                                 <span>BALANCE</span>
                             </div>
                             <div className="table-body">
-                                { 
+                                {
                                     dataInverstmentPlan.map(inverstmentPlanItem)
                                 }
                             </div>
@@ -222,7 +247,7 @@ const ReportDetail = ({history}) => {
 
                     {
                         dataInverstmentPlan.length === 0 &&
-                        <EmptyMessage title="Sin comisiones de referidos para mostrar"/>
+                        <EmptyIndicator message="Sin comisiones de referidos para mostrar" />
                     }
                 </>
             }
@@ -246,7 +271,7 @@ const ReportDetail = ({history}) => {
                                 <span>MONTO USD</span>
                             </div>
                             <div className="table-body">
-                                { 
+                                {
                                     commissionsBTC.map((item, index) => {
                                         amountCommissionBTC.coin.push(item.bono)
                                         amountCommissionBTC.usd.push(item.amountUSD)
@@ -257,9 +282,9 @@ const ReportDetail = ({history}) => {
                             </div>
                             <div className="table-footer">
                                 <span>total de comisiones por referidos del mes</span>
-                                <span>{ amountCommissionBTC.coin.reduce((a,b) => (a + b), 0) }</span>
+                                <span>{amountCommissionBTC.coin.reduce((a, b) => (a + b), 0)}</span>
                                 <span></span>
-                                <span>{ amountCommissionBTC.usd.reduce((a,b) => (a + b), 0) }</span>
+                                <span>{amountCommissionBTC.usd.reduce((a, b) => (a + b), 0)}</span>
                             </div>
                         </div>
                     }
@@ -277,27 +302,27 @@ const ReportDetail = ({history}) => {
                                 <span>MONTO USD</span>
                             </div>
                             <div className="table-body">
-                                { 
+                                {
                                     commissionsETH.map((item, index) => {
                                         amountCommissionETH.coin.push(item.bono)
                                         amountCommissionETH.usd.push(item.amountUSD)
-                                        
+
                                         return commissionItem(item, index)
                                     })
                                 }
                             </div>
                             <div className="table-footer">
                                 <span>total de comisiones por referidos del mes</span>
-                                <span>{ amountCommissionETH.coin.reduce((a,b) => (a + b), 0) }</span>
+                                <span>{amountCommissionETH.coin.reduce((a, b) => (a + b), 0)}</span>
                                 <span></span>
-                                <span>{ amountCommissionETH.usd.reduce((a,b) => (a + b), 0) }</span>
+                                <span>{amountCommissionETH.usd.reduce((a, b) => (a + b), 0)}</span>
                             </div>
                         </div>
                     }
 
                     {
                         commissionsBTC.length === 0 && commissionsETH.length === 0 &&
-                        <EmptyMessage title="Sin comisiones de referidos para mostrar"/>
+                        <EmptyIndicator message="Sin comisiones de referidos para mostrar" />
                     }
                 </>
             }
@@ -316,7 +341,7 @@ const ReportDetail = ({history}) => {
                             <span>MONTO USD</span>
                         </div>
                         <div className="table-body">
-                            { 
+                            {
                                 summary.map(summaryItem)
                             }
                         </div>

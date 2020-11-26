@@ -5,7 +5,6 @@ import './Configuration.scss'
 import { useSelector } from "react-redux"
 
 // Import components
-import NavigationBar from '../../components/NavigationBar/NavigationBar'
 import UploadFile from '../../components/UploadFile/UploadFile'
 import Swal from "sweetalert2"
 import Modal from "../../components/Modal/Modal"
@@ -110,8 +109,6 @@ const Configuration = () => {
 
     return (
         <div className="Configuration">
-            <NavigationBar />
-
             <div className="content">
                 <h2>Términos y condiciones</h2>
 
