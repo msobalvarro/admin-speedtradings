@@ -60,7 +60,7 @@ const DetailUpgrade = ({ id = -1, onRemove = _ => { } }) => {
     const onAccept = async _ => {
         try {
 
-            const { dataResult } = await Petition.post('/admin/upgrades/accept', { data }, credentials)
+            const { data: dataResult } = await Petition.post('/admin/upgrades/accept', { data }, credentials)
 
             if (dataResult.error) {
                 throw String(dataResult.message)

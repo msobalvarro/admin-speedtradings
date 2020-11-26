@@ -59,7 +59,7 @@ const DetailRequest = ({ id = -1, onRemove = _ => { } }) => {
         try {
             setLoader(true)
 
-            const { dataResult } = await Petition.post('/admin/request/accept', { data }, credentials)
+            const { data: dataResult } = await Petition.post('/admin/request/accept', { data }, credentials)
 
             if (dataResult.error) {
                 throw String(dataResult.message)
