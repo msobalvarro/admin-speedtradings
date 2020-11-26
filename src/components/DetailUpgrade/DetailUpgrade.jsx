@@ -57,13 +57,13 @@ const DetailUpgrade = ({ id = -1, onRemove = _ => { } }) => {
      * Función a ejecutar para aceptar un upgrade
      * @param {Object} dataSend - datos del upgrade 
      */
-    const onAccept = async (dataSend) => {
+    const onAccept = async _ => {
         try {
 
-            const { data } = await Petition.post('/admin/upgrades/accept', { data: dataSend }, credentials)
+            const { dataResult } = await Petition.post('/admin/upgrades/accept', { data }, credentials)
 
-            if (data.error) {
-                throw String(data.message)
+            if (dataResult.error) {
+                throw String(dataResult.message)
             }
 
             onRemoveDetail(id)
