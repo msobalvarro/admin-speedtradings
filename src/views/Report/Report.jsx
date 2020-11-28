@@ -329,7 +329,7 @@ const Report = () => {
                     </div>
 
                     {
-                        state.allData.length === 0 &&
+                        state.allData.length > 0 &&
                         <div className="selection">
                             <div className="total-content">
                                 <span className="total">
