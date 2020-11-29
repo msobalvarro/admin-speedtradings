@@ -51,7 +51,7 @@ const Report = () => {
     const [showModalPassword, setShowModalPassword] = useState(false)
 
     // Contendra todos los hash escritos
-    const hashs = []
+    const [hashs, setHashs] = useState({})
 
     const { token } = useSelector(({ globalStorage }) => globalStorage)
 
@@ -146,7 +146,19 @@ const Report = () => {
                             {
                                 // verificamos la wallet no es de alypay
                                 item.alypay !== 1 &&
-                                <input type="text" placeholder="Escriba hash de transaccion" className="text-input" onChange={e => hashs[index] = e.target.value} />
+                                <input
+                                    type="text"
+                                    placeholder="Escriba hash de transaccion"
+                                    className="text-input"
+                                    onChange={e => {
+                                        const { value } = e.target
+                                        const { id } = item
+
+                                        setHashs({
+                                            ...hashs,
+                                            [id]: value
+                                        })
+                                    }} />
                             }
 
 
@@ -186,18 +198,12 @@ const Report = () => {
             for (let index = 0; index < state.allData.length; index++) {
                 const elementData = state.allData[index]
 
-                if (hashs[index] === undefined) {
-                    hashs[index] = ""
-                }
-
-                // Obtenemos el hash de la fila
-                const hash = hashs[index] === undefined ? "" : hashs[index]
-
                 // Construimos el objeto que necesitara el backend para procesar el retiro
                 const dataPush = {
                     ...elementData,
                     paymented: elementData.hash !== null,
-                    hash: (elementData.hash === null ? hash : elementData.hash)
+                    // Obtenemos el hash, en caso de que no exista, obtenemos el hash ingresado manualmente
+                    hash: elementData.hash || (hashs[elementData.id] || null)
                 }
 
                 // Se lo agregamos a la constante que enviaremos al backend
