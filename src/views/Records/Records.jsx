@@ -293,7 +293,7 @@ const Records = () => {
     // Metodo para aplicar trading
     const applyTrading = async (password) => {
         try {
-            //setLoaderTrading(true)
+            setLoaderReportDownload(true)
 
             if (!Validator.isNumeric(percentage)) {
                 throw String("El porcentaje del trading no es valido")
@@ -365,7 +365,7 @@ const Records = () => {
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error, 'warning')
         } finally {
-            //setLoader(false)
+            setLoaderReportDownload(false)
         }
 
 

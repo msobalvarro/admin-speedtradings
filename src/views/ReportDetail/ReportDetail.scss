@@ -1,19 +1,27 @@
 @import '../../utils/constants.scss';
 
 .ReportDetail {
+    .row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .label {
+            display: inline-block;
+            margin-right: .5rem;
+        }
+    }
     &-header {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        background-color: $colorMain;
-        padding: 0 2rem;
-
-        img {
-            width: 10rem;
-        }
+        padding: 1rem 2rem;
 
         .navigation {
+            background-color: $colorMain;
+            padding: .5rem 1rem;
+            border-radius: 7px;
             span {
                 text-decoration: none;
                 color: #fff;
@@ -36,8 +44,10 @@
         display: flex;
         flex-direction: row;
         justify-content: space-evenly;
-        background-color: $colorMain;
+        background-color: rgba(#000, .4);
+        margin: 0 2rem;
         padding: 1rem 2rem;
+        border-radius: 7px;
 
         div {
             width: 25%;
@@ -132,10 +142,12 @@
         display: flex;
         flex-direction: column;
         width: 95%;
+        background-color: rgba(#000, .4);
         margin: 0 auto;
         margin-top: 1rem;
         margin-bottom: 1.5rem;
         overflow-x: auto;
+        border-radius: 7px;
 
         &-head, &-body, &-footer {
             min-width: 1024px;
@@ -198,7 +210,7 @@
             display: flex;
             flex-direction: row;
             justify-content: flex-end;
-            background-color: $colorMain;
+            background-color: rgba(#000, .75);
             font-size: 1.5rem;
             padding: .5rem 1rem;
 
@@ -206,7 +218,7 @@
                 &:first-child {
                     text-transform: uppercase;
                     font-weight: bold;
-                    color: $colorSecondary;
+                    color: $colorYellow;
                     margin-right: 1rem;
                 }
             }

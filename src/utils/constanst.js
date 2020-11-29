@@ -18,11 +18,11 @@ export const keySecret = "testDevelop"
 
 export const emailImageToken = "jRVFgyxiXKHxAWQL47jVzoMwj2m9DfG6-fLv8j9zBtLDMjpBd4QeLpXdTHM2Mnlyg-zZEfQrPoCn9yPUVaUQEvTl3B904h3xcY"
 
-//export const urlServer = "https://ardent-medley-272823.appspot.com"
+export const urlServer = "https://ardent-medley-272823.appspot.com"
 //export const urlServer = "http://192.168.1.238:8084"
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
-export const urlServer = "http://192.168.0.119:8084"
+//export const urlServer = "http://192.168.0.119:8084"
 //export const urlServer = "http://192.168.0.117:8084"
 
 export const urlServerSocket = urlServer.replace("https", "wss").replace("http", "ws")
@@ -38,6 +38,35 @@ export const urlServerSocket = urlServer.replace("https", "wss").replace("http",
 export const WithDecimals = (number = 0) => number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 
 export const Round = (number = 0) => Math.round(number * 100) / 100
+
+/**
+ * Creates a function like `round`. Extract from lodash library
+ *
+ * @private
+ * @param {string} methodName The name of the `Math` method to use when rounding.
+ * @returns {Function} Returns the new round function.
+ */
+export const floor = (number, precision) => {
+    const func = Math.floor
+
+    if (isNaN(number) || number === null) {
+        return 0
+    }
+
+    precision = precision == null ? 0 : (precision >= 0 ? Math.min(precision, 292) : Math.max(precision, -292))
+
+    if (precision) {
+        // Shift with exponential notation to avoid floating-point issues.
+        // See [MDN](https://mdn.io/round#Examples) for more details.
+        let pair = `${number}e`.split('e')
+        const value = func(`${pair[0]}e${+pair[1] + precision}`)
+
+        pair = `${value}e`.split('e')
+        return +`${pair[0]}e${+pair[1] - precision}`
+    }
+
+    return func(number)
+}
 
 /**Copy string */
 export const copyData = (str = "") => {

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, withRouter } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import moment from 'moment'
 import './ReportDetail.scss'
 
 // import constants
-import { useQueryParams, Petition } from '../../utils/constanst'
+import { useQueryParams, Petition, floor, randomKey } from '../../utils/constanst'
 
 // assets
-import Logo from '../../static/images/logo.png'
 import { dataBasicInfo, dataCommissions, dataInverstmentPlan } from './data'
 
 // import components
 import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
+import Modal from '../../components/Modal/Modal'
+import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
 
 
 // Elemento del la sección de información básica del cliente
@@ -51,40 +53,40 @@ const BasicInfo = ({ data }) => {
 }
 
 // Renderizado para cada columna de la tabla de planes de inversión
-const inverstmentPlanItem = (item, index) => (
-    <div key={index} className='row'>
-        <span>{item.day}</span>
-        <span>{item.date}</span>
-        <span>{item.code}</span>
+const inverstmentPlanItem = (item) => (
+    <div key={randomKey()} className='row'>
+        <span>{item.day_number}</span>
+        <span>{moment(item.date).format('DD-MM-YYYY')}</span>
+        <span>{item.codigo}</span>
         <span>{item.description}</span>
-        <span>{item.rendiment ?? ''}</span>
-        <span>{item.int ?? ''}</span>
-        <span>{item.debit ?? ''}</span>
-        <span>{item.credit ?? ''}</span>
-        <span>{item.balance}</span>
+        <span>{floor(item.percentage, 3) ?? ''}</span>
+        <span>{floor(item.daily_interest, 8)}</span>
+        <span>{floor(item.debit, 8) ?? ''}</span>
+        <span>{floor(item.credit, 8) ?? ''}</span>
+        <span>{floor(item.balance, 8)}</span>
     </div>
 )
 
 // Renderizado para cada columna de la tabla de comisiones
-const commissionItem = (item, index) => (
-    <div key={index} className='row'>
-        <span>{item.date}</span>
+const commissionItem = (item) => (
+    <div key={randomKey()} className='row'>
+        <span>{moment(item.registration_date).format('DD-MM-YYYY')}</span>
         <span>{item.code}</span>
-        <span>{item.sponsoredName}</span>
-        <span>{item.inverstment ?? ''}</span>
-        <span>{item.bono ?? ''}</span>
-        <span>{item.price ?? ''}</span>
-        <span>{item.amountUSD ?? ''}</span>
+        <span>{item.name}</span>
+        <span>{item.amount ?? 0}</span>
+        <span>{item.fee_sponsor ?? ''}</span>
+        <span>{item.price ?? 0}</span>
+        <span>{item.amountUSD ?? 0}</span>
     </div>
 )
 
 // Renderizado para cada columna de la tabla de resumen
-const summaryItem = (item, index) => (
-    <div key={index} className="row">
+const summaryItem = (item) => (
+    <div key={randomKey()} className="row">
         <span>{item.code}</span>
         <span>{item.moviment}</span>
         <span>{item.count}</span>
-        <span>{item.coinAmount}</span>
+        <span>{floor(item.amount, 8)}</span>
         <span>$ {item.usdAmount}</span>
     </div>
 )
@@ -100,13 +102,18 @@ const ReportDetail = ({ history }) => {
     }
 
     const QueryParams = useQueryParams()
+    const [loader, setLoader] = useState(false)
+
+    // Estados para los datos del reporte
+    const [duplicationPlanBTC, setDuplicationPlanBTC] = useState([])
+    const [duplicationPlanETH, setDuplicationPlanETH] = useState([])
     const [commissionsBTC, setCommissionsBTC] = useState([])
     const [commissionsETH, setCommissionsETH] = useState([])
     const [summary, setSummary] = useState([])
 
     // Estado para controlar la pestaña que se muestra dentro de la vista de reportes
     const [tab, setTab] = useState(1)
-    const [dateReport, setDateReport] = useState('')
+    const [coinType, setCoinType] = useState(1)
     const { id } = useParams()
 
     // Variables para almacenar la lista de los montos para cada tipo de comisión
@@ -115,17 +122,28 @@ const ReportDetail = ({ history }) => {
 
     const fetchData = async _ => {
         try {
+            setLoader(true)
+
+            const dateReport = moment(QueryParams.get('date')).format('YYYY-MM-DD')
+
             const dataSend = {
                 id,
-                date: dateReport,
-                coinType: 1
+                date: dateReport
             }
 
-            const { data } = await Petition.get('/admin/reports-users', dataSend, credentials)
+            const { data } = await Petition.post('/admin/reports-users', dataSend, credentials)
 
+            const { bitcoin, ethereum } = data
             console.log(data)
+            setDuplicationPlanBTC(bitcoin.duplicationPlan)
+            setDuplicationPlanETH(ethereum.duplicationPlan)
+
+            setCommissionsBTC(bitcoin.commissionPayment)
+            setCommissionsETH(ethereum.commissionPayment)
         } catch (error) {
             console.error(error)
+        } finally {
+            setLoader(false)
         }
     }
 
@@ -134,69 +152,53 @@ const ReportDetail = ({ history }) => {
         setTab(tabNumber)
     }
 
-    useEffect(_ => {
-        /* setCommissionsBTC(dataCommissions.filter(item => item.code === 'CBTC'))
-        setCommissionsETH(dataCommissions.filter(item => item.code === 'CETH')) */
-    }, [])
+    const getCurrentDuplicationPlan = _ => (coinType === 1)
+        ? duplicationPlanBTC
+        : duplicationPlanETH
 
     useEffect(_ => {
-        /* // Variable donde se almecenará la data del resumen antes de asignarle al estado
-        const summaryData = [];
+        fetchData()
+    }, [id, QueryParams.get('date')])
 
-        ['INV', 'NCR', 'INT', 'RET'].forEach(item => {
-            // Lista de transacciones que pertencen a la código actual
-            const result = dataInverstmentPlan.filter(subitem => (subitem.code === item))
+    useEffect(_ => {
+        const _data = getCurrentDuplicationPlan()
 
-            let coinAmount = 0,
-                usdAmount = 0,
-                moviment = ''
+        const summaryInt = _data.filter(item => item.codigo === 'INT')
+        const summaryRet = _data.filter(item => item.codigo === 'RET')
+        const summaryInv = _data.filter(item => item.codigo === 'INV')
+        const summaryNcr = _data.filter(item => item.codigo === 'NCR')
 
-            switch (item.toLowerCase()) {
-                case 'inv':
-                case 'ncr':
-                    coinAmount = result.map(item => item.credit).reduce((a, b) => (a + b), 0)
-                    usdAmount = result.map(item => (item.credit * 1)).reduce((a, b) => (a + b), 0)
-                    moviment = (item.toLowerCase() === 'inv') ? 'INVERSIÓN' : 'CRÉDITO DUPLICACIÓN'
-                    break
-
-                case 'int':
-                    coinAmount = result.map(item => item.int).reduce((a, b) => (a + b), 0)
-                    usdAmount = result.map(item => (item.int * dataBasicInfo.priceCoin)).reduce((a, b) => (a + b), 0)
-                    moviment = 'INTERÉS DEL DÍA'
-                    break
-
-                case 'ret':
-                    coinAmount = result.map(item => item.debit).reduce((a, b) => (a + b), 0)
-                    usdAmount = result.map(item => (item.debit * dataBasicInfo.priceCoin)).reduce((a, b) => (a + b), 0)
-                    moviment = 'RETIRO A WALLET'
-                    break
-
-                default:
-                    return
-            }
-
-            let response = {
-                code: item,
-                count: result.length,
-                moviment,
-                coinAmount,
-                usdAmount
-            }
-
-            summaryData.push(response)
-        })
-
-        // Guradando los datos del resumen en el estado
-        setSummary(summaryData)
-        setDateReport(QueryParams.get('date')) */
-        //console.log(moment(QueryParams.get('date')))
-    }, [])
+        setSummary([
+            {
+                code: "INT",
+                moviment: "interes del dia",
+                count: summaryInt.length,
+                amount: summaryInt.reduce((prev, item) => prev + item.daily_interest, 0)
+            },
+            {
+                code: "RET",
+                moviment: "retiro a wallet",
+                count: summaryRet.length,
+                amount: summaryRet.reduce((prev, item) => prev + item.debit, 0)
+            },
+            {
+                code: "INV",
+                moviment: "inversion",
+                count: summaryInv.length,
+                amount: summaryInv.reduce((prev, item) => prev + item.credit, 0)
+            },
+            {
+                code: "NCR",
+                moviment: "credito duplicaciom",
+                count: summaryNcr.length,
+                amount: summaryNcr.reduce((prev, item) => prev + item.credit, 0)
+            },
+        ])
+    }, [coinType])
 
     return (
         <div className='ReportDetail'>
             <header className='ReportDetail-header'>
-                <img src={Logo} alt="" />
-
                 <nav className="navigation">
                     <span onClick={e => onClickTab({ e, tabNumber: 1 })} className={tab === 1 ? 'active' : ''}>
                         Plan de inversión
@@ -210,6 +212,17 @@ const ReportDetail = ({ history }) => {
                         Resumen transacciones
                     </span>
                 </nav>
+
+                <div className="row">
+                    <span className="label">Moneda</span>
+                    <select
+                        value={coinType}
+                        onChange={e => setCoinType(parseInt(e.target.value))}
+                        className="picker">
+                        <option value="1">Bitcoin</option>
+                        <option value="2">Ethereum</option>
+                    </select>
+                </div>
             </header>
 
             <BasicInfo data={dataBasicInfo} />
@@ -220,34 +233,49 @@ const ReportDetail = ({ history }) => {
                     <h2 className="title">DETALLE DE PLAN DE INVERSIÓN - DUPLICACIÓN</h2>
 
                     {
-                        dataInverstmentPlan.length > 0 &&
-                        <div className="table">
-                            <div className="table-head">
-                                <span>No. DÍA</span>
-                                <span>FECHA</span>
-                                <span>CÓDIGO</span>
-                                <span>DESCRIPCIÓN</span>
-                                <span>% DÍA</span>
-                                <span>INT DIARIO</span>
-                                <span>DÉBITO</span>
-                                <span>CRÉDITO</span>
-                                <span>BALANCE</span>
-                            </div>
-                            <div className="table-body">
-                                {
-                                    dataInverstmentPlan.map(inverstmentPlanItem)
-                                }
-                            </div>
-                            <div className="table-footer">
-                                <span>saldo final del mes</span>
-                                <span>{dataInverstmentPlan[dataInverstmentPlan.length - 1].balance}</span>
-                            </div>
-                        </div>
-                    }
+                        getCurrentDuplicationPlan().length > 0 &&
+                        <>
+                            {
+                                (_ => {
+                                    let balancePrev = 0
 
-                    {
-                        dataInverstmentPlan.length === 0 &&
-                        <EmptyIndicator message="Sin comisiones de referidos para mostrar" />
+                                    return (
+                                        <div className="table">
+                                            <div className="table-head">
+                                                <span>No. DÍA</span>
+                                                <span>FECHA</span>
+                                                <span>CÓDIGO</span>
+                                                <span>DESCRIPCIÓN</span>
+                                                <span>% DÍA</span>
+                                                <span>INT DIARIO</span>
+                                                <span>DÉBITO</span>
+                                                <span>CRÉDITO</span>
+                                                <span>BALANCE</span>
+                                            </div>
+                                            <div className="table-body">
+                                                {
+                                                    getCurrentDuplicationPlan().map((item, index) => {
+                                                        if (index === 0) {
+                                                            balancePrev = item.balance
+                                                        } else {
+                                                            balancePrev = (balancePrev - item.debit + item.credit)
+
+                                                            item.balance = balancePrev
+                                                        }
+
+                                                        return inverstmentPlanItem(item)
+                                                    })
+                                                }
+                                            </div>
+                                            <div className="table-footer">
+                                                <span>saldo final del mes</span>
+                                                <span>{floor(balancePrev, 8)}</span>
+                                            </div>
+                                        </div>
+                                    )
+                                })()
+                            }
+                        </>
                     }
                 </>
             }
@@ -259,7 +287,7 @@ const ReportDetail = ({ history }) => {
                     <h2 className="title">DETALLE DE PAGO DE COMISIONES POR REFERIDOS</h2>
 
                     {
-                        commissionsBTC.length > 0 &&
+                        commissionsBTC.length > 0 && coinType === 1 &&
                         <div className="table commissions">
                             <div className="table-head">
                                 <span>FECHA</span>
@@ -272,25 +300,25 @@ const ReportDetail = ({ history }) => {
                             </div>
                             <div className="table-body">
                                 {
-                                    commissionsBTC.map((item, index) => {
-                                        amountCommissionBTC.coin.push(item.bono)
-                                        amountCommissionBTC.usd.push(item.amountUSD)
+                                    commissionsBTC.map((item) => {
+                                        amountCommissionBTC.coin.push(item.fee_sponsor)
+                                        amountCommissionBTC.usd.push(0)
 
-                                        return commissionItem(item, index)
+                                        return commissionItem(item)
                                     })
                                 }
                             </div>
                             <div className="table-footer">
                                 <span>total de comisiones por referidos del mes</span>
-                                <span>{amountCommissionBTC.coin.reduce((a, b) => (a + b), 0)}</span>
+                                <span>{floor(amountCommissionBTC.coin.reduce((a, b) => (a + b), 0), 8)}</span>
                                 <span></span>
-                                <span>{amountCommissionBTC.usd.reduce((a, b) => (a + b), 0)}</span>
+                                <span>{floor(amountCommissionBTC.usd.reduce((a, b) => (a + b), 0), 8)}</span>
                             </div>
                         </div>
                     }
 
                     {
-                        commissionsETH.length > 0 &&
+                        commissionsETH.length > 0 && coinType === 2 &&
                         <div className="table commissions">
                             <div className="table-head">
                                 <span>FECHA</span>
@@ -319,11 +347,6 @@ const ReportDetail = ({ history }) => {
                             </div>
                         </div>
                     }
-
-                    {
-                        commissionsBTC.length === 0 && commissionsETH.length === 0 &&
-                        <EmptyIndicator message="Sin comisiones de referidos para mostrar" />
-                    }
                 </>
             }
 
@@ -347,6 +370,13 @@ const ReportDetail = ({ history }) => {
                         </div>
                     </div>
                 </>
+            }
+
+            {
+                loader &&
+                <Modal persist={true} onlyChildren>
+                    <ActivityIndicator size={64} />
+                </Modal>
             }
         </div>
     )
