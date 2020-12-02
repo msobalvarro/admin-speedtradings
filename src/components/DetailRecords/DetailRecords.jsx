@@ -107,7 +107,7 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
 
                             <div className="col">
                                 <div className="rows border-bottom">
-                                    <div className="header">
+                                    <div className="row">
                                         <span className={`status ${data.amount_btc !== null ? 'active' : 'inactive'}`}>
                                             {data.amount_btc !== null ? 'Activo' : 'Inactivo'}
                                         </span>
@@ -130,7 +130,7 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
                                 </div>
 
                                 <div className="rows border-bottom">
-                                    <div className="header">
+                                    <div className="row">
                                         <span className={`status ${data.amount_eth !== null ? 'active' : 'inactive'}`}>
                                             {data.amount_eth !== null ? 'Activo' : 'Inactivo'}
                                         </span>
@@ -159,6 +159,7 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
                     <div className="buttons">
                         <Link
                             to={`/reports/${data.id}?date=${dateReport}`}
+                            target={"_blank"}
                             className="button large secondary">
                             Generar Reporte
                         </Link>

@@ -27,7 +27,7 @@ const Users = () => {
     // Estado que almacena el id del usuario a mostrar en detalle
     const [activeDetail, setActiveDetail] = useState(-1)
     // Estado que almacena la fecha con la que generarán los reportes
-    const [dateReport, setDateReport] = useState(moment(new Date()).format('YYYY-MM'))
+    const [dateReport, setDateReport] = useState(window.sessionStorage.getItem('date_report') || moment(new Date()).format('YYYY-MM'))
     // Estado que almacena el status del indicador de carga
     const [loader, setLoader] = useState(false)
 
@@ -68,8 +68,8 @@ const Users = () => {
                             const { value } = e.target
 
                             if (value) {
-                                console.log('calue', value)
                                 setDateReport(value)
+                                window.sessionStorage.setItem('date_report', value)
                             }
                         }} />
                 </div>

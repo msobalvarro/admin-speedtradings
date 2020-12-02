@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react"
 import { useSelector, useDispatch } from 'react-redux'
-import { NavLink } from "react-router-dom"
+import { NavLink, useLocation } from "react-router-dom"
 import { LogOut } from "../../utils/constanst"
 
 // Import Assets
@@ -28,11 +28,17 @@ const NavigationBar = () => {
 
     // Detect blur for component to hide option list
     const handleBlur = (e) => {
-        if (!showMoreContainerRef.current.contains(e.target) && showMore) {
-            setShowMore(false)
+        if (showMoreContainerRef.current) {
+            if (!showMoreContainerRef.current.contains(e.target) && showMore) {
+                setShowMore(false)
+            }
         }
     }
 
+    /**
+     * Configura los eventos del socket para actualizar la lista de los usuarios
+     * conectados
+     */
     useEffect(_ => {
         if (socket !== null && !socket._callbacks[`$${socketEvents.adminCounter}`]) {
             // Se estable el listener para detectar los admins conectados
@@ -51,6 +57,10 @@ const NavigationBar = () => {
         }
     })
 
+    // Si se carga la vista de reportes, se oculta el navbar
+    if (/^\/reports\/[\d]{1,}$/.test(useLocation().pathname)) {
+        return null
+    }
 
     return (
         <nav className="navigation-bar">

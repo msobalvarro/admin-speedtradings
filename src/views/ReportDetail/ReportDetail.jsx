@@ -14,6 +14,8 @@ import { dataBasicInfo, dataCommissions, dataInverstmentPlan } from './data'
 import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
 import Modal from '../../components/Modal/Modal'
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
+import UserReportPDF from './ReporDetailPdf'
+import PDF from './pdf'
 
 
 // Elemento del la sección de información básica del cliente
@@ -25,28 +27,32 @@ const BasicInfoItem = ({ title, value }) => (
 )
 
 // Renderiza la sección de la información básica del cliente
-const BasicInfo = ({ data }) => {
+const BasicInfo = ({ data, coinType = 1 }) => {
     return (
         <div className='ReportDetail-basicInfo'>
             <div className='ReportDetail-bacicInfo__section'>
                 <BasicInfoItem title='nombre' value={data.name} />
                 <BasicInfoItem title='producto' value={data.product} />
-                <BasicInfoItem title='criptomoneda' value={data.coin} />
+                <BasicInfoItem title='criptomoneda' value={data.criptocoin} />
                 <BasicInfoItem title='billetera' value={data.wallet} />
             </div>
 
             <div>
                 <BasicInfoItem title='fecha inicial' value={data.startDate} />
-                <BasicInfoItem title='fecha final' value={data.lastDate} />
-                <BasicInfoItem title='precio btc' value={data.priceCoin} />
-                <BasicInfoItem title='rango' value={data.range} />
+                <BasicInfoItem title='fecha final' value={data.cutoffDate} />
+                <BasicInfoItem
+                    title={`precio ${coinType === 1 ? 'btc' : 'eth'}`}
+                    value={data.priceCoin} />
+                <BasicInfoItem title='rango' value={data.ranges} />
             </div>
 
             <div>
-                <BasicInfoItem title='plan de inversión' value={data.inverstmentPlan} />
-                <BasicInfoItem title='total a duplicar' value={data.totalDuplication} />
-                <BasicInfoItem title='saldo final en btc' value={data.lastPriceCoin} />
-                <BasicInfoItem title='no. referidos' value={data.nSponsors} />
+                <BasicInfoItem title='plan de inversión' value={floor(data.plan, 8)} />
+                <BasicInfoItem title='total a duplicar' value={floor(data.duplicate_plan, 8)} />
+                <BasicInfoItem
+                    title={`saldo final en ${coinType === 1 ? 'btc' : 'eth'}`}
+                    value={data.lastBalance} />
+                <BasicInfoItem title='no. referidos' value={data.referred} />
             </div>
         </div>
     )
@@ -101,20 +107,26 @@ const ReportDetail = ({ history }) => {
         }
     }
 
+    const { id } = useParams()
     const QueryParams = useQueryParams()
     const [loader, setLoader] = useState(false)
+    const [showpdf, setShowdf] = useState(false)
 
     // Estados para los datos del reporte
+    const [headerInfoBTC, setHeaderInfoBTC] = useState({})
+    const [headerInfoETH, setHeaderInfoETH] = useState({})
+
     const [duplicationPlanBTC, setDuplicationPlanBTC] = useState([])
     const [duplicationPlanETH, setDuplicationPlanETH] = useState([])
+
     const [commissionsBTC, setCommissionsBTC] = useState([])
     const [commissionsETH, setCommissionsETH] = useState([])
+
     const [summary, setSummary] = useState([])
 
     // Estado para controlar la pestaña que se muestra dentro de la vista de reportes
     const [tab, setTab] = useState(1)
     const [coinType, setCoinType] = useState(1)
-    const { id } = useParams()
 
     // Variables para almacenar la lista de los montos para cada tipo de comisión
     const amountCommissionBTC = { coin: [], usd: [] }
@@ -126,6 +138,10 @@ const ReportDetail = ({ history }) => {
 
             const dateReport = moment(QueryParams.get('date')).format('YYYY-MM-DD')
 
+            // Se calcula la fecha de inicio y corte del reporte
+            const startDate = moment(dateReport).format('DD MMMM YYYY')
+            const cutoffDate = moment(dateReport).endOf('month').format('DD MMMM YYYY')
+
             const dataSend = {
                 id,
                 date: dateReport
@@ -135,11 +151,29 @@ const ReportDetail = ({ history }) => {
 
             const { bitcoin, ethereum } = data
             console.log(data)
+
+            setHeaderInfoBTC({
+                ...bitcoin.info,
+                product: 'Plan de inversión - Duplicación',
+                startDate,
+                cutoffDate,
+                lastBalance: 0
+            })
+            setHeaderInfoETH({
+                ...ethereum.info,
+                product: 'Plan de inversión - Duplicación',
+                startDate,
+                cutoffDate,
+                lastBalance: 0
+            })
+
             setDuplicationPlanBTC(bitcoin.duplicationPlan)
             setDuplicationPlanETH(ethereum.duplicationPlan)
 
             setCommissionsBTC(bitcoin.commissionPayment)
             setCommissionsETH(ethereum.commissionPayment)
+
+            window.setTimeout(_ => { setShowdf(true) }, 2000)
         } catch (error) {
             console.error(error)
         } finally {
@@ -152,6 +186,10 @@ const ReportDetail = ({ history }) => {
         setTab(tabNumber)
     }
 
+    const getCurrentHeaderInfo = _ => (coinType === 1)
+        ? headerInfoBTC
+        : headerInfoETH
+
     const getCurrentDuplicationPlan = _ => (coinType === 1)
         ? duplicationPlanBTC
         : duplicationPlanETH
@@ -160,9 +198,13 @@ const ReportDetail = ({ history }) => {
         fetchData()
     }, [id, QueryParams.get('date')])
 
+    /**
+     * Calcula la info del resumen según la moneda seleccionada
+     */
     useEffect(_ => {
         const _data = getCurrentDuplicationPlan()
 
+        // Extrae los intereses de los datos obtenidos
         const summaryInt = _data.filter(item => item.codigo === 'INT')
         const summaryRet = _data.filter(item => item.codigo === 'RET')
         const summaryInv = _data.filter(item => item.codigo === 'INV')
@@ -196,6 +238,11 @@ const ReportDetail = ({ history }) => {
         ])
     }, [coinType])
 
+    return <PDF
+        duplicationPlan={duplicationPlanETH}
+        commissions={commissionsETH}
+        info={getCurrentHeaderInfo()} />
+
     return (
         <div className='ReportDetail'>
             <header className='ReportDetail-header'>
@@ -225,7 +272,7 @@ const ReportDetail = ({ history }) => {
                 </div>
             </header>
 
-            <BasicInfo data={dataBasicInfo} />
+            <BasicInfo data={getCurrentHeaderInfo()} coinType={coinType} />
 
             {
                 tab === 1 &&
@@ -255,11 +302,26 @@ const ReportDetail = ({ history }) => {
                                             <div className="table-body">
                                                 {
                                                     getCurrentDuplicationPlan().map((item, index) => {
+                                                        /**
+                                                         * Sí es el primer elemento, se
+                                                         * registra valor del balance
+                                                         * inicial
+                                                         */
                                                         if (index === 0) {
                                                             balancePrev = item.balance
                                                         } else {
+                                                            /**
+                                                             * Se calcula el nuevo valor
+                                                             * del balance, luego de los
+                                                             * movimientos del día
+                                                             */
                                                             balancePrev = (balancePrev - item.debit + item.credit)
 
+                                                            /**
+                                                             * Se actualiza el monto del
+                                                             * balance según los calculos
+                                                             * previos
+                                                             */
                                                             item.balance = balancePrev
                                                         }
 
@@ -383,3 +445,7 @@ const ReportDetail = ({ history }) => {
 }
 
 export default withRouter(ReportDetail)
+
+export {
+    inverstmentPlanItem
+}

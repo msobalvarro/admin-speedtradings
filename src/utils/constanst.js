@@ -18,11 +18,11 @@ export const keySecret = "testDevelop"
 
 export const emailImageToken = "jRVFgyxiXKHxAWQL47jVzoMwj2m9DfG6-fLv8j9zBtLDMjpBd4QeLpXdTHM2Mnlyg-zZEfQrPoCn9yPUVaUQEvTl3B904h3xcY"
 
-export const urlServer = "https://ardent-medley-272823.appspot.com"
+//export const urlServer = "https://ardent-medley-272823.appspot.com"
 //export const urlServer = "http://192.168.1.238:8084"
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
-//export const urlServer = "http://192.168.0.119:8084"
+export const urlServer = "http://192.168.0.119:8084"
 //export const urlServer = "http://192.168.0.117:8084"
 
 export const urlServerSocket = urlServer.replace("https", "wss").replace("http", "ws")
@@ -123,6 +123,20 @@ export const Moment = ({
             {checkHoursOffset()}
         </time>
     )
+}
+
+/**
+ * Retorna un string con los primeros 4 caracteres y los últimos 4 caracteres de una wallet
+ * @param {String} _wallet 
+ */
+export const formatWallet = _wallet => {
+    if (!_wallet) {
+        return ''
+    }
+
+    const { length } = _wallet
+
+    return `${_wallet.substr(0, 4)}...${_wallet.substr((length - 4), 4)}`
 }
 
 /**
