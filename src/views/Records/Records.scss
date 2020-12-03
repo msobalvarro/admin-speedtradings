@@ -1,263 +1,270 @@
 @import '../../utils/constants.scss';
 
 .Records {
-    .header-content {
+  .header-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+
+    .trading,
+    .reports {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .trading {
+      input,
+      select,
+      button {
+        margin-left: 1rem;
+      }
+    }
+
+    .reports {
+      border-right: 1px darken(#fff, 20) solid;
+      margin-right: 1rem;
+      padding-right: 1rem;
+
+      .row {
         display: flex;
         flex-direction: row;
-        justify-content: flex-end;
-        margin-bottom: 1rem;
-        margin-top: 1rem;
+        align-items: center;
 
-        .trading, .reports {
+        span {
+          margin-right: 5px;
+        }
+      }
+
+      .row,
+      button {
+        margin-left: 1rem;
+      }
+    }
+
+    button {
+      padding: 0 0.5rem !important;
+      font-size: 0.75rem;
+    }
+  }
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+
+    .column {
+      position: relative;
+      box-sizing: border-box;
+      width: calc(50% - 1rem);
+      background-color: rgba(0, 0, 0, 0.4);
+      border-radius: 7px;
+      min-height: 500px;
+      height: calc(100vh - 9rem);
+      max-height: 800px;
+
+      .Activityindicator {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .list {
+      .tabs-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        border: 2px solid $colorYellow;
+        border-radius: 7px;
+
+        .tab {
+          position: relative;
+          display: block;
+          flex-grow: 1;
+          background-color: transparent;
+          color: $colorYellow;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+          text-align: center;
+          cursor: pointer;
+          transform: scale(1);
+          user-select: none;
+          transition: background-color 0.25s, color 0.25s, transform 0.25s;
+
+          &.active {
+            background-color: $colorYellow;
+            color: #1d1d1d;
+          }
+
+          &:active {
+            transform: scale(0.96);
+          }
+
+          &[data-counter]:after {
+            position: absolute;
             display: flex;
-            flex-direction: row;
-        }
+            justify-content: center;
+            align-items: center;
+            content: attr(data-counter);
+            background-color: $colorRed;
+            color: #fff;
+            padding: 0.3rem;
+            min-width: 14px;
+            font-size: 12px;
+            border-radius: 100px;
+            top: -40%;
+            right: 5px;
 
-        .trading {
-            input, select, button {
-                margin-left: 1rem;
+            &:empty {
+              background-color: blue;
             }
+          }
         }
+      }
 
-        .reports {
-            border-right: 1px darken(#fff, 20) solid;
-            margin-right: 1rem;
-            padding-right: 1rem;
-
-            .row {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                
-                span {
-                    margin-right: 5px;
-                }
-            }
-
-            .row, button {
-                margin-left: 1rem;
-            }
-        }
-
-        button {
-            padding: 0 .5rem !important;
-            font-size: .75rem;
-        }
-    }
-
-    .container {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 1rem 2rem;
-
-        .column {
-            position: relative;
-            box-sizing: border-box;
-            width: calc(50% - 1rem);
-            background-color: rgba(0, 0, 0, .4);
-            border-radius: 7px;
-            min-height: 500px;
-            height: calc(100vh - 9rem);
-            max-height: 800px;
-
-            .Activityindicator {
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-            }
-        }
-
-        .list {
-            .tabs-container {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-evenly;
-                border: 2px solid $colorYellow;
-                border-radius: 7px;
-
-                .tab {
-                    position: relative;
-                    display: block;
-                    flex-grow: 1;
-                    background-color: transparent;
-                    color: $colorYellow;
-                    padding: .5rem 1rem;
-                    border-radius: 4px;
-                    text-align: center;
-                    cursor: pointer;
-                    transform: scale(1);
-                    user-select: none;
-                    transition: background-color .25s, color .25s, transform .25s;
-
-                    &.active {
-                        background-color: $colorYellow;
-                        color: #1d1d1d;
-                    }
-
-                    &:active {
-                        transform: scale(.96);
-                    }
-
-                    &[data-counter]:after {
-                        position: absolute;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        content: attr(data-counter);
-                        background-color: $colorRed;
-                        color: #fff;
-                        padding: .3rem;
-                        min-width: 14px;
-                        font-size: 12px;
-                        border-radius: 100px;
-                        top: -40%;
-                        right: 5px;
-
-                        &:empty {
-                            background-color: blue;
-                        }
-                    }
-                }
-            }
-
-            .list-content {
-                margin: 1rem 0;
-                max-height: calc(100% - 4rem);
-                overflow-y: auto;
-
-                .title {
-                    color: $colorYellow;
-                    font-weight: normal;
-                    text-align: center;
-                }
-
-                .empty {
-                    align-items: center;
-                    animation: fadeEffect 1s;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    margin-top: 25px;
-            
-                    img {
-                        width: 256px;
-                        margin-bottom: 10px;
-                    }
-                }
-            }
-        }
-    }
-
-    .table {
-        animation: fadeEffect 1s;
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        margin-top: 1rem;
-        user-select: none;
-        height: 100%;
+      .list-content {
+        margin: 1rem 0;
+        max-height: calc(100% - 4rem);
         overflow-y: auto;
 
-        .header, .row {
-            padding: 10px 1rem;
-            display: flex;
-            justify-content: space-between;
-
-            span {
-                text-align: center;
-                width: calc(100% / 4);
-                
-                &:first-child {
-                    text-align: left;
-                }
-
-                &:last-child {
-                    text-align: right;
-                }
-            }
+        .title {
+          color: $colorYellow;
+          font-weight: normal;
+          text-align: left;
         }
 
-        .header {
-            border-bottom: 2px solid $colorYellow;
-            color: $colorYellow;
-        }
-
-        .row {
-            border-bottom: 1px solid #fff;
-            transition: $transition;
-  
-            span {
-              &.name {
-                text-transform: capitalize;
-              }
-  
-              i {
-                opacity: 0.5;
-              }
-            }
-  
-            &:hover {
-              background-color: rgba($color: #fff, $alpha: 0.1);
-              cursor: pointer;
-            }
-
-            &.active {
-                background-color: rgba($color: #fff, $alpha: 0.2);
-            }
-        }
-
-        &.request, &.upgrade {
-            span {
-                flex-grow: 1;
-                width: calc(100% / 3);
-
-                &:nth-child(2) {
-                    width: 100px;
-                }
-
-                &:first-child, &:last-child {
-                    @include text-overflow;
-                }
-            }
-        }
-    }
-
-    .detail {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
         .empty {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 2rem;
-        
-            img {
-                margin: 0 auto;
-                margin-bottom: 1rem;
-                width: 200px;
-            }
-        
-            h2 {
-                font-size: 1.25rem;
-                color: darken(#fff, 30);
-            }
+          align-items: center;
+          animation: fadeEffect 1s;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          margin-top: 25px;
+
+          img {
+            width: 256px;
+            margin-bottom: 10px;
+          }
         }
-
-        .exchange {
-            max-height: calc(800px - 7rem) !important;
-            overflow-y: auto;
-
-            h2 {
-                font-size: 1.1rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .buttons {
-                position: initial;
-            }
-        }
+      }
     }
+  }
+
+  .table {
+    animation: fadeEffect 1s;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+    user-select: none;
+    height: 100%;
+    overflow-y: auto;
+
+    .header,
+    .row {
+      padding: 10px 1rem;
+      display: flex;
+      justify-content: space-between;
+
+      span {
+        text-align: center;
+        width: calc(100% / 4);
+
+        &:first-child {
+          text-align: left;
+        }
+
+        &:last-child {
+          text-align: right;
+        }
+      }
+    }
+
+    .header {
+      border-bottom: 2px solid $colorYellow;
+      color: $colorYellow;
+    }
+
+    .row {
+      border-bottom: 1px solid #fff;
+      transition: $transition;
+
+      span {
+        &.name {
+          text-transform: capitalize;
+        }
+
+        i {
+          opacity: 0.5;
+        }
+      }
+
+      &:hover {
+        background-color: rgba($color: #fff, $alpha: 0.1);
+        cursor: pointer;
+      }
+
+      &.active {
+        background-color: rgba($color: #fff, $alpha: 0.2);
+      }
+    }
+
+    &.request,
+    &.upgrade {
+      span {
+        flex-grow: 1;
+        width: calc(100% / 3);
+
+        &:nth-child(2) {
+          width: 100px;
+        }
+
+        &:first-child,
+        &:last-child {
+          @include text-overflow;
+        }
+      }
+    }
+  }
+
+  .detail {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 2rem;
+
+      img {
+        margin: 0 auto;
+        margin-bottom: 1rem;
+        width: 200px;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+        color: darken(#fff, 30);
+      }
+    }
+
+    .exchange {
+      max-height: calc(800px - 7rem) !important;
+      overflow-y: auto;
+
+      h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .buttons {
+        position: initial;
+      }
+    }
+  }
 }
