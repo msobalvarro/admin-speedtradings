@@ -45,7 +45,6 @@ const Users = () => {
       }
 
       setAllUsers(data)
-      console.log(data)
     } catch (error) {
       console.error(error)
       Swal.fire('Ha ocurrido un error', error.toString(), 'error')

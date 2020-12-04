@@ -36,7 +36,8 @@
     }
 
     .content-list {
-      width: calc(40% - 1rem);
+      width: calc(50% - 1rem);
+      overflow: hidden;
       .sub-header {
         display: flex;
         flex-direction: row;
@@ -52,7 +53,7 @@
     }
 
     .content-detail {
-      width: calc(60% - 1rem);
+      width: calc(50% - 1rem);
       padding: 1rem;
 
       .content-col {
@@ -148,7 +149,7 @@
   }
 }
 
-.leyenda-container {
+.caption-container {
   width: 100%;
   padding: 16px;
   display: flex;

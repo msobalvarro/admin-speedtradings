@@ -1,25 +1,13 @@
 import React, { useState } from 'react'
-// Import icons
-import { ReactComponent as PersonIcon } from '../../static/images/user.svg'
-import { ReactComponent as EnterpriseIcon } from '../../static/images/enterprise.svg'
 
 // Import constant
 import { Moment } from '../../utils/constanst'
+import UserIcon from '../UserIcon/UserIcon'
+const PERSON_TYPE = 1
+const ENTERPRISE_TYPE = 2
 
 const RecordsList = ({ data = [], activeDetail = -1, onDetail = _ => {} }) => {
   const [filter, setFilter] = useState('')
-  const PERSON_TYPE = 1
-
-  //validar el tipo de usuario
-  const showTypeIcon = type => {
-    if (!type) return ''
-
-    return type === PERSON_TYPE ? (
-      <PersonIcon className="icon" fill="#ffcb08" />
-    ) : (
-      <EnterpriseIcon className="icon" fill="#ffcb08" />
-    )
-  }
 
   // Componente que representa un articulo de la lista
   // Registos
@@ -36,7 +24,7 @@ const RecordsList = ({ data = [], activeDetail = -1, onDetail = _ => {} }) => {
           onClick={_ => onDetail(item.id_user)}
         >
           <span className="icon-container">
-            {item.type_users && showTypeIcon(item.type_users)}
+            {item.type_users && <UserIcon type={item.type_users} />}
           </span>
           <span className="name">{item.name}</span>
           <span>{item.country}</span>
@@ -62,13 +50,14 @@ const RecordsList = ({ data = [], activeDetail = -1, onDetail = _ => {} }) => {
           className="text-input"
         />
       </div>
-      <div className="leyenda-container">
+      <div className="caption-container">
         <span>
-          <PersonIcon className="icon" fill="#ffcb08" /> Personal
+          <UserIcon type={PERSON_TYPE} />
+          Personal
         </span>
         <div className="separator"></div>
         <span>
-          <EnterpriseIcon className="icon" fill="#ffcb08" />
+          <UserIcon type={ENTERPRISE_TYPE} />
           Empresarial
         </span>
       </div>
