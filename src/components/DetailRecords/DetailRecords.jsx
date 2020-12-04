@@ -174,7 +174,7 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
               </div>
 
               <div className="plan-item">
-                <h4 className="plan-title">Plan bitcoin</h4>
+                <h4 className="plan-title">Plan ethereum</h4>
                 <hr className="divisor" />
 
                 <div className="wallet-container">
