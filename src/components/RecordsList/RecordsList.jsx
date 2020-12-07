@@ -6,7 +6,7 @@ import UserIcon from '../UserIcon/UserIcon'
 const PERSON_TYPE = 1
 const ENTERPRISE_TYPE = 2
 
-const RecordsList = ({ data = [], activeDetail = -1, onDetail = _ => {} }) => {
+const RecordsList = ({ data = [], activeDetail = -1, onDetail = _ => { } }) => {
   const [filter, setFilter] = useState('')
 
   // Componente que representa un articulo de la lista
@@ -15,7 +15,8 @@ const RecordsList = ({ data = [], activeDetail = -1, onDetail = _ => {} }) => {
     if (
       (item.name.length > 0 && item.name.toLowerCase().search(filter) > -1) ||
       (item.country.length > 0 &&
-        item.country.toLowerCase().search(filter) > -1)
+        item.country.toLowerCase().search(filter) > -1) ||
+      (item.user_email.length > 0 && item.user_email.toLowerCase().search(filter) > -1)
     ) {
       return (
         <div
