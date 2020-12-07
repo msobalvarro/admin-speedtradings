@@ -1,21 +1,26 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, withRouter } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react'
+import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import moment from 'moment'
+import jsPDF from 'jspdf'
 import './ReportDetail.scss'
 
 // import constants
-import { useQueryParams, Petition, floor, randomKey } from '../../utils/constanst'
-
-// assets
-import { dataBasicInfo, dataCommissions, dataInverstmentPlan } from './data'
+import {
+    useQueryParams,
+    Petition,
+    floor,
+    randomKey,
+    formatWallet,
+    WithDecimals
+} from '../../utils/constanst'
 
 // import components
 import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
 import Modal from '../../components/Modal/Modal'
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
-import UserReportPDF from './ReporDetailPdf'
 import PDF from './pdf'
+import { ReactComponent as PdfIcon } from '../../static/images/pdf.svg'
 
 
 // Elemento del la sección de información básica del cliente
@@ -34,15 +39,19 @@ const BasicInfo = ({ data, coinType = 1 }) => {
                 <BasicInfoItem title='nombre' value={data.name} />
                 <BasicInfoItem title='producto' value={data.product} />
                 <BasicInfoItem title='criptomoneda' value={data.criptocoin} />
-                <BasicInfoItem title='billetera' value={data.wallet} />
+                <BasicInfoItem title='billetera' value={formatWallet(data.wallet)} />
             </div>
 
             <div>
-                <BasicInfoItem title='fecha inicial' value={data.startDate} />
-                <BasicInfoItem title='fecha final' value={data.cutoffDate} />
+                <BasicInfoItem
+                    title='fecha inicial'
+                    value={moment(data.startDate).format('DD MMMM YYYY')} />
+                <BasicInfoItem
+                    title='fecha final'
+                    value={moment(data.cutoffDate).format('DD MMMM YYYY')} />
                 <BasicInfoItem
                     title={`precio ${coinType === 1 ? 'btc' : 'eth'}`}
-                    value={data.priceCoin} />
+                    value={`$ ${WithDecimals(floor(data.price, 8))}`} />
                 <BasicInfoItem title='rango' value={data.ranges} />
             </div>
 
@@ -74,17 +83,22 @@ const inverstmentPlanItem = (item) => (
 )
 
 // Renderizado para cada columna de la tabla de comisiones
-const commissionItem = (item) => (
-    <div key={randomKey()} className='row'>
-        <span>{moment(item.registration_date).format('DD-MM-YYYY')}</span>
-        <span>{item.code}</span>
-        <span>{item.name}</span>
-        <span>{item.amount ?? 0}</span>
-        <span>{item.fee_sponsor ?? ''}</span>
-        <span>{item.price ?? 0}</span>
-        <span>{item.amountUSD ?? 0}</span>
-    </div>
-)
+const commissionItem = (item) => {
+    const sponsorAmount = item.fee_sponsor * item.amount
+    const sponsorAmountUsd = sponsorAmount * item.price_coin
+
+    return (
+        <div key={randomKey()} className='row'>
+            <span>{moment(item.registration_date).format('DD-MM-YYYY')}</span>
+            <span>{item.code}</span>
+            <span>{item.name}</span>
+            <span>{floor(item.amount, 8) ?? 0}</span>
+            <span>{floor(sponsorAmount, 8) ?? ''}</span>
+            <span>$ {floor(item.price_coin, 8) ?? 0}</span>
+            <span>$ {floor(sponsorAmountUsd, 8) ?? 0}</span>
+        </div>
+    )
+}
 
 // Renderizado para cada columna de la tabla de resumen
 const summaryItem = (item) => (
@@ -93,13 +107,13 @@ const summaryItem = (item) => (
         <span>{item.moviment}</span>
         <span>{item.count}</span>
         <span>{floor(item.amount, 8)}</span>
-        <span>$ {item.usdAmount}</span>
+        <span>$ {floor(item.amount * item.price, 8)}</span>
     </div>
 )
 
 
 // vista de los reportes
-const ReportDetail = ({ history }) => {
+const ReportDetail = () => {
     const { token } = useSelector(storage => storage.globalStorage)
     const credentials = {
         headers: {
@@ -110,7 +124,6 @@ const ReportDetail = ({ history }) => {
     const { id } = useParams()
     const QueryParams = useQueryParams()
     const [loader, setLoader] = useState(false)
-    const [showpdf, setShowdf] = useState(false)
 
     // Estados para los datos del reporte
     const [headerInfoBTC, setHeaderInfoBTC] = useState({})
@@ -132,15 +145,15 @@ const ReportDetail = ({ history }) => {
     const amountCommissionBTC = { coin: [], usd: [] }
     const amountCommissionETH = { coin: [], usd: [] }
 
+    const pdfRef = useRef(null)
+
+    // Obtiene los datos del reporte
     const fetchData = async _ => {
         try {
             setLoader(true)
 
+            // Calcula la fecha de reporte a enviar al servidor 
             const dateReport = moment(QueryParams.get('date')).format('YYYY-MM-DD')
-
-            // Se calcula la fecha de inicio y corte del reporte
-            const startDate = moment(dateReport).format('DD MMMM YYYY')
-            const cutoffDate = moment(dateReport).endOf('month').format('DD MMMM YYYY')
 
             const dataSend = {
                 id,
@@ -149,31 +162,33 @@ const ReportDetail = ({ history }) => {
 
             const { data } = await Petition.post('/admin/reports-users', dataSend, credentials)
 
-            const { bitcoin, ethereum } = data
-            console.log(data)
+            if (data.error) {
+                throw String(data.message)
+            }
 
+            // Se extraen los planes del usuario
+            const { bitcoin, ethereum } = data
+
+            // Se carga la información general de cada plan
             setHeaderInfoBTC({
                 ...bitcoin.info,
                 product: 'Plan de inversión - Duplicación',
-                startDate,
-                cutoffDate,
                 lastBalance: 0
             })
+
             setHeaderInfoETH({
                 ...ethereum.info,
                 product: 'Plan de inversión - Duplicación',
-                startDate,
-                cutoffDate,
                 lastBalance: 0
             })
 
+            // Se cargan los planes de cuplicación para las monedas
             setDuplicationPlanBTC(bitcoin.duplicationPlan)
             setDuplicationPlanETH(ethereum.duplicationPlan)
 
+            // Se cargan los pagos de comisiones realizados
             setCommissionsBTC(bitcoin.commissionPayment)
             setCommissionsETH(ethereum.commissionPayment)
-
-            window.setTimeout(_ => { setShowdf(true) }, 2000)
         } catch (error) {
             console.error(error)
         } finally {
@@ -181,19 +196,67 @@ const ReportDetail = ({ history }) => {
         }
     }
 
+    // Cambia la entre las pestañas de los reportes
     const onClickTab = ({ e, tabNumber }) => {
         e.preventDefault()
         setTab(tabNumber)
     }
 
+    // Obtiene el contenido del reporte 
+    const onPrintReport = _ => {
+        const content = pdfRef.current
+        const reportContent = `
+        <html>
+            <head>
+                <style>
+                    @media print {
+                        html, body {
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            width: 795px !important;
+                            max-width: 795px !important;
+                        }
+                        main {
+                            -webkit-print-color-adjust: exact !important;
+                        }
+
+                        table {
+                            page-break-before: auto;
+                        }
+                    }
+
+                    @page:first {
+                        padding-bottom: 10mm
+                    }
+                </style>
+            </head>
+            <body>${content.innerHTML}</body>
+        </html>`
+
+        // Abre una ventana en modo impresión para almacenar el pdf
+        const printWindow = window.open('', '', 'height=400,width=800')
+        printWindow.document.write(reportContent)
+        printWindow.document.close()
+        printWindow.print()
+        printWindow.close()
+    }
+
+    // Obtiene el headerInfo según la moneda seleccionada
     const getCurrentHeaderInfo = _ => (coinType === 1)
         ? headerInfoBTC
         : headerInfoETH
 
+    // Obtiene el duplicationPlan según la moneda seleccionada
     const getCurrentDuplicationPlan = _ => (coinType === 1)
         ? duplicationPlanBTC
         : duplicationPlanETH
 
+    // Obtiene los pagos de la comisiones según la moneda seleccionada
+    const getCurrentCommissions = _ => (coinType === 1)
+        ? commissionsBTC
+        : commissionsETH
+
+    // Invoca la petición al server
     useEffect(_ => {
         fetchData()
     }, [id, QueryParams.get('date')])
@@ -203,6 +266,7 @@ const ReportDetail = ({ history }) => {
      */
     useEffect(_ => {
         const _data = getCurrentDuplicationPlan()
+        const { price } = getCurrentHeaderInfo()
 
         // Extrae los intereses de los datos obtenidos
         const summaryInt = _data.filter(item => item.codigo === 'INT')
@@ -215,36 +279,39 @@ const ReportDetail = ({ history }) => {
                 code: "INT",
                 moviment: "interes del dia",
                 count: summaryInt.length,
-                amount: summaryInt.reduce((prev, item) => prev + item.daily_interest, 0)
+                amount: summaryInt.reduce((prev, item) => prev + item.daily_interest, 0),
+                price
             },
             {
                 code: "RET",
                 moviment: "retiro a wallet",
                 count: summaryRet.length,
-                amount: summaryRet.reduce((prev, item) => prev + item.debit, 0)
+                amount: summaryRet.reduce((prev, item) => prev + item.debit, 0),
+                price
             },
             {
                 code: "INV",
                 moviment: "inversion",
                 count: summaryInv.length,
-                amount: summaryInv.reduce((prev, item) => prev + item.credit, 0)
+                amount: summaryInv.reduce((prev, item) => prev + item.credit, 0),
+                price
             },
             {
                 code: "NCR",
                 moviment: "credito duplicaciom",
                 count: summaryNcr.length,
-                amount: summaryNcr.reduce((prev, item) => prev + item.credit, 0)
+                amount: summaryNcr.reduce((prev, item) => prev + item.credit, 0),
+                price
             },
         ])
-    }, [coinType])
-
-    return <PDF
-        duplicationPlan={duplicationPlanETH}
-        commissions={commissionsETH}
-        info={getCurrentHeaderInfo()} />
+    }, [coinType, duplicationPlanETH, duplicationPlanBTC])
 
     return (
         <div className='ReportDetail'>
+            <button className="btn-pdf" onClick={_ => onPrintReport()}>
+                <PdfIcon />
+            </button>
+
             <header className='ReportDetail-header'>
                 <nav className="navigation">
                     <span onClick={e => onClickTab({ e, tabNumber: 1 })} className={tab === 1 ? 'active' : ''}>
@@ -363,8 +430,12 @@ const ReportDetail = ({ history }) => {
                             <div className="table-body">
                                 {
                                     commissionsBTC.map((item) => {
-                                        amountCommissionBTC.coin.push(item.fee_sponsor)
-                                        amountCommissionBTC.usd.push(0)
+                                        const sponsorAmount = item.fee_sponsor * item.amount
+
+                                        const sponsorAmountUsd = sponsorAmount * item.price_coin
+
+                                        amountCommissionBTC.coin.push(sponsorAmount)
+                                        amountCommissionBTC.usd.push(sponsorAmountUsd)
 
                                         return commissionItem(item)
                                     })
@@ -374,7 +445,7 @@ const ReportDetail = ({ history }) => {
                                 <span>total de comisiones por referidos del mes</span>
                                 <span>{floor(amountCommissionBTC.coin.reduce((a, b) => (a + b), 0), 8)}</span>
                                 <span></span>
-                                <span>{floor(amountCommissionBTC.usd.reduce((a, b) => (a + b), 0), 8)}</span>
+                                <span>$ {floor(amountCommissionBTC.usd.reduce((a, b) => (a + b), 0), 8)}</span>
                             </div>
                         </div>
                     }
@@ -394,8 +465,12 @@ const ReportDetail = ({ history }) => {
                             <div className="table-body">
                                 {
                                     commissionsETH.map((item, index) => {
-                                        amountCommissionETH.coin.push(item.bono)
-                                        amountCommissionETH.usd.push(item.amountUSD)
+                                        const sponsorAmount = item.fee_sponsor * item.amount
+
+                                        const sponsorAmountUsd = sponsorAmount * item.price_coin
+
+                                        amountCommissionETH.coin.push(sponsorAmount)
+                                        amountCommissionETH.usd.push(sponsorAmountUsd)
 
                                         return commissionItem(item, index)
                                     })
@@ -403,9 +478,9 @@ const ReportDetail = ({ history }) => {
                             </div>
                             <div className="table-footer">
                                 <span>total de comisiones por referidos del mes</span>
-                                <span>{amountCommissionETH.coin.reduce((a, b) => (a + b), 0)}</span>
+                                <span>{floor(amountCommissionETH.coin.reduce((a, b) => (a + b), 0), 8)}</span>
                                 <span></span>
-                                <span>{amountCommissionETH.usd.reduce((a, b) => (a + b), 0)}</span>
+                                <span>$ {floor(amountCommissionETH.usd.reduce((a, b) => (a + b), 0), 8)}</span>
                             </div>
                         </div>
                     }
@@ -440,11 +515,19 @@ const ReportDetail = ({ history }) => {
                     <ActivityIndicator size={64} />
                 </Modal>
             }
+
+            <div ref={pdfRef} style={{ display: 'none' }}>
+                <PDF
+                    duplicationPlan={getCurrentDuplicationPlan()}
+                    commissions={getCurrentCommissions()}
+                    summary={summary}
+                    info={getCurrentHeaderInfo()} />
+            </div>
         </div>
     )
 }
 
-export default withRouter(ReportDetail)
+export default React.memo(ReportDetail)
 
 export {
     inverstmentPlanItem

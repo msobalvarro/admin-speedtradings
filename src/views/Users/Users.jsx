@@ -41,7 +41,7 @@ const Users = () => {
             if (data.error) {
                 throw String(data.message)
             }
-
+            console.log(data)
             setAllUsers(data)
         } catch (error) {
             console.error(error)

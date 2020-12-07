@@ -27,7 +27,7 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
         try {
             setLoader(true)
 
-            const { data: dataDetail } = await Petition.post('/admin/records/id', { id }, credentials)
+            const { data: dataDetail } = await Petition.get(`/admin/records/${id}`, credentials)
 
             if (dataDetail.error) {
                 throw String(dataDetail.message)
