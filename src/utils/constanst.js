@@ -23,7 +23,7 @@ export const emailImageToken =
 //export const urlServer = "http://192.168.1.238:8084"
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
-export const urlServer = 'http://192.168.0.119:8084'
+export const urlServer = 'http://192.168.0.117:8084'
 //export const urlServer = "http://192.168.0.117:8084"
 
 export const urlServerSocket = urlServer
