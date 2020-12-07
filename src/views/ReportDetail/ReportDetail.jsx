@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import moment from 'moment'
-import jsPDF from 'jspdf'
 import './ReportDetail.scss'
 
 // import constants

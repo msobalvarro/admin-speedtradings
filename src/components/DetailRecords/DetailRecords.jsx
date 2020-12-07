@@ -203,13 +203,13 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
               <Link
                 to={`/reports/${data.id}?date=${dateReport}`}
                 target={'_blank'}
-                className="btn btn-primary"
+                className="button btn-primary"
               >
                 Generar reporte
               </Link>
 
               <button
-                className={`btn ${data.status ? 'desactivate-user' : 'activate-user'
+                className={`button ${data.status ? 'desactivate-user' : 'activate-user'
                   }`}
                 type="button"
                 onClick={onChangeUserStatus}
