@@ -23,7 +23,7 @@ export const emailImageToken =
 //export const urlServer = "http://192.168.1.238:8084"
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
-export const urlServer = 'http://192.168.0.117:8084'
+export const urlServer = 'http://192.168.0.119:8084'
 //export const urlServer = "http://192.168.0.117:8084"
 
 export const urlServerSocket = urlServer
@@ -245,3 +245,20 @@ export const reducer = (state, action) => {
     [action.type]: action.payload,
   }
 }
+
+/**
+ * Función para leer un archivo y retornarlo en base64
+ * @param {File} file - Archivo a leer y retornar en base64
+ */
+export const readFile = (fileId, credentials) =>
+  new Promise(async (resolve, _) => {
+    Petition.get(`/file-admin/${fileId}`, {
+      responseType: 'arraybuffer',
+      ...credentials,
+    })
+      .then(({ data, headers }) => {
+        const blob = new Blob([data], { type: headers['content-type'] })
+        resolve(blob)
+      })
+      .catch(error => resolve({ error: true, message: error }))
+  })

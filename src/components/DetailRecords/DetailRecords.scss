@@ -115,9 +115,16 @@
 
 .buttons-container {
   align-self: end;
+
+  & div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 16px;
+  }
+
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-column-gap: 32px;
+  grid-template-rows: min-content min-content;
+  grid-gap: 16px;
   margin-top: 2rem;
 
   & .btn-primary {

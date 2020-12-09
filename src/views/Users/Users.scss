@@ -1,6 +1,8 @@
 @import '../../utils/constants.scss';
 
-.Users {
+.users-list {
+  width: 100%;
+  height: 100%;
   .header {
     display: flex;
     flex-direction: row;
@@ -32,7 +34,7 @@
       min-height: 500px;
       height: calc(100vh - 5rem);
       max-height: 800px;
-      min-height: 700px;
+      min-height: 800px;
     }
 
     .content-list {
@@ -166,4 +168,17 @@
     background: $colorMain;
     margin: 0 5px;
   }
+}
+
+.kyc-person {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed tomato;
+}
+
+.kyc-enterprise {
+  display: block;
+
+  width: 100%;
+  height: 100%;
 }

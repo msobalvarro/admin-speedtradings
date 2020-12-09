@@ -19,9 +19,10 @@ const ENTERPRISE_TYPE = 2
 /**
  * Visualiza el detalle de un usuario
  * @param {Number} id - id del usuario
- * @param {String} dateReport - mes en el que se generarán los reportes 
+ * @param {String} dateReport - mes en el que se generarán los reportes
+ * @param {Function} showKYC - Especificar KYC  a mostrar
  */
-const DetailRecords = ({ id = -1, dateReport = '' }) => {
+const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
   const { token } = useSelector(storage => storage.globalStorage)
 
   const credentials = {
@@ -60,7 +61,8 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
   /**
    * Cambia el estado de un usuario (activado/desactivado)
    */
-  const onChangeUserStatus = async _ => {
+
+  const toDisableUser = async _ => {
     try {
       setLoaderFullScreen(true)
 
@@ -88,6 +90,27 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
     }
   }
 
+  const onChangeUserStatus = () => {
+    Swal.fire({
+      title: 'Estas seguro?',
+      text: 'De querer cambiar el estado de este usuario?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#2e8b12',
+      cancelButtonColor: '#c0392b',
+      confirmButtonText: 'Sí, cambiar!',
+    }).then(result => {
+      if (result.value) {
+        toDisableUser()
+        Swal.fire(
+          'Deshabilitado!',
+          'El estado del usuario ha sido modificado',
+          'success'
+        )
+      }
+    })
+  }
+
   useEffect(
     _ => {
       if (id !== -1) {
@@ -112,7 +135,7 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
               <span className="name-label">{data.name}</span>
 
               <span className="type-user label">
-                <UserIcon type={PERSON_TYPE} />
+                <UserIcon type={data.type_users} />
                 {data.type_users === PERSON_TYPE && 'Persona'}
                 {data.type_users === ENTERPRISE_TYPE && 'Empresa'}
               </span>
@@ -163,8 +186,8 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
                       {data.amount_btc ? (
                         data.amount_btc + 'BTC'
                       ) : (
-                          <i>SIN MONTO</i>
-                        )}
+                        <i>SIN MONTO</i>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -191,8 +214,8 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
                       {data.amount_eth ? (
                         data.amount_eth + 'ETH'
                       ) : (
-                          <i>SIN MONTO</i>
-                        )}
+                        <i>SIN MONTO</i>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -200,33 +223,43 @@ const DetailRecords = ({ id = -1, dateReport = '' }) => {
             </div>
 
             <section className="buttons-container">
-              <Link
-                to={`/reports/${data.id}?date=${dateReport}`}
-                target={'_blank'}
-                className="button btn-primary"
-              >
-                Generar reporte
-              </Link>
-
               <button
-                className={`button ${data.status ? 'desactivate-user' : 'activate-user'
-                  }`}
                 type="button"
-                onClick={onChangeUserStatus}
+                className="button large"
+                onClick={() => showKYC(data.type_users)}
               >
-                {data.status ? 'Deshabilitar' : 'Habilitar'}
+                Ver KYC
               </button>
+
+              <div>
+                <Link
+                  to={`/reports/${data.id}?date=${dateReport}`}
+                  target={'_blank'}
+                  className="button secondary"
+                >
+                  Generar reporte
+                </Link>
+
+                <button
+                  className={`button ${
+                    data.status ? 'desactivate-user' : 'activate-user'
+                  }`}
+                  type="button"
+                  onClick={onChangeUserStatus}
+                >
+                  {data.status ? 'Deshabilitar' : 'Habilitar'}
+                </button>
+              </div>
             </section>
           </div>
         </>
       )}
 
-      {
-        loaderFullScreen &&
+      {loaderFullScreen && (
         <Modal persist={true} onlyChildren>
           <ActivityIndicator size={64} />
         </Modal>
-      }
+      )}
     </div>
   )
 }
