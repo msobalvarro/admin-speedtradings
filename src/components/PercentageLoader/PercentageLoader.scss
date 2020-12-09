@@ -1,0 +1,58 @@
+@import '../../utils/constants.scss';
+
+.PercentageLoader {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #000;
+    width: 45%;
+    height: 50%;
+    padding: 1rem 2rem;
+    border-radius: 7px;
+    box-shadow: 0 0 15px -3px rgba(#fff, .2);
+
+    h2 {
+        color: $colorYellow;
+        text-align: center;
+    }
+
+    .list-content {
+        min-height: 150px;
+        max-height: 150px;
+        overflow-y: auto;
+        background-color: rgba($colorMain, .4);
+        padding: 1rem;
+    }
+
+    .percentage {
+        background-color: $colorMain;
+        width: 100%;
+        height: 3rem;
+        border-radius: 7px;
+        overflow: hidden;
+
+        .value {
+            height: 100%;
+            background-color: $colorGreen;
+            background-size: 50px 50px;
+            background-image: linear-gradient(
+                -45deg,
+                lighten($colorGreen, 7) 25%,
+                transparent 25%, transparent 50%,
+                lighten($colorGreen, 7) 50%,
+                lighten($colorGreen, 7) 75%,
+                transparent 75%, transparent
+            );
+            animation: Animation 1s linear infinite;
+
+            @keyframes Animation { 
+                0% {
+                    background-position: 0 100%;
+                  }
+                  100% {
+                    background-position: 100px 100%;
+                  }
+            }
+        }
+    }
+}
