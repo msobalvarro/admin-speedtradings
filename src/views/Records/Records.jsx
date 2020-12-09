@@ -25,6 +25,7 @@ import ActivityIndicator from "../../components/ActivityIndicator/Activityindica
 import EmptyIndicator from "../../components/EmptyIndicator/EmptyIndicator"
 import ConfirmPassword from "../../components/ConfirmPassword/ConfirmPassword"
 import Modal from '../../components/Modal/Modal'
+import PercentageLoader from '../../components/PercentageLoader/PercentageLoader'
 
 import MoneyChangerList from "../../components/MoneyChangerList/MoneyChangerList"
 import ExchangeList from "../../components/ExchangeList/ExchangeList"
@@ -80,6 +81,9 @@ const Records = () => {
     const [percentage, setPercentage] = useState('')
     const [cryptoCurrency, setCrypto] = useState('default')
     const [showPasswordModal, setShowPasswordModal] = useState(false)
+    const [showPercentageLoader, setShowPercentageLoader] = useState(true)
+    const [currentPercentage, setCurrentPercentage] = useState(50)
+    const [personsTradding, setPersonsTradinds] = useState([])
 
     // Estado que guarda la configuracion diaria del trading
     const [dataTrading, setDataTrading] = useState({ crypto: [], day: 0 })
@@ -196,7 +200,9 @@ const Records = () => {
                     newExchange,
                     removeExchange,
                     newMoneyChanger,
-                    removeMoneyChanger
+                    removeMoneyChanger,
+                    onTogglePercentage,
+                    setPercentageCharge
                 } = socketEvents
 
                 if (!socket._callbacks[`$${newRegister}`]) {
@@ -251,6 +257,22 @@ const Records = () => {
                         console.log('removing money changer', _idMoneyChanger)
                         setRemoveMoneyChanger(_idMoneyChanger)
                     })
+
+                    socket.on(onTogglePercentage, async _value => {
+                        console.log('onTogglePErcentage: ', _value)
+                        setShowPercentageLoader(_value)
+                    })
+
+                    socket.on(setPercentageCharge, async response => {
+                        console.log('percentageCharge', response)
+                        const {
+                            currentPercentageValue,
+                            name: person
+                        } = response
+
+                        setCurrentPercentage(currentPercentageValue)
+                        setPersonsTradinds([...personsTradding, person])
+                    })
                 }
             }
         } catch (error) {
@@ -293,8 +315,6 @@ const Records = () => {
     // Metodo para aplicar trading
     const applyTrading = async (password) => {
         try {
-            setLoaderReportDownload(true)
-
             if (!Validator.isNumeric(percentage)) {
                 throw String("El porcentaje del trading no es valido")
             }
@@ -364,11 +384,7 @@ const Records = () => {
 
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error, 'warning')
-        } finally {
-            setLoaderReportDownload(false)
         }
-
-
     }
 
     /**
@@ -656,6 +672,14 @@ const Records = () => {
                 <Modal persist={true} onlyChildren>
                     <ActivityIndicator size={64} />
                 </Modal>
+            }
+
+            {
+                showPercentageLoader &&
+                <PercentageLoader
+                    percentage={currentPercentage}
+                    data={personsTradding}
+                    title="Aplicando Trading" />
             }
         </div>
     )

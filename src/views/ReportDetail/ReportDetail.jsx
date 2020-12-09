@@ -143,11 +143,13 @@ const ReportDetail = () => {
     // Variables para almacenar la lista de los montos para cada tipo de comisión
     const amountCommissionBTC = { coin: [], usd: [] }
     const amountCommissionETH = { coin: [], usd: [] }
+    const lastBalance = []
 
     const pdfRef = useRef(null)
 
     // Obtiene los datos del reporte
     const fetchData = async _ => {
+        console.log('fetching')
         try {
             setLoader(true)
 
@@ -242,8 +244,8 @@ const ReportDetail = () => {
 
     // Obtiene el headerInfo según la moneda seleccionada
     const getCurrentHeaderInfo = _ => (coinType === 1)
-        ? headerInfoBTC
-        : headerInfoETH
+        ? { ...headerInfoBTC, lastBalance }
+        : { ...headerInfoETH, lastBalance }
 
     // Obtiene el duplicationPlan según la moneda seleccionada
     const getCurrentDuplicationPlan = _ => (coinType === 1)
@@ -338,7 +340,9 @@ const ReportDetail = () => {
                 </div>
             </header>
 
-            <BasicInfo data={getCurrentHeaderInfo()} coinType={coinType} />
+            <BasicInfo
+                data={getCurrentHeaderInfo()}
+                coinType={coinType} />
 
             {
                 tab === 1 &&
@@ -390,6 +394,8 @@ const ReportDetail = () => {
                                                              */
                                                             item.balance = balancePrev
                                                         }
+
+                                                        //lastBalance.push(balancePrev)
 
                                                         return inverstmentPlanItem(item)
                                                     })
