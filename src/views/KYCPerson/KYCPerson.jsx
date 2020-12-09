@@ -108,7 +108,7 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
                 <p className="card-value">{dataKYC.email}</p>
               </div>
               <div className="label-group">
-                <span className="card-label">Numero de telefono</span>
+                <span className="card-label">Número de teléfono </span>
                 <p className="card-value">{dataKYC.alternativeNumber}</p>
               </div>
               <div className="label-group">
@@ -164,7 +164,7 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
                 <p className="card-value">{dataKYC.nationality}</p>
               </div>
               <div className="label-group">
-                <span className="card-label">Pais de residencia</span>
+                <span className="card-label">País de residencia</span>
                 <p className="card-value">{dataKYC.countryResidence}</p>
               </div>
               <div className="label-group">
@@ -186,7 +186,7 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
 
             <div>
               <div className="label-group">
-                <span className="card-label">Codigo postal</span>
+                <span className="card-label">Código postal</span>
                 <p className="card-value">{dataKYC.postalCode}</p>
               </div>
 
@@ -201,24 +201,33 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
         <div className="card">
           <h3 className="card-title">Beneficiario</h3>
 
-          <div className="card-body">
-            <div className="label-group">
-              <span className="card-label">Nombre</span>
-              <p className="card-value">
-                {dataKYC.beneficiary?.firstname}{' '}
-                {dataKYC?.beneficiary?.lastname}
-              </p>
+          {!dataKYC.beneficiary && (
+            <p className="card-value">Sin beneficiario</p>
+          )}
+
+          {dataKYC.beneficiary && (
+            <div className="card-body">
+              <div className="label-group">
+                <span className="card-label">Nombre</span>
+                <p className="card-value">
+                  {dataKYC.beneficiary?.firstname}{' '}
+                  {dataKYC?.beneficiary?.lastname}
+                </p>
+              </div>
+              <div className="label-group">
+                <span className="card-label">Parentesco</span>
+                <p className="card-value">
+                  {relationship[dataKYC.beneficiary?.relationship]}
+                </p>
+              </div>
+              <div className="label-group">
+                <button className="button large secondary">
+                  {' '}
+                  Ver detalles
+                </button>
+              </div>
             </div>
-            <div className="label-group">
-              <span className="card-label">Parentesco</span>
-              <p className="card-value">
-                {relationship[dataKYC.beneficiary?.relationship]}
-              </p>
-            </div>
-            <div className="label-group">
-              <button className="button large secondary"> Ver detalles</button>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </section>
