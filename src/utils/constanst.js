@@ -19,12 +19,12 @@ export const keySecret = 'testDevelop'
 export const emailImageToken =
     'jRVFgyxiXKHxAWQL47jVzoMwj2m9DfG6-fLv8j9zBtLDMjpBd4QeLpXdTHM2Mnlyg-zZEfQrPoCn9yPUVaUQEvTl3B904h3xcY'
 
-//export const urlServer = "https://ardent-medley-272823.appspot.com"
+export const urlServer = "https://ardent-medley-272823.appspot.com"
 //export const urlServer = "http://192.168.1.238:8084"
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
 //export const urlServer = 'http://192.168.0.119:8084'
-export const urlServer = "http://192.168.0.119:8084"
+//export const urlServer = "http://192.168.0.119:8084"
 
 export const urlServerSocket = urlServer
     .replace('https', 'wss')
@@ -251,14 +251,14 @@ export const reducer = (state, action) => {
  * @param {File} file - Archivo a leer y retornar en base64
  */
 export const readFile = (fileId, credentials) =>
-  new Promise(async (resolve, _) => {
-    Petition.get(`/file-admin/${fileId}`, {
-      responseType: 'arraybuffer',
-      ...credentials,
+    new Promise(async (resolve, _) => {
+        Petition.get(`/file-admin/${fileId}`, {
+            responseType: 'arraybuffer',
+            ...credentials,
+        })
+            .then(({ data, headers }) => {
+                const blob = new Blob([data], { type: headers['content-type'] })
+                resolve(blob)
+            })
+            .catch(error => resolve({ error: true, message: error }))
     })
-      .then(({ data, headers }) => {
-        const blob = new Blob([data], { type: headers['content-type'] })
-        resolve(blob)
-      })
-      .catch(error => resolve({ error: true, message: error }))
-  })
