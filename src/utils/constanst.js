@@ -197,7 +197,12 @@ const Petition = Axios.create({
 })
 
 Petition.interceptors.request.use(config => {
-    if (config.url === '/admin/trading') {
+    const whiteListUrl = [
+        '/admin/payments/apply',
+        '/admin/trading'
+    ]
+
+    if (whiteListUrl.indexOf(config.url)) {
         // Sí se consume el endpoint del trading, se configura el tiempo de espera en 30 min
         config.timeout = (1000 * 60 * 30)
     }
