@@ -54,7 +54,7 @@ const Records = () => {
     const ReportsSource = [
         { url: '/admin/reports/upgrades', filename: 'upgradesReport' },
         { url: '/admin/reports/upgrades', filename: 'exchangeReport' },
-        { url: '/admin/reports/upgrades', filename: 'moneyChangerReport' },
+        { url: '/admin/reports//money-changer', filename: 'moneyChangerReport' },
     ]
 
     // Estado para controlar la pestaña activa
@@ -437,7 +437,7 @@ const Records = () => {
                 {/**
                      * Sección para generar los reportes
                      */
-                    [2, 3, 4].indexOf(tab) !== -1 &&
+                    [2, 4].indexOf(tab) !== -1 &&
                     <div className="reports">
                         <div className="row">
                             <span>Desde</span>
