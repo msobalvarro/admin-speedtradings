@@ -186,8 +186,8 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                       {data.amount_btc ? (
                         data.amount_btc + 'BTC'
                       ) : (
-                        <i>SIN MONTO</i>
-                      )}
+                          <i>SIN MONTO</i>
+                        )}
                     </span>
                   </div>
                 </div>
@@ -214,8 +214,8 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                       {data.amount_eth ? (
                         data.amount_eth + 'ETH'
                       ) : (
-                        <i>SIN MONTO</i>
-                      )}
+                          <i>SIN MONTO</i>
+                        )}
                     </span>
                   </div>
                 </div>
@@ -241,9 +241,8 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                 </Link>
 
                 <button
-                  className={`button ${
-                    data.status ? 'desactivate-user' : 'activate-user'
-                  }`}
+                  className={`button ${data.status ? 'desactivate-user' : 'activate-user'
+                    }`}
                   type="button"
                   onClick={onChangeUserStatus}
                 >

@@ -25,7 +25,6 @@ import ActivityIndicator from "../../components/ActivityIndicator/Activityindica
 import EmptyIndicator from "../../components/EmptyIndicator/EmptyIndicator"
 import ConfirmPassword from "../../components/ConfirmPassword/ConfirmPassword"
 import Modal from '../../components/Modal/Modal'
-import PercentageLoader from '../../components/PercentageLoader/PercentageLoader'
 
 import MoneyChangerList from "../../components/MoneyChangerList/MoneyChangerList"
 import ExchangeList from "../../components/ExchangeList/ExchangeList"
@@ -81,9 +80,6 @@ const Records = () => {
     const [percentage, setPercentage] = useState('')
     const [cryptoCurrency, setCrypto] = useState('default')
     const [showPasswordModal, setShowPasswordModal] = useState(false)
-    const [showPercentageLoader, setShowPercentageLoader] = useState(true)
-    const [currentPercentage, setCurrentPercentage] = useState(50)
-    const [personsTradding, setPersonsTradinds] = useState([])
 
     // Estado que guarda la configuracion diaria del trading
     const [dataTrading, setDataTrading] = useState({ crypto: [], day: 0 })
@@ -190,7 +186,6 @@ const Records = () => {
     const ConfigureSocket = _ => {
         try {
             if (socket !== null) {
-                console.log('socket events', socketEvents)
                 // Se obtiene la lista de los eventos disponibles para el socket
                 const {
                     newRegister,
@@ -201,8 +196,6 @@ const Records = () => {
                     removeExchange,
                     newMoneyChanger,
                     removeMoneyChanger,
-                    onTogglePercentage,
-                    setPercentageCharge
                 } = socketEvents
 
                 if (!socket._callbacks[`$${newRegister}`]) {
@@ -256,22 +249,6 @@ const Records = () => {
                     socket.on(removeMoneyChanger, _idMoneyChanger => {
                         console.log('removing money changer', _idMoneyChanger)
                         setRemoveMoneyChanger(_idMoneyChanger)
-                    })
-
-                    socket.on(onTogglePercentage, async _value => {
-                        console.log('onTogglePErcentage: ', _value)
-                        setShowPercentageLoader(_value)
-                    })
-
-                    socket.on(setPercentageCharge, async response => {
-                        console.log('percentageCharge', response)
-                        const {
-                            currentPercentageValue,
-                            name: person
-                        } = response
-
-                        setCurrentPercentage(currentPercentageValue)
-                        setPersonsTradinds([...personsTradding, person])
                     })
                 }
             }
@@ -331,16 +308,14 @@ const Records = () => {
                     id_currency: Number(cryptoCurrency),
                     password
                 }
+                console.log('petition apply trading')
+                const { data: result, status } = await Petition.post('/admin/trading', dataSend, header)
 
-                const { data, status } = await Petition.post('/admin/trading', dataSend, header)
-
-                if (data.error) {
-                    throw String(data.message)
+                if (result.error) {
+                    throw String(result.message)
                 }
 
-                if (status === 200 && data.response === "success") {
-                    // debugger
-
+                if (status === 200 && result.response === 'success') {
                     // Copiamos el arreglo de las cryptos procesadas
                     const arr = dataTrading.crypto
                     arr.push(cryptoCurrency)
@@ -361,18 +336,16 @@ const Records = () => {
                     Swal.fire(
                         `Trading procesado`,
                         `
-                        Todos los planes de inversion en 
-                        ${cryptoCurrency === "1" ? 'BTC' : ''}
-                        ${cryptoCurrency === "2" ? 'ETH' : ''}
-                        fueron reportados
-                        `,
+                    Todos los planes de inversion en 
+                    ${cryptoCurrency === "1" ? 'BTC' : ''}
+                    ${cryptoCurrency === "2" ? 'ETH' : ''}
+                    fueron reportados
+                    `,
                         "success"
                     )
 
                     setPercentage('')
-                    setShowPasswordModal(false)
                 }
-
             } else {
                 Swal.fire(
                     `${cryptoCurrency === '1' ? 'Bitcoin' : ''} ${cryptoCurrency === '2' ? 'Ethereum' : ''}`,
@@ -383,7 +356,10 @@ const Records = () => {
 
 
         } catch (error) {
-            Swal.fire("Ha ocurrido un error", error, 'warning')
+            console.error(error)
+            Swal.fire("Ha ocurrido un error", error.toString(), 'warning')
+        } finally {
+            setShowPasswordModal(false)
         }
     }
 
@@ -672,14 +648,6 @@ const Records = () => {
                 <Modal persist={true} onlyChildren>
                     <ActivityIndicator size={64} />
                 </Modal>
-            }
-
-            {
-                showPercentageLoader &&
-                <PercentageLoader
-                    percentage={currentPercentage}
-                    data={personsTradding}
-                    title="Aplicando Trading" />
             }
         </div>
     )

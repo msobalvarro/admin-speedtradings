@@ -16,6 +16,7 @@ import {
 
 // import components
 import NavigationBar from '../components/NavigationBar/NavigationBar'
+import PercentageLoader from '../components/PercentageLoader/PercentageLoader'
 
 // Import Views
 import Login from './Login/Login'
@@ -32,6 +33,12 @@ import NotFound from './404/404'
 const App = () => {
     const dispatch = useDispatch()
     const [loged, setLogin] = useState(false)
+
+    // Estados para controlar el modal de aplicar trading
+    const [showPercentageLoader, setShowPercentageLoader] = useState(false)
+    const [percentageTitle, setPercentageTitle] = useState('')
+    const [percentageValue, setPercentageValue] = useState(0)
+    const [percentageData, setPercentageData] = useState('')
 
     // Configura y esta a la esucha del servidor con soket
     const ConfigurateSoket = async (token = "") => {
@@ -50,9 +57,38 @@ const App = () => {
                 transports: ['websocket']
             })
 
+            const {
+                onTogglePercentage,
+                setPercentageCharge
+            } = data.eventSocketNames
+
             socket.on('connect', _ => {
                 console.log('Socket connected')
             })
+
+            /**
+             * Se configuran los eventos del socket para mostrar el modal a la hora de 
+             * aplicar le trading
+             */
+            if (!socket._callbacks[`$${onTogglePercentage}`]) {
+                // Muestra/oculta el modal de aplicar trading
+                socket.on(onTogglePercentage, async percentage => {
+                    setShowPercentageLoader(percentage)
+                })
+
+                // Muestra el procentaje de avance y el usuario actual al que se está aplicando
+                socket.on(setPercentageCharge, async response => {
+                    const {
+                        currentPercentageValue,
+                        name: person,
+                        title
+                    } = response
+
+                    setPercentageValue(currentPercentageValue)
+                    setPercentageData(person)
+                    setPercentageTitle(title)
+                })
+            }
 
             dispatch({ type: SETSOCKETEVENTS, payload: data.eventSocketNames })
             dispatch({ type: SETSOCKET, payload: socket })
@@ -113,6 +149,14 @@ const App = () => {
                         <Route path="/configuration" exact component={Configuration} />
                         <Route path="*" component={NotFound} />
                     </Switch>
+
+                    {
+                        showPercentageLoader &&
+                        <PercentageLoader
+                            percentage={percentageValue}
+                            data={percentageData}
+                            title={percentageTitle} />
+                    }
                 </>
             }
         </HashRouter>
