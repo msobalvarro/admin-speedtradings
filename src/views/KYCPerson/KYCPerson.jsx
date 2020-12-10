@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react'
-import { ReactComponent as CloseIcon } from '../../static/images/close.svg'
-import { Petition, readFile, Moment } from '../../utils/constanst'
 import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
+
+//Import icons
+import { ReactComponent as CloseIcon } from '../../static/images/close.svg'
+import DefaultPhoto from '../../static/images/placeholder-profile.jpg'
+
+//Import components
+import Modal from '../../components/Modal/Modal'
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
 import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
-import DefaultPhoto from '../../static/images/placeholder-profile.jpg'
-import Modal from '../../components/Modal/Modal'
 
+//Import utils
+import { Petition, readFile, Moment } from '../../utils/constanst'
 import {
   identificationType,
   foundsOrigin,
@@ -15,6 +20,8 @@ import {
 } from '../../utils/values'
 
 import { countries } from '../../utils/countries'
+
+//Import styles
 import './KYCStyles.scss'
 
 const KYCPerson = ({ id = -1, onClickChangePage }) => {
@@ -94,7 +101,7 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
   }
 
   const handleClickShowBeneficiary = () => {
-    //Navegar a la pagina de beneficiario
+    //Navegar a la pagina de beneficiario y pasarla la informacion correspondiente
     onClickChangePage(BENEFICIARY_PERSON_PAGE, dataKYC.beneficiary)
   }
 
@@ -143,7 +150,7 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
           <h3 className="card-title">Información personal</h3>
           <div className="card-body three-columns">
             <div className="column image-container">
-              {dataKYC.identificationPictureId && (
+              {dataKYC.profilePictureId && (
                 <img
                   className="card-image"
                   src={dataKYC.profilePhoto}
@@ -304,7 +311,9 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
               <div className="label-group">
                 <button
                   className="button large secondary"
-                  onClick={handleClickShowBeneficiary}
+                  onClick={() =>
+                    handleClickShowBeneficiary(dataKYC?.beneficiary)
+                  }
                 >
                   Ver más
                 </button>

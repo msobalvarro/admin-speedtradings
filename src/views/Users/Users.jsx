@@ -8,6 +8,7 @@ import './Users.scss'
 import RecordsList from '../../components/RecordsList/RecordsList'
 import DetailRecords from '../../components/DetailRecords/DetailRecords'
 import KYCPerson from '../../views/KYCPerson/KYCPerson'
+import KYCBeneficiary from '../../views/KYCBeneficiary/KYCBeneficiary'
 
 // Import constants
 import { Petition } from '../../utils/constanst'
@@ -104,6 +105,7 @@ const Users = () => {
   const onClickChangePage = (pageNumber, data) => {
     //Guardar datos que recibe de la pagina anterior
     setSharedInformation(data)
+
     //Cambiar de pagina
     setPage(pageNumber)
   }
@@ -166,9 +168,10 @@ const Users = () => {
       )}
 
       {checkActivePage(BENEFICIARY_PERSON_PAGE) && (
-        <section className="kyc-person" data={sharedInformation}>
-          <h1>KYC PERSONA</h1>
-        </section>
+        <KYCBeneficiary
+          data={sharedInformation}
+          onClickChangePage={onClickChangePage}
+        />
       )}
 
       {checkActivePage(KYC_ENTERPRISE_PAGE) && (
