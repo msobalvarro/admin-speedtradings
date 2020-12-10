@@ -9,20 +9,19 @@ const PercentageLoader = ({ percentage = 0, data = 'namename', title = '' }) => 
     const [dotted, setDotted] = useState(0)
 
     useEffect(_ => {
-        window.setTimeout(_ => setDotted((dotted === 3 ? 0 : (dotted + 1))), 1000)
-    }, [dotted])
-    return null
+        setDotted((dotted === 3 ? 0 : (dotted + 1)))
+    }, [percentage])
+
     return (
         <Modal persist={true} onlyChildren>
             <div className="PercentageLoader">
                 <h2>{title}{".".repeat(dotted)}</h2>
 
-                <div className="list-content">
-                    {data}
-                </div>
+                <h3 className="list-content">{data}</h3>
 
                 <div className="percentage">
                     <div className="value" style={{ width: `${percentage}%` }}></div>
+                    <span className='percentage-label'>{percentage} %</span>
                 </div>
             </div>
         </Modal>
