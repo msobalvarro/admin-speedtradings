@@ -193,7 +193,7 @@ const Report = () => {
         const dataSend = []
 
         try {
-            dispatch({ type: "loaderPayment", payload: false })
+            dispatch({ type: "loaderPayment", payload: true })
 
             for (let index = 0; index < state.allData.length; index++) {
                 const elementData = state.allData[index]
@@ -225,14 +225,13 @@ const Report = () => {
 
                 // refrescamos los datos
                 getAllData()
-                setShowModalPassword(false)
             }
 
         } catch (error) {
             Swal.fire("Ha ocurrido un error", error.toString(), "warning")
         } finally {
             dispatch({ type: "loaderPayment", payload: false })
-
+            setShowModalPassword(false)
         }
     }
 
