@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
-
+import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
+import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
 // Import constant
 import { Moment } from '../../utils/constanst'
 import UserIcon from '../UserIcon/UserIcon'
 const PERSON_TYPE = 1
 const ENTERPRISE_TYPE = 2
 
-const RecordsList = ({ data = [], activeDetail = -1, onDetail = _ => {} }) => {
+const RecordsList = ({
+  data = [],
+  loader,
+  activeDetail = -1,
+  onDetail = _ => {},
+}) => {
   const [filter, setFilter] = useState('')
 
   // Componente que representa un articulo de la lista
@@ -35,6 +41,20 @@ const RecordsList = ({ data = [], activeDetail = -1, onDetail = _ => {} }) => {
       )
     }
   }
+
+  if (loader)
+    return (
+      <div className="center-element">
+        <ActivityIndicator size={64} />
+      </div>
+    )
+
+  if (!loader && data.length === 0)
+    return (
+      <div className="center-element">
+        <EmptyIndicator message="Sin usuarios para mostrar" />
+      </div>
+    )
 
   // Componente contenedor de la lista
   return (

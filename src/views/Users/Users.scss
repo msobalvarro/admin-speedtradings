@@ -182,3 +182,11 @@
   width: 100%;
   height: 100%;
 }
+
+.center-element {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

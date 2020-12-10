@@ -5,8 +5,6 @@ import moment from 'moment'
 import './Users.scss'
 
 // Import components
-import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
-import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
 import RecordsList from '../../components/RecordsList/RecordsList'
 import DetailRecords from '../../components/DetailRecords/DetailRecords'
 import KYCPerson from '../../views/KYCPerson/KYCPerson'
@@ -41,6 +39,9 @@ const Users = () => {
 
   // Estado para controlar la pestaña activa
   const [page, setPage] = useState(USER_LIST_PAGE)
+
+  // Estado para guardar la informacion que se comparte entre paginas
+  const [sharedInformation, setSharedInformation] = useState({})
 
   // Se obtiene la lista de los usuarios
   const fetchData = async _ => {
@@ -97,9 +98,13 @@ const Users = () => {
   /**
    * Función que cambia el estado para cambiar de pagina
    * @param {Number} pageNumber - Número de la pagina a la que se movera
+   * @param {Object} data - Datos que se comparten de la pagina anterior a la pagina nueva
    */
 
-  const onClickChangePage = pageNumber => {
+  const onClickChangePage = (pageNumber, data) => {
+    //Guardar datos que recibe de la pagina anterior
+    setSharedInformation(data)
+    //Cambiar de pagina
     setPage(pageNumber)
   }
 
@@ -138,19 +143,12 @@ const Users = () => {
 
           <div className="content">
             <div className="content-list">
-              {loader && <ActivityIndicator size={64} />}
-
-              {!loader && allUsers.length === 0 && (
-                <EmptyIndicator message="Sin usuarios para mostrar" />
-              )}
-
-              {!loader && allUsers.length > 0 && (
-                <RecordsList
-                  data={allUsers}
-                  activeDetail={activeDetail}
-                  onDetail={_id => setActiveDetail(_id)}
-                />
-              )}
+              <RecordsList
+                loader={loader}
+                data={allUsers}
+                activeDetail={activeDetail}
+                onDetail={_id => setActiveDetail(_id)}
+              />
             </div>
 
             <div className="content-detail">
@@ -168,7 +166,7 @@ const Users = () => {
       )}
 
       {checkActivePage(BENEFICIARY_PERSON_PAGE) && (
-        <section className="kyc-person">
+        <section className="kyc-person" data={sharedInformation}>
           <h1>KYC PERSONA</h1>
         </section>
       )}
