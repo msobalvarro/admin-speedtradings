@@ -1,0 +1,50 @@
+/******ESTILOS DEL MODAL PARA VISUALIZAR FOTOS******/
+
+.overlay {
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  width: 100vw;
+}
+
+.modal-container {
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  height: 600px;
+  max-width: 600px;
+  position: relative;
+  width: 100%;
+  & .modal-image {
+    border-radius: 8px;
+    height: 100%;
+    object-fit: contain;
+    vertical-align: top;
+    width: 100%;
+  }
+
+  & .modal-title {
+    background-color: rgba(0, 0, 0, 0.6);
+    bottom: 0;
+    color: #fff;
+    font-size: 22px;
+    padding: 16px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+  }
+
+  & .button-container {
+    height: 24px;
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    width: 24px;
+    & .icon {
+      cursor: pointer;
+      height: 100%;
+      width: 24px;
+    }
+  }
+}

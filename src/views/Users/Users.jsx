@@ -9,6 +9,7 @@ import RecordsList from '../../components/RecordsList/RecordsList'
 import DetailRecords from '../../components/DetailRecords/DetailRecords'
 import KYCPerson from '../../views/KYCPerson/KYCPerson'
 import KYCBeneficiary from '../../views/KYCBeneficiary/KYCBeneficiary'
+import KYCEnterprise from '../../views/KYCEnterprise/KYCEnterprise'
 
 // Import constants
 import { Petition } from '../../utils/constanst'
@@ -175,9 +176,10 @@ const Users = () => {
       )}
 
       {checkActivePage(KYC_ENTERPRISE_PAGE) && (
-        <section className="kyc-enterprise">
-          <h1>KYC EMPRESA</h1>
-        </section>
+        <KYCEnterprise
+          id={activeDetail}
+          onClickChangePage={onClickChangePage}
+        />
       )}
     </div>
   )

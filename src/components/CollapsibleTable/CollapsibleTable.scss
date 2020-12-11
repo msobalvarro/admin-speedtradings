@@ -1,0 +1,61 @@
+@import '../../utils/constants.scss';
+
+.table-row {
+  display: grid;
+  grid-gap: 16px;
+  grid-template-columns: 20px repeat(5, 1fr);
+  padding: 16px 0;
+}
+
+.label-group-small {
+  margin-bottom: 16px;
+
+  & .label {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 23px;
+    margin-bottom: 8px;
+    display: block;
+    color: $colorSecondary;
+  }
+
+  & .value {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 21px;
+
+    color: #ffffff;
+  }
+}
+
+.arrow-icon-container {
+  width: 16px;
+  height: 16px;
+
+  & .icon {
+    width: 16px;
+    height: 100%;
+    cursor: pointer;
+  }
+}
+
+.collapse {
+  padding: 16px 94px;
+  transition: all 0.3s ease;
+}
+
+.separator {
+  height: 1px;
+  width: 100%;
+  background-color: #4f4f4f;
+}
+
+.button-identifications {
+  text-align: center;
+  height: 100%;
+  display: grid;
+  grid-template-rows: min-content min-content min-content;
+  grid-gap: 16px;
+}

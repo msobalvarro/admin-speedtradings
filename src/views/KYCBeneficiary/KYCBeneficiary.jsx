@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 //Import icons
 import { ReactComponent as BackIcon } from '../../static/images/arrow.svg'
-import { ReactComponent as CloseIcon } from '../../static/images/close.svg'
 import DefaultPhoto from '../../static/images/placeholder-profile.jpg'
 
 //Import utils
-import { readFile, Moment } from '../../utils/constanst'
-import { countries } from '../../utils/countries'
+import { readFile, Moment, getCountry } from '../../utils/constanst'
 
 import {
   identificationType,
@@ -16,9 +14,9 @@ import {
 } from '../../utils/values'
 
 //Import components
-import Modal from '../../components/Modal/Modal'
 import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
+import ModalPhoto from '../../components/ModalPhoto/ModalPhoto'
 
 //Import styles
 import '../KYCPerson/KYCStyles.scss'
@@ -42,15 +40,6 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
   const [beneficiary, setBeneficiary] = useState({})
 
   const fetchDetail = async () => {
-    //Obtener nombre de la nacionalidad
-    const nationality = countries.filter(
-      country => country.phoneCode === data.nationality
-    )
-    //Obtener nombre del pais de residencia
-    const countryResidence = countries.filter(
-      country => country.phoneCode === data.residence
-    )
-
     //Obtener fotos
     const identificationPhoto = await readFile(
       data.indentificationPictureId,
@@ -61,8 +50,8 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
 
     setBeneficiary({
       ...data,
-      nationality: nationality[0]?.name,
-      countryResidence: countryResidence[0]?.name,
+      nationality: getCountry(data.nationality),
+      countryResidence: getCountry(data.residence),
       identificationPhoto: data.indentificationPictureId
         ? URL.createObjectURL(identificationPhoto)
         : DefaultPhoto,
@@ -130,7 +119,7 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
                     setShowModal({
                       visible: true,
                       image: beneficiary.profilePhoto,
-                      title: beneficiary.fullname,
+                      title: `${beneficiary.firstname} ${beneficiary?.lastname}`,
                     })
                   }
                 />
@@ -272,26 +261,11 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
       </div>
 
       {showModal.visible && (
-        <Modal persist={true} onlyChildren>
-          <div className="overlay">
-            <div className="modal-container">
-              <div className="button-container">
-                <CloseIcon
-                  className="icon"
-                  fill="#ffffff"
-                  onClick={() => setShowModal({ ...showModal, visible: false })}
-                />
-              </div>
-
-              <img
-                className="modal-image"
-                src={showModal.image}
-                alt="Foto de perfil"
-              />
-              <p className="modal-title">{showModal.title}</p>
-            </div>
-          </div>
-        </Modal>
+        <ModalPhoto
+          image={showModal.image}
+          title={showModal.title}
+          onClose={() => setShowModal({ ...showModal, visible: false })}
+        />
       )}
     </section>
   )

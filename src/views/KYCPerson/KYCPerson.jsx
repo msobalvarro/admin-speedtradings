@@ -7,19 +7,17 @@ import { ReactComponent as CloseIcon } from '../../static/images/close.svg'
 import DefaultPhoto from '../../static/images/placeholder-profile.jpg'
 
 //Import components
-import Modal from '../../components/Modal/Modal'
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
 import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
+import ModalPhoto from '../../components/ModalPhoto/ModalPhoto'
 
 //Import utils
-import { Petition, readFile, Moment } from '../../utils/constanst'
+import { Petition, readFile, Moment, getCountry } from '../../utils/constanst'
 import {
   identificationType,
   foundsOrigin,
   relationship,
 } from '../../utils/values'
-
-import { countries } from '../../utils/countries'
 
 //Import styles
 import './KYCStyles.scss'
@@ -52,15 +50,6 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
 
       const { data } = await Petition.get(`/admin/kyc/${id}`, credentials)
 
-      //Obtener nombre de la nacionalidad
-      const nationality = countries.filter(
-        country => country.phoneCode === data.nationality
-      )
-      //Obtener nombre del pais de residencia
-      const countryResidence = countries.filter(
-        country => country.phoneCode === data.residence
-      )
-
       //Obtener fotos
       const identificationPhoto = await readFile(
         data.identificationPictureId,
@@ -72,8 +61,8 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
       if (Object.keys(data).length > 0) {
         setDataKYC({
           ...data,
-          nationality: nationality[0]?.name,
-          countryResidence: countryResidence[0]?.name,
+          nationality: getCountry(data.nationality),
+          countryResidence: getCountry(data.residence),
           identificationPhoto: data.identificationPictureId
             ? URL.createObjectURL(identificationPhoto)
             : DefaultPhoto,
@@ -324,26 +313,11 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
       </div>
 
       {showModal.visible && (
-        <Modal persist={true} onlyChildren>
-          <div className="overlay">
-            <div className="modal-container">
-              <div className="button-container">
-                <CloseIcon
-                  className="icon"
-                  fill="#ffffff"
-                  onClick={() => setShowModal({ ...showModal, visible: false })}
-                />
-              </div>
-
-              <img
-                className="modal-image"
-                src={showModal.image}
-                alt="Foto de perfil"
-              />
-              <p className="modal-title">{showModal.title}</p>
-            </div>
-          </div>
-        </Modal>
+        <ModalPhoto
+          image={showModal.image}
+          title={showModal.title}
+          onClose={() => setShowModal({ ...showModal, visible: false })}
+        />
       )}
     </section>
   )
