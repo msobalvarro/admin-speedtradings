@@ -60,7 +60,7 @@ const NavigationBar = () => {
 
         // verificamos cuando esta conectado a internet
         window.onoffline = () => setConection(false)
-        window.ononline = () => setConection(false)
+        window.ononline = () => setConection(true)
 
         return _ => {
             window.removeEventListener('click', handleBlur)
