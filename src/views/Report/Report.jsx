@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from "react"
+import React, { useEffect, useState, useReducer, useCallback } from "react"
 import moment from "moment"
 import { useSelector } from "react-redux"
 
@@ -173,7 +173,7 @@ const Report = () => {
     }
 
     /**Ejecuta el reporte de pago */
-    const onReport = async () => {
+    const onReport = useCallback(async (_password) => {
         // Creamos la constante que tendra los datos preparados
         // Para enviar al backend
         const dataSend = []
@@ -225,7 +225,7 @@ const Report = () => {
             dispatch({ type: "loaderPayment", payload: false })
 
         }
-    }
+    }, [hashs])
 
     /**
      * Función para obtener el archivo .xls que será el reporte
@@ -328,7 +328,7 @@ const Report = () => {
                     </div>
 
                     {
-                        state.allData.length > 0 &&
+                        state.allData.length !== 0 &&
                         <div className="selection">
                             <div className="total-content">
                                 <span className="total">
