@@ -37,6 +37,12 @@ $animationShadow: rgba(
   }
 }
 
+@keyframes rotateEfect {
+  100% { 
+    transform: rotate(360deg);
+  }
+}
+
 // text overflow
 @mixin text-overflow($maxWidth: 210px) {
   text-overflow: ellipsis;

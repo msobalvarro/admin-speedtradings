@@ -2,13 +2,26 @@
 
 nav.navigation-bar {
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.4);
     border: 2px solid $colorMain;
     display: flex;
     justify-content: space-between;
     padding: 0px 10px;
     margin: 10px 25px;
     border-radius: 10px;
+
+
+    .offline {
+        background-color: rgba(0, 0, 0, 0.8);
+        border-radius: 10px;
+        position: fixed;
+        color: $colorBlack;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 1000;
+        width: 100vw;
+    }
 
     img.brand-logo {
         max-width: 128px;
@@ -26,8 +39,20 @@ nav.navigation-bar {
             color: #FFF;
             font-size: 16px;
             padding: 10px 15px;
-            
+            position: relative;
             transition: $transition;
+
+            &.loading::after  {
+                animation: rotateEfect 0.5s infinite;
+                border-radius: 50%;
+                border: 3px solid $colorYellow;
+                border-top: 3px solid $colorBlack;
+                content: "";
+                bottom: 80%;
+                position: absolute;
+                height: 16px;
+                width: 16px;
+            }
             
             &:hover {
                 background-color: rgba(250, 250, 250, 0.1);

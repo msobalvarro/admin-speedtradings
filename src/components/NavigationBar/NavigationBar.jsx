@@ -1,18 +1,20 @@
 import React, { useRef, useState, useEffect } from "react"
 import { useSelector, useDispatch } from 'react-redux'
-import { NavLink, useLocation } from "react-router-dom"
+import { BrowserRouter, NavLink, useLocation } from "react-router-dom"
+import Lottie from "lottie-react-web"
 import { LogOut } from "../../utils/constanst"
 
 // Import Assets
 import Logo from "../../static/images/logo.png"
 
 import { SETADMINCONNECTED, SETADMINCONNECTEDEMAILS } from '../../store/ActionTypes'
-import { randomKey } from '../../utils/constanst'
+import _ from "lodash"
 
 // import assets and icons
 import consoleIcon from "../../static/images/navbar/console.svg"
 import lockIcon from "../../static/images/navbar/lock.svg"
 import settingsIcon from "../../static/images/navbar/settings.svg"
+import offlineAnimation from "../../static/animations/offline.animation.json"
 import { ReactComponent as ArrowIcon } from "../../static/images/arrow-back.svg"
 import "./NavigationBar.scss"
 
@@ -27,6 +29,7 @@ const NavigationBar = () => {
 
     const [showMore, setShowMore] = useState(false)
     const [showConnected, setShowConnected] = useState(false)
+    const [connected, setConection] = useState(false)
     const showMoreContainerRef = useRef(null)
 
     // Detect blur for component to hide option list
@@ -55,6 +58,10 @@ const NavigationBar = () => {
     useEffect(_ => {
         window.addEventListener('click', handleBlur)
 
+        // verificamos cuando esta conectado a internet
+        window.onoffline = () => setConection(false)
+        window.ononline = () => setConection(false)
+
         return _ => {
             window.removeEventListener('click', handleBlur)
         }
@@ -68,6 +75,14 @@ const NavigationBar = () => {
     return (
         <nav className="navigation-bar">
             <img src={Logo} className="brand-logo" alt="logo" />
+{/* 
+            {
+                !connected &&
+                <>
+                    <div className="offline">
+                    </div>
+                </>
+            } */}
 
             <div className="content-links">
                 <NavLink
@@ -108,9 +123,7 @@ const NavigationBar = () => {
                     adminConnectedEmails.length > 0 &&
                     <div className={`dropdown-content admin-connect ${showConnected ? 'active' : ''}`}>
                         {
-                            adminConnectedEmails.map(email => (
-                                <div className="option-select" key={randomKey()}>{email}</div>
-                            ))
+                            adminConnectedEmails.map(email => <div className="option-select" key={_.uniqueId()}>{email}</div>)
                         }
                     </div>
                 }
