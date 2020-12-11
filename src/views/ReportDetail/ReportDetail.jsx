@@ -15,7 +15,6 @@ import {
 } from '../../utils/constanst'
 
 // import components
-import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
 import Modal from '../../components/Modal/Modal'
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
 import PDF from './pdf'

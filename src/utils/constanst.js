@@ -194,6 +194,7 @@ const Petition = Axios.create({
 
         return status >= 200 && status < 300
     },
+    timeout: 0
 })
 
 Petition.interceptors.request.use(config => {

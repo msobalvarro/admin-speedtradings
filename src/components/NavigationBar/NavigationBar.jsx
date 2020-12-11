@@ -5,13 +5,16 @@ import { LogOut } from "../../utils/constanst"
 
 // Import Assets
 import Logo from "../../static/images/logo.png"
-import { ReactComponent as ArrowIcon } from "../../static/images/arrow-back.svg"
-import "./NavigationBar.scss"
 
 import { SETADMINCONNECTED, SETADMINCONNECTEDEMAILS } from '../../store/ActionTypes'
-
 import { randomKey } from '../../utils/constanst'
 
+// import assets and icons
+import consoleIcon from "../../static/images/navbar/console.svg"
+import lockIcon from "../../static/images/navbar/lock.svg"
+import settingsIcon from "../../static/images/navbar/settings.svg"
+import { ReactComponent as ArrowIcon } from "../../static/images/arrow-back.svg"
+import "./NavigationBar.scss"
 
 const NavigationBar = () => {
     const socket = useSelector(storage => storage.socket)
@@ -55,7 +58,7 @@ const NavigationBar = () => {
         return _ => {
             window.removeEventListener('click', handleBlur)
         }
-    })
+    }, [])
 
     // Si se carga la vista de reportes, se oculta el navbar
     if (/^\/reports\/[\d]{1,}$/.test(useLocation().pathname)) {
@@ -106,7 +109,7 @@ const NavigationBar = () => {
                     <div className={`dropdown-content admin-connect ${showConnected ? 'active' : ''}`}>
                         {
                             adminConnectedEmails.map(email => (
-                                <span key={randomKey()}>{email}</span>
+                                <div className="option-select" key={randomKey()}>{email}</div>
                             ))
                         }
                     </div>
@@ -118,20 +121,22 @@ const NavigationBar = () => {
                     <ArrowIcon className="arrow" />
                 </button>
 
-                <div
-                    ref={showMoreContainerRef}
-                    className={`dropdown-content ${showMore ? 'active' : ''}`}>
-                    <NavLink
-                        to="/configuration"
-                        activeClassName='active'>
-                        Configuración
+                <div ref={showMoreContainerRef} className={`dropdown-content ${showMore ? 'active' : ''}`}>
+                    <NavLink to="/configuration" activeClassName='active'>
+                        <img src={settingsIcon} alt="settings" />
+                        <span>Preferencias</span>
                     </NavLink>
-                    <NavLink
-                        to="/logs"
-                        activeClassName='active'>
-                        Consola
+
+
+                    <NavLink to="/logs" activeClassName='active'>
+                        <img src={consoleIcon} alt="console" />
+                        <span>Consola</span>
                     </NavLink>
-                    <a href="/#" onClick={LogOut}>Cerrar sesion</a>
+
+                    <a href="/#" onClick={LogOut}>
+                        <img src={lockIcon} alt="console" />
+                        <span>Cerrar sesion</span>
+                    </a>
                 </div>
             </div>
         </nav>
