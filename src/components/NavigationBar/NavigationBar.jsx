@@ -29,7 +29,7 @@ const NavigationBar = () => {
 
     const [showMore, setShowMore] = useState(false)
     const [showConnected, setShowConnected] = useState(false)
-    const [connected, setConection] = useState(false)
+    const [connected, setConection] = useState(true)
     const showMoreContainerRef = useRef(null)
 
     // Detect blur for component to hide option list
@@ -75,14 +75,15 @@ const NavigationBar = () => {
     return (
         <nav className="navigation-bar">
             <img src={Logo} className="brand-logo" alt="logo" />
-{/* 
+
             {
                 !connected &&
                 <>
                     <div className="offline">
+                        <Lottie options={{ animationData: offlineAnimation }} />
                     </div>
                 </>
-            } */}
+            }
 
             <div className="content-links">
                 <NavLink
