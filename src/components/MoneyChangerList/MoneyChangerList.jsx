@@ -1,16 +1,19 @@
 import React from "react"
-import moment from "moment"
+import { Moment } from '../../utils/constanst'
 
 /**
  * @param {Array} data - Datos a renderizar
  * @param {Callback} onDetail - Función a ejecutar al abrir el detalle del registro
  */
-const MoneyChangerList = ({ data=[], onDetail=_=>{} }) => {
+const MoneyChangerList = ({ data = [], activeDetail = {}, onDetail = _ => { } }) => {
     // Componente que representa un articulo de la lista Exchange request
     const itemMoneyChanger = (item, index) => {
         // Tipo - Moneda - Monto - Solicitado
         return (
-            <div className="row" key={index} onClick={_ => onDetail(index)}>
+            <div
+                className={`row ${activeDetail.id === item.id ? 'active' : ''}`}
+                key={index}
+                onClick={_ => onDetail(item)}>
                 {
                     item.type === "buy" &&
                     <span>Compra</span>
@@ -28,7 +31,7 @@ const MoneyChangerList = ({ data=[], onDetail=_=>{} }) => {
 
                 <span>{item.coin_name}</span>
                 <span>$ {item.amount_usd}</span>
-                <span>{moment(item.date).fromNow()}</span>
+                <span><Moment date={item.date} /></span>
             </div>
         )
     }

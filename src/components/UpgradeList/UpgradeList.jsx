@@ -4,12 +4,15 @@ import React from "react"
  * @param {Array} data - Datos a renderizar
  * @param {Callback} onDetail - Función a ejecutar al abrir el detalle del registro
  */
-const UpgradeList = ({ data = [], onDetail = _ => { } }) => {
+const UpgradeList = ({ data = [], onDetail = _ => { }, activeDetail = -1 }) => {
     // Componente que representa un articulo de la lista
     // de solicitudes de Upgrade
     const itemUpgrade = (item, index) => {
         return (
-            <div className="row" key={index} onClick={_ => onDetail(item.id)}>
+            <div
+                className={`row ${activeDetail === item.id ? 'active' : ''}`}
+                key={index}
+                onClick={_ => onDetail(item.id)}>
                 <span className="name">{item.name}</span>
                 <span>{item.amount} {item.id_currency === 1 && 'BTC'} {item.id_currency === 2 && 'ETH'}</span>
                 <span>
@@ -30,7 +33,7 @@ const UpgradeList = ({ data = [], onDetail = _ => { } }) => {
             <h2 className="title">Solicitudes de upgrades</h2>
 
 
-            <div className="table request">
+            <div className="table upgrade">
                 <div className="header">
                     <span>Nombre</span>
                     <span>Monto</span>

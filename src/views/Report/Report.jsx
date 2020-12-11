@@ -14,7 +14,7 @@ import iconExcel from "../../static/images/excel.png"
 
 // Import Components
 import ActivityIndicator from "../../components/ActivityIndicator/Activityindicator"
-import NavigationBar from "../../components/NavigationBar/NavigationBar"
+import ConfirmPassword from "../../components/ConfirmPassword/ConfirmPassword"
 import Swal from "sweetalert2"
 
 const initialState = {
@@ -48,8 +48,10 @@ const Report = () => {
     const [reportToDate, setReportToDate] = useState(moment().format("YYYY-MM-DD"))
     const [creditAlyPay, setCreditAlypay] = useState({ btc: 0, eth: 0 })
 
+    const [showModalPassword, setShowModalPassword] = useState(false)
+
     // Contendra todos los hash escritos
-    const hashs = []
+    const [hashs, setHashs] = useState({})
 
     const { token } = useSelector(({ globalStorage }) => globalStorage)
 
@@ -113,9 +115,9 @@ const Report = () => {
     /**Componente para renderizar los datos */
     const ItemComponent = (item, index) => {
         if (
-            item.name.length > 0 && item.name.toLowerCase().search(state.filter) > -1 ||
-            item.wallet.length > 0 && item.wallet.toLowerCase().search(state.filter) > -1 ||
-            item.amount.length > 0 && item.amount.toLowerCase().search(state.filter) > -1
+            (item.name.length > 0 && item.name.toLowerCase().search(state.filter) > -1) ||
+            (item.wallet.length > 0 && item.wallet.toLowerCase().search(state.filter) > -1) ||
+            (item.amount.length > 0 && item.amount.toLowerCase().search(state.filter) > -1)
         ) {
             return (
                 <div className="row" id={"row-" + index} key={index}>
@@ -144,7 +146,19 @@ const Report = () => {
                             {
                                 // verificamos la wallet no es de alypay
                                 item.alypay !== 1 &&
-                                <input type="text" placeholder="Escriba hash de transaccion" className="text-input" onChange={e => hashs[index] = e.target.value} />
+                                <input
+                                    type="text"
+                                    placeholder="Escriba hash de transaccion"
+                                    className="text-input"
+                                    onChange={e => {
+                                        const { value } = e.target
+                                        const { id } = item
+
+                                        setHashs({
+                                            ...hashs,
+                                            [id]: value
+                                        })
+                                    }} />
                             }
 
 
@@ -173,29 +187,23 @@ const Report = () => {
     }
 
     /**Ejecuta el reporte de pago */
-    const onReport = useCallback(async (_password) => {
+    const onReport = async (_password) => {
         // Creamos la constante que tendra los datos preparados
         // Para enviar al backend
         const dataSend = []
 
         try {
-            dispatch({ type: "loaderPayment", payload: false })
+            dispatch({ type: "loaderPayment", payload: true })
 
             for (let index = 0; index < state.allData.length; index++) {
                 const elementData = state.allData[index]
-
-                if (hashs[index] === undefined) {
-                    hashs[index] = ""
-                }
-
-                // Obtenemos el hash de la fila
-                const hash = hashs[index] === undefined ? "" : hashs[index]
 
                 // Construimos el objeto que necesitara el backend para procesar el retiro
                 const dataPush = {
                     ...elementData,
                     paymented: elementData.hash !== null,
-                    hash: (elementData.hash === null ? hash : elementData.hash)
+                    // Obtenemos el hash, en caso de que no exista, obtenemos el hash ingresado manualmente
+                    hash: elementData.hash || (hashs[elementData.id] || null)
                 }
 
                 // Se lo agregamos a la constante que enviaremos al backend
@@ -203,7 +211,7 @@ const Report = () => {
             }
 
             // Ejecutamos la peticion para ejecutar reporte
-            const { data } = await Petition.post("/admin/payments/apply", { data: dataSend, id_currency: state.currency }, { headers })
+            const { data } = await Petition.post("/admin/payments/apply", { data: dataSend, id_currency: state.currency, password: _password }, { headers })
 
             if (data.error) {
                 throw String(data.message)
@@ -223,9 +231,9 @@ const Report = () => {
             Swal.fire("Ha ocurrido un error", error.toString(), "warning")
         } finally {
             dispatch({ type: "loaderPayment", payload: false })
-
+            setShowModalPassword(false)
         }
-    }, [hashs])
+    }
 
     /**
      * Función para obtener el archivo .xls que será el reporte
@@ -292,8 +300,6 @@ const Report = () => {
 
     return (
         <div className="container-report">
-            <NavigationBar />
-
             <div className="content">
                 <div className="header">
                     <input type="text" value={state.filter} onChange={e => dispatch({ type: "filter", payload: e.target.value })} className="text-input" placeholder="Filtrar.." />
@@ -348,7 +354,7 @@ const Report = () => {
 
                             {
                                 !state.loaderPayment &&
-                                <button disabled={state.loaderPayment} className="button" onClick={onReport}>Enviar reporte</button>
+                                <button disabled={state.loaderPayment} className="button" onClick={_ => setShowModalPassword(true)}>Enviar reporte</button>
                             }
 
 
@@ -400,6 +406,13 @@ const Report = () => {
                         <img src={astronaut} alt="empty" />
                         <h2>No hay reportes todavia</h2>
                     </div>
+                }
+
+                {
+                    showModalPassword &&
+                    <ConfirmPassword
+                        onCancel={_ => setShowModalPassword(false)}
+                        onSubmit={_password => onReport(_password)} />
                 }
             </div>
         </div>

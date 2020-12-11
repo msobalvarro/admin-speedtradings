@@ -1,0 +1,101 @@
+@import '../../utils/constants.scss';
+
+.kyc-header {
+  display: flex;
+  justify-content: space-between;
+  margin: 40px 0;
+  color: $colorSecondary;
+  font-weight: bold;
+  font-size: 24px;
+
+  & .icon-container {
+    width: 24px;
+  }
+
+  & .icon {
+    height: 100%;
+    cursor: pointer;
+  }
+}
+
+.card {
+  border-radius: 8px;
+  background-color: rgba(#000, 0.4);
+  padding: 23px 10%;
+
+  & .card-title {
+    font-size: 24px;
+    font-weight: 500px;
+    margin-bottom: 16px;
+    color: $colorYellow;
+  }
+
+  .label-group {
+    margin-bottom: 25px;
+  }
+
+  & .card-label {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 23px;
+    margin-bottom: 8px;
+
+    color: $colorSecondary;
+  }
+
+  & .card-value {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 21px;
+
+    color: #ffffff;
+  }
+}
+
+/*LAYOUT DE KYC PERSON*/
+.KYCPerson {
+  max-width: 1500px;
+  margin: auto;
+  padding: 25px;
+}
+
+.person-name {
+  font-weight: bold;
+  font-size: 32px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.card-container {
+  display: grid;
+  grid-gap: 25px;
+  grid-template-columns: 1fr 340px;
+  grid-template-rows: min-content min-content;
+}
+
+.three-columns {
+  justify-content: space-between;
+  display: grid;
+  grid-gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.identity-container {
+  text-align: center;
+  .identity {
+    & span {
+      font-size: 16px;
+    }
+    //@include text-overflow('100%');
+  }
+}
+
+.image-container {
+  width: 100%;
+
+  & img {
+    width: 100%;
+  }
+}

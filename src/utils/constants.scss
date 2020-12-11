@@ -16,12 +16,16 @@ $backgroundGradient: linear-gradient(
 $colorMain: #273234;
 $colorSecondary: #9ed3da;
 $colorYellow: #ffcb08;
-$colorRed: #C0392B;
-$colorGreen: #2E8B12;
+$colorRed: #c0392b;
+$colorGreen: #2e8b12;
 
 // Utils constants
 $transition: all 0.2s ease;
-$animationShadow: rgba($color: $colorYellow, $alpha: 0.5) 0px 0px 0px 3px;
+$animationShadow: rgba(
+    $color: $colorYellow,
+    $alpha: 0.5,
+  )
+  0px 0px 0px 3px;
 
 @keyframes fadeEffect {
   from {
@@ -30,4 +34,14 @@ $animationShadow: rgba($color: $colorYellow, $alpha: 0.5) 0px 0px 0px 3px;
   to {
     opacity: 1;
   }
+}
+
+// text overflow
+@mixin text-overflow($maxWidth: 210px) {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 150px;
+  max-width: $maxWidth;
+  cursor: pointer;
 }

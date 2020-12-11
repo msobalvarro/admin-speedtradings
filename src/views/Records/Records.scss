@@ -1,398 +1,270 @@
-@import "../../utils/constants.scss";
+@import '../../utils/constants.scss';
 
-div.container-records {
+.Records {
   .header-content {
-    margin-top: 25px;
-    align-items: center;
     display: flex;
-    padding: 0 25px;
+    flex-direction: row;
     justify-content: flex-end;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
 
-    .row {
+    .trading,
+    .reports {
       display: flex;
-      flex-direction: column;
-      span {
-        font-size: 12px;
-        margin-bottom: 5px;
-      }
+      flex-direction: row;
     }
 
     .trading {
-      display: flex;
-      align-items: center;
-
-      span.message {
-        color: $colorYellow;
-        font-size: 12px;
-        margin-right: 10px;
-        opacity: 0.8;
+      input,
+      select,
+      button {
+        margin-left: 1rem;
       }
+    }
 
-      select {
-        margin: 0 10px;
-      }
+    .reports {
+      border-right: 1px darken(#fff, 20) solid;
+      margin-right: 1rem;
+      padding-right: 1rem;
 
-      input {
-        text-align: center;
-        width: 64px;
-        -moz-appearance: textfield;
+      .row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
 
-        &::-webkit-outer-spin-button,
-        &::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
+        span {
+          margin-right: 5px;
         }
       }
+
+      .row,
+      button {
+        margin-left: 1rem;
+      }
+    }
+
+    button {
+      padding: 0 0.5rem !important;
+      font-size: 0.75rem;
     }
   }
 
-  .content {
+  .container {
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
+    padding: 1rem 2rem;
 
-    .collection {
+    .column {
+      position: relative;
+      box-sizing: border-box;
+      width: calc(50% - 1rem);
       background-color: rgba(0, 0, 0, 0.4);
-      border-radius: 10px;
-      padding: 20px;
-      min-height: 512px;
-      margin: 25px;
-      height: 75vh;
-      overflow: auto;
-      width: 45%;
+      border-radius: 7px;
+      min-height: 500px;
+      height: calc(100vh - 9rem);
+      max-height: 800px;
 
-      .menu-tab {
-        border: 2px solid $colorYellow;
-        border-radius: 10px;
-        overflow: hidden;
-        margin-bottom: 10px;
+      .Activityindicator {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .list {
+      .tabs-container {
         display: flex;
-        width: 100%;
+        flex-direction: row;
+        justify-content: space-evenly;
+        border: 2px solid $colorYellow;
+        border-radius: 7px;
 
-        .item {
-          color: $colorYellow;
-          transition: $transition;
+        .tab {
           position: relative;
-          padding: 10px;
-          cursor: pointer;
+          display: block;
+          flex-grow: 1;
+          background-color: transparent;
+          color: $colorYellow;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
           text-align: center;
-          width: 25%;
+          cursor: pointer;
+          transform: scale(1);
+          user-select: none;
+          transition: background-color 0.25s, color 0.25s, transform 0.25s;
 
           &.active {
             background-color: $colorYellow;
-            color: $colorMain;
+            color: #1d1d1d;
           }
 
-          .request {
+          &:active {
+            transform: scale(0.96);
+          }
+
+          &[data-counter]:after {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            content: attr(data-counter);
             background-color: $colorRed;
             color: #fff;
-            border-radius: 25px;
+            padding: 0.3rem;
+            min-width: 14px;
             font-size: 12px;
-            position: absolute;
-            padding: 5px 0;
-            text-align: center;
-            top: 10%;
-            margin-left: 10px;
-            width: 50px;
-            // right: 5%;
-          }
+            border-radius: 100px;
+            top: -40%;
+            right: 5px;
 
-          &:last-child {
-            .request {
-              margin-left: 0px;
-              padding: 5px 10px;
-              width: auto !important;
-              top: 0%;
+            &:empty {
+              background-color: blue;
             }
           }
         }
       }
 
-      .empty {
-        align-items: center;
-        animation: fadeEffect 1s;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin-top: 25px;
+      .list-content {
+        margin: 1rem 0;
+        max-height: calc(100% - 4rem);
+        overflow-y: auto;
 
-        img {
-          width: 256px;
-          margin-bottom: 10px;
-        }
-      }
-
-      .separator {
-        margin: 25px 0;
-        // border-bottom: 1px solid #FFF;
-      }
-      .sub-header {
-        align-items: center;
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 15px;
-      }
-
-      h2.title {
-        color: $colorYellow;
-        font-weight: normal;
-      }
-
-      .table {
-        animation: fadeEffect 1s;
-        display: flex;
-        flex-direction: column;
-
-        &.request {
-          .row {
-            span {
-              width: 33%;
-              overflow: hidden;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-
-              &:nth-child(1) {
-                text-align: left;
-              }
-
-              &:nth-child(2) {
-                text-align: center;
-              }
-
-              &:nth-child(3) {
-                text-align: right;
-              }
-            }
-          }
-        }
-
-        &.records {
-          .row {
-            span {
-              width: 25%;
-              overflow: hidden;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-
-              &:nth-child(1) {
-                text-align: left;
-              }
-
-              &:nth-child(2) {
-                text-align: center;
-              }
-
-              &:nth-child(3) {
-                text-align: center;
-              }
-
-              &:nth-child(4) {
-                text-align: right;
-              }
-            }
-          }
-        }
-
-        .header {
-          border-bottom: 2px solid $colorYellow;
+        .title {
           color: $colorYellow;
-          display: flex;
-          justify-content: space-between;
-          padding: 10px 0;
+          font-weight: normal;
+          text-align: left;
         }
 
-        .row {
-          border-bottom: 1px solid #fff;
-          display: flex;
-          justify-content: space-between;
-          padding: 10px 0;
-          transition: $transition;
-
-          span {
-            &.name {
-              text-transform: capitalize;
-            }
-
-            i {
-              opacity: 0.5;
-            }
-          }
-
-          &:hover {
-            background-color: rgba($color: #fff, $alpha: 0.1);
-            cursor: pointer;
-          }
-        }
-      }
-    }
-
-    .collection.left {
-      position: relative;
-      padding-bottom: 5rem;
-
-      .reports {
-        position: absolute;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        bottom: 10px;
-        margin: 0 10px;
-        height: 4rem;
-        width: calc(100% - 20px);
-        left: 0;
-
-        .row {
+        .empty {
+          align-items: center;
+          animation: fadeEffect 1s;
           display: flex;
           flex-direction: column;
-          width: 30%;
+          justify-content: center;
+          margin-top: 25px;
 
-          span {
-            display: inline-block;
-            margin-bottom: 5px;
+          img {
+            width: 256px;
+            margin-bottom: 10px;
           }
-        }
-
-        .button {
-          font-size: 14px;
-          width: 200px;
-          height: 2.5rem;
-          align-self: flex-end;
-          padding: 5px 10px;
         }
       }
     }
   }
 
-  .content-modal {
-    .content-col {
+  .table {
+    animation: fadeEffect 1s;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+    user-select: none;
+    height: 100%;
+    overflow-y: auto;
+
+    .header,
+    .row {
+      padding: 10px 1rem;
       display: flex;
       justify-content: space-between;
 
-      .col {
-        width: 45%;
+      span {
+        text-align: center;
+        width: calc(100% / 4);
 
-        .header {
-          align-items: center;
-          display: flex;
-          justify-content: space-between;
-          span {
-            border-radius: 25px;
-            color: $colorMain;
-            padding: 5px 10px;
-
-            &.active {
-              background-color: $colorYellow;
-            }
-
-            &.inactive {
-              background-color: gray;
-            }
-          }
+        &:first-child {
+          text-align: left;
         }
 
         &:last-child {
           text-align: right;
         }
-
-        &.empty {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          opacity: 0.3;
-
-          h2 {
-            font-style: oblique;
-          }
-        }
-
-        h2 {
-          color: $colorYellow;
-          font-weight: normal;
-        }
-
-        .row {
-          display: flex;
-          flex-direction: column;
-          margin: 20px 0;
-
-          .name {
-            font-size: 0.7em;
-          }
-
-          .value {
-            font-size: 1.3em;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-
-            &.copy:hover {
-              position: relative;
-              cursor: pointer;
-
-              &::before {
-                border-radius: 3px;
-                content: "Toca para copiar";
-                font-size: 10px;
-                background: #c53c1a;
-                right: 0%;
-                position: absolute;
-                padding: 5px;
-              }
-            }
-          }
-
-          input.text-input {
-            margin-top: 5px;
-          }
-
-          i {
-            opacity: 0.5;
-          }
-        }
       }
     }
 
-    .confirm-decline {
-      animation: fadeEffect 1s;
-      width: 100%;
+    .header {
+      border-bottom: 2px solid $colorYellow;
+      color: $colorYellow;
+    }
 
-      h1 {
-        color: $colorYellow;
-        font-weight: normal;
+    .row {
+      border-bottom: 1px solid #fff;
+      transition: $transition;
+
+      span {
+        &.name {
+          text-transform: capitalize;
+        }
+
+        i {
+          opacity: 0.5;
+        }
       }
 
-      .row-reason {
-        display: flex;
-        margin: 25px 0;
-        flex-direction: column;
+      &:hover {
+        background-color: rgba($color: #fff, $alpha: 0.1);
+        cursor: pointer;
+      }
 
-        span.legend-decline {
-          font-size: 12px;
-          margin-bottom: 5px;
-        }
-
-        .sub-row {
-          align-items: center;
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 10px;
-
-          .content-check {
-            align-items: center;
-            font-size: 12px;
-            display: flex;
-
-            label {
-              margin-right: 5px;
-            }
-          }
-        }
+      &.active {
+        background-color: rgba($color: #fff, $alpha: 0.2);
       }
     }
 
-    .buttons {
+    &.request,
+    &.upgrade {
+      span {
+        flex-grow: 1;
+        width: calc(100% / 3);
+
+        &:nth-child(2) {
+          width: 100px;
+        }
+
+        &:first-child,
+        &:last-child {
+          @include text-overflow;
+        }
+      }
+    }
+  }
+
+  .detail {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .empty {
       display: flex;
-      margin-top: 15px;
-      justify-content: space-evenly;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 2rem;
+
+      img {
+        margin: 0 auto;
+        margin-bottom: 1rem;
+        width: 200px;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+        color: darken(#fff, 30);
+      }
+    }
+
+    .exchange {
+      max-height: calc(800px - 7rem) !important;
+      overflow-y: auto;
+
+      h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .buttons {
+        position: initial;
+      }
     }
   }
 }

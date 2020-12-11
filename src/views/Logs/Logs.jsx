@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { Petition } from "../../utils/constanst"
 
-// Import components
-import NavigationBar from "../../components/NavigationBar/NavigationBar"
-
 // Import styles and assets
 import "./Logs.scss"
 
@@ -33,8 +30,6 @@ const Logs = () => {
 
     return (
         <div className="container-logs">
-            <NavigationBar />
-
             <div className="console">
                 <div className="header">
                     <span>Logs for development - Backend</span>

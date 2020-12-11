@@ -1,11 +1,11 @@
 import React from "react"
 
 // Import Asset
-import Astronaut from '../../static/images/astronaut.png'
+import Cactus from '../../static/images/cactus.png'
 
-const EmptyIndicator = ({ message='' }) => (
+const EmptyIndicator = ({ message = '' }) => (
     <div className="empty">
-        <img src={Astronaut} alt="empty" />
+        <img src={Cactus} alt="empty" />
         <h2 className="title">{message}</h2>
     </div>
 )

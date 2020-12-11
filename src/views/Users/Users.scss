@@ -1,0 +1,184 @@
+@import '../../utils/constants.scss';
+
+.users-list {
+  width: 100%;
+  height: 100%;
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 0 2rem;
+
+    .row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .label {
+        margin-right: 1rem;
+      }
+    }
+  }
+
+  .content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    .content-list,
+    .content-detail {
+      position: relative;
+      box-sizing: border-box;
+      background-color: rgba(#000, 0.4);
+      border-radius: 7px;
+      min-height: 500px;
+      height: calc(100vh - 5rem);
+      max-height: 800px;
+      min-height: 800px;
+    }
+
+    .content-list {
+      width: calc(50% - 1rem);
+      overflow: hidden;
+      .sub-header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        color: $colorYellow;
+        padding: 1rem;
+        padding-bottom: 0;
+      }
+
+      .table {
+        max-height: calc(100% - 4.5rem);
+      }
+    }
+
+    .content-detail {
+      width: calc(50% - 1rem);
+      padding: 1rem;
+
+      .content-col {
+        padding: 0;
+        margin-top: 1rem;
+
+        h2 {
+          color: $colorSecondary !important;
+        }
+      }
+
+      .DetailRecords {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+
+        h2 {
+          color: $colorYellow;
+          font-size: 1.1rem;
+        }
+
+        .button {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  .table {
+    animation: fadeEffect 1s;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+    user-select: none;
+    height: 100%;
+    overflow-y: auto;
+
+    .header,
+    .row {
+      padding: 10px 1rem;
+      display: grid;
+      grid-template-columns: 50px 2fr min-content min-content;
+      span {
+        @include text-overflow;
+        text-align: left;
+        &:first-child {
+          text-align: left;
+        }
+
+        &:last-child {
+          text-align: right;
+        }
+      }
+    }
+
+    .header {
+      border-bottom: 2px solid $colorYellow;
+      color: $colorYellow;
+    }
+
+    .row {
+      border-bottom: 1px solid #fff;
+      transition: $transition;
+
+      span {
+        &.name {
+          text-transform: capitalize;
+        }
+
+        i {
+          opacity: 0.5;
+        }
+      }
+
+      &:hover {
+        background-color: rgba($color: #fff, $alpha: 0.1);
+        cursor: pointer;
+      }
+
+      &.active {
+        background-color: rgba($color: #fff, $alpha: 0.2);
+      }
+    }
+  }
+}
+
+.icon-container {
+  width: 24px;
+  & .icon {
+    width: inherit;
+  }
+}
+
+.caption-container {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  & .icon {
+    width: 18px;
+    margin-right: 5px;
+  }
+
+  & .separator {
+    height: 18px;
+    width: 2px;
+    background: $colorMain;
+    margin: 0 5px;
+  }
+}
+
+.kyc-person {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed tomato;
+}
+
+.kyc-enterprise {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,33 @@
+@import '../../utils/constants.scss';
+
+.UploadFile {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #1d1d1d;
+    color: $colorSecondary;
+    border-radius: 7px;
+    border: 2px dashed currentColor;
+    box-shadow: 0 0 0 5px #1d1d1d;
+    height: 40px;
+    padding: 1rem;
+    margin: 7px;
+    text-align: center;
+    transition: background-color .25s, color .25s, box-shadow .25s;
+
+    &-icon {
+        font-size: 1.25rem;
+        width: 1.25rem;
+
+        path {
+            fill: currentColor;
+        }
+    }
+
+    &.active {
+        background-color: $colorSecondary;
+        color: #1d1d1d;
+        box-shadow: 0 0 0 7px $colorSecondary;
+    }
+}

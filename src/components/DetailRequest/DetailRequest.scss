@@ -1,0 +1,108 @@
+@import '../../utils/constants.scss';
+
+.content-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: $colorYellow;
+  padding: 1rem;
+
+  h2 {
+    margin-bottom: 2rem;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0;
+
+    .col {
+      width: calc(50% - 1rem);
+      
+      &:first-child {
+        padding-left: 1rem;
+      }
+
+      &:last-child {
+        padding-right: 1rem;
+      }
+    }
+  }
+
+    .row, .row-reason {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 2rem;
+
+        span {
+          width: 100%;
+          max-width: 250px !important;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          cursor: default;
+
+          &.name {
+            font-size: 1.1rem;
+          }
+
+          &.value {
+            color: #fff;
+            text-align: left !important;
+            margin-top: .35rem;
+          }
+
+          &:nth-child(1) {
+            text-align: left;
+          }
+
+          &:nth-child(2) {
+            text-align: center;
+          }
+
+          &:nth-child(3) {
+            text-align: right;
+          }
+        }
+        .sub-row  {
+          .legend-decline {
+            display: block;
+            margin-bottom: .5rem;
+          }
+
+          .content-check {
+            display:  flex;
+            flex-direction: row;
+            align-items: center;
+
+            input[type="checkbox"] {
+              margin-left: .5rem;
+            }
+          }
+        }
+      }
+
+      .row-reason {
+        margin: 0 auto;
+        margin-top: 1rem;
+        width: 116%;
+
+        .text-input {
+          margin-top: 1rem;
+        }
+      }
+}
+
+.content-modal {
+  .buttons {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    bottom: 0;
+    width: 100%;
+    padding-bottom: 1rem;
+  }
+}
