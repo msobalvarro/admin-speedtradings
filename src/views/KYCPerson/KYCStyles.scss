@@ -186,7 +186,8 @@ button.delete-button {
   grid-template-columns: max-content 1fr 340px;
   grid-gap: 16px;
   justify-items: start;
-  align-items: flex-start;
+  align-items: end;
+  padding: 16px 0;
 }
 
 .results-container {
@@ -233,4 +234,5 @@ button.delete-button {
 
 .actions-buttons {
   display: flex;
+  align-self: center;
 }
