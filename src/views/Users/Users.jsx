@@ -78,19 +78,19 @@ const Users = () => {
     switch (pageIndex) {
       // Verificaciones para la pagina de LISTA DE USUARIOS
       case USER_LIST_PAGE:
-        return !loader && page === USER_LIST_PAGE
+        return page === USER_LIST_PAGE
 
       // Verificaciones para la pagina de KYC PERSON
       case KYC_PERSON_PAGE:
-        return !loader && page === KYC_PERSON_PAGE
+        return page === KYC_PERSON_PAGE
 
       // Verificaciones para la pagina de BENEFICIARIO del usuario tipo persona
       case BENEFICIARY_PERSON_PAGE:
-        return !loader && page === BENEFICIARY_PERSON_PAGE
+        return page === BENEFICIARY_PERSON_PAGE
 
       // Verificaciones para la pagina de KYC EMPRESAS
       case KYC_ENTERPRISE_PAGE:
-        return !loader && page === KYC_ENTERPRISE_PAGE
+        return page === KYC_ENTERPRISE_PAGE
 
       default:
         return false

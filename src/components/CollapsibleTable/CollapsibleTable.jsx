@@ -5,7 +5,7 @@ import { getCountry } from '../../utils/constanst'
 
 import './CollapsibleTable.scss'
 
-const Row = ({ beneficiary }) => {
+const Row = ({ beneficiary, showPhoto }) => {
   const [collapseIsOpen, setCollapseIsOpen] = useState(false)
 
   const toggleCollapse = () => {
@@ -98,8 +98,33 @@ const Row = ({ beneficiary }) => {
           <div className="button-identifications">
             <span className="value">Identificaciones</span>
 
-            <button className="button secondary">Ver identificacion</button>
-            <button className="button secondary">Ver pasaporte</button>
+            {beneficiary.identificationNumber && (
+              <button
+                className="button secondary"
+                onClick={() =>
+                  showPhoto({
+                    id: beneficiary.identificationPicture,
+                    title: beneficiary.identificationNumber,
+                  })
+                }
+              >
+                Ver identificacion
+              </button>
+            )}
+
+            {beneficiary.passportNumber && (
+              <button
+                onClick={() =>
+                  showPhoto({
+                    id: beneficiary.passportPicture,
+                    title: beneficiary.passportNumber,
+                  })
+                }
+                className="button secondary"
+              >
+                Ver pasaporte
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -109,7 +134,7 @@ const Row = ({ beneficiary }) => {
   )
 }
 
-const CollapsibleTable = ({ beneficiaries }) => {
+const CollapsibleTable = ({ beneficiaries, showPhoto }) => {
   if (!beneficiaries) return <h2>Sin beneficiarios</h2>
 
   return (
@@ -126,7 +151,7 @@ const CollapsibleTable = ({ beneficiaries }) => {
       </div>
       <div className="table-body">
         {beneficiaries.map((beneficiary, index) => (
-          <Row key={index} beneficiary={beneficiary} />
+          <Row key={index} beneficiary={beneficiary} showPhoto={showPhoto} />
         ))}
       </div>
     </div>

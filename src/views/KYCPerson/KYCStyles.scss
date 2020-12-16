@@ -35,7 +35,7 @@
 .card {
   border-radius: 8px;
   background-color: rgba(#000, 0.4);
-  padding: 5% 10%;
+  padding: 32px;
 
   & .card-title {
     font-size: 24px;
@@ -75,11 +75,34 @@
   }
 }
 
+button.verify-button {
+  margin-left: 16px;
+  border: 1px solid $colorGreen;
+  background: transparent;
+  color: $colorGreen;
+  outline: $colorGreen;
+
+  &:hover {
+    box-shadow: 0 0 0 3px rgba($colorGreen, 0.4);
+  }
+}
+
+button.delete-button {
+  margin-left: 16px;
+  border: 1px solid $colorRed;
+  background: transparent;
+  color: $colorRed;
+  outline: $colorRed;
+
+  &:hover {
+    box-shadow: 0 0 0 3px rgba($colorRed, 0.4);
+  }
+}
+
 .person-name {
   font-weight: bold;
   font-size: 32px;
   color: #fff;
-  margin-bottom: 16px;
 }
 
 .center-element {
@@ -100,6 +123,11 @@
 }
 
 /******KYC PERSONA******/
+.title-and-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 16px;
+}
 
 .KYCPerson,
 .KYCEnterprise {
@@ -150,14 +178,15 @@
 
 .beneficiaries-table {
   margin-top: 25px;
-  padding: 5%;
+  padding: 32px;
 }
 
 .transactions-and-name {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 25px 0;
+  display: grid;
+  grid-template-columns: max-content 1fr 340px;
+  grid-gap: 16px;
+  justify-items: start;
+  align-items: flex-start;
 }
 
 .results-container {
@@ -170,7 +199,7 @@
 .result-card {
   background-color: $colorMain;
   border-radius: 8px;
-  padding: 16px;
+  padding: 8px;
 
   & .dimention {
     font-size: 20px;
@@ -200,4 +229,8 @@
 .commerce-name {
   font-weight: bold;
   font-size: 32px;
+}
+
+.actions-buttons {
+  display: flex;
 }

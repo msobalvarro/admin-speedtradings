@@ -1,20 +1,12 @@
 /******ESTILOS DEL MODAL PARA VISUALIZAR FOTOS******/
 
-.overlay {
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.8);
-  display: flex;
-  height: 100vh;
-  justify-content: center;
-  width: 100vw;
-}
-
-.modal-container {
+.modal-photo {
   border-radius: 8px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   height: 600px;
   max-width: 600px;
   position: relative;
+
   width: 100%;
   & .modal-image {
     border-radius: 8px;
@@ -34,17 +26,20 @@
     text-align: center;
     width: 100%;
   }
+}
 
-  & .button-container {
-    height: 24px;
-    position: absolute;
-    right: -30px;
-    top: -30px;
-    width: 24px;
-    & .icon {
-      cursor: pointer;
-      height: 100%;
-      width: 24px;
-    }
+.rotate-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 150px;
+  position: absolute;
+  top: 0;
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.6);
+  left: calc(50% - 75px);
+  .icon {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
   }
 }

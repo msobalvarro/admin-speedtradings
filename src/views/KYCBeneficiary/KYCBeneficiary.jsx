@@ -12,9 +12,9 @@ import {
   foundsOrigin,
   relationship,
 } from '../../utils/values'
+import { useSesionStorage } from '../../utils/hooks/useSesionStorage'
 
 //Import components
-import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
 import ModalPhoto from '../../components/ModalPhoto/ModalPhoto'
 
@@ -22,7 +22,7 @@ import ModalPhoto from '../../components/ModalPhoto/ModalPhoto'
 import '../KYCPerson/KYCStyles.scss'
 
 const KYCBeneficiary = ({ data, onClickChangePage }) => {
-  const [loader, setLoader] = useState(true)
+  const [loader, setLoader] = useState(false)
   const { token } = useSelector(storage => storage.globalStorage)
   const credentials = {
     headers: {
@@ -31,15 +31,20 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
   }
 
   const KYC_PERSON_PAGE = 2
+
   const [showModal, setShowModal] = useState({
     visible: false,
     image: '',
     title: '',
   })
 
-  const [beneficiary, setBeneficiary] = useState({})
+  const KEY = `kyc-beneficiary-${data.identificationNumber}`
+
+  const [beneficiary, setBeneficiary] = useSesionStorage(KEY, {})
 
   const fetchDetail = async () => {
+    setLoader(true)
+
     //Obtener fotos
     const identificationPhoto = await readFile(
       data.indentificationPictureId,
@@ -65,23 +70,12 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
 
   useEffect(
     _ => {
-      if (data) fetchDetail()
+      if (data) {
+        Object.keys(beneficiary).length === 0 && fetchDetail()
+      }
     },
     [data]
   )
-
-  if (Object.keys(data).length === 0)
-    return (
-      <div className="center-element">
-        <EmptyIndicator message="Este usuario no cuenta con un beneficiario" />
-        <button
-          className="button large mt"
-          onClick={() => onClickChangePage(KYC_PERSON_PAGE)}
-        >
-          Regresar
-        </button>
-      </div>
-    )
 
   return (
     <section className="KYCPerson">
