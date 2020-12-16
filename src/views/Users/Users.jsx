@@ -29,7 +29,7 @@ const Users = () => {
   // Estado que almacena la fecha con la que generarán los reportes
   const [dateReport, setDateReport] = useState(
     window.sessionStorage.getItem('date_report') ||
-      moment(new Date()).format('YYYY-MM')
+    moment(new Date()).format('YYYY-MM')
   )
   // Estado que almacena el status del indicador de carga
   const [loader, setLoader] = useState(false)
