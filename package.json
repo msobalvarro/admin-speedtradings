@@ -16,6 +16,7 @@
     "express-favicon": "^2.0.1",
     "jwt-simple": "^0.5.6",
     "lodash": "^4.17.20",
+    "lottie-react-web": "^2.2.2",
     "moment": "^2.24.0",
     "react": "^16.13.0",
     "react-addons-update": "^15.6.2",
