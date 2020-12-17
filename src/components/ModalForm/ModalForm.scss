@@ -1,0 +1,46 @@
+@import '../../utils/constants.scss';
+
+.modal-form {
+  border-radius: 8px;
+  background-color: $colorMain;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  max-width: 400px;
+  position: relative;
+  width: 100%;
+  padding: 16px;
+
+  & .full-width {
+    width: 100%;
+  }
+
+  & .modal-title {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 500px;
+    margin-bottom: 16px;
+    color: $colorYellow;
+  }
+
+  & .modal-group {
+    margin-bottom: 25px;
+  }
+
+  & .modal-label {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 23px;
+    margin-bottom: 8px;
+    display: block;
+    color: $colorSecondary;
+  }
+
+  & .modal-value {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 21px;
+
+    color: #ffffff;
+  }
+}

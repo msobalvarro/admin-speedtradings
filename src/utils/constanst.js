@@ -5,6 +5,7 @@ import Axios from 'axios'
 import Swal from 'sweetalert2'
 import moment from 'moment'
 import 'moment/locale/es'
+import { countries } from './countries.js'
 
 import soundNotification from '../static/sound/notification.mp3'
 
@@ -19,7 +20,7 @@ export const keySecret = 'testDevelop'
 export const emailImageToken =
     'jRVFgyxiXKHxAWQL47jVzoMwj2m9DfG6-fLv8j9zBtLDMjpBd4QeLpXdTHM2Mnlyg-zZEfQrPoCn9yPUVaUQEvTl3B904h3xcY'
 
-//export const urlServer = "https://ardent-medley-272823.appspot.com"
+//export const urlServer = 'https://ardent-medley-272823.appspot.com'
 //export const urlServer = "http://192.168.1.238:8084"
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
@@ -262,3 +263,15 @@ export const readFile = (fileId, credentials) =>
       })
       .catch(error => resolve({ error: true, message: error }))
   })
+
+/**
+ * Función para obtener el nombre de un pais pasandole el phone code
+ * @param {Number} code - Codigo telefonico del pais ej. +505
+ */
+export const getCountry = (code = -1) => {
+  if (code === -1) return
+  //Obtener nombre de la nacionalidad
+  const country = countries.filter(country => country.phoneCode === code)
+
+  return country[0].name
+}

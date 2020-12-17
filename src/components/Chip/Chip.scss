@@ -1,0 +1,19 @@
+.Chip {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.chip-icon {
+  width: 22px;
+  height: 22px;
+  margin-right: 8px;
+}
+
+.chip-text {
+  color: #c0392b;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 21px;
+}

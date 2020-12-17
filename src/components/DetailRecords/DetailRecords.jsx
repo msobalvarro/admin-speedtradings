@@ -44,7 +44,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
         `/admin/records/${id}`,
         credentials
       )
-
+      console.log(dataDetail)
       if (dataDetail.error) {
         throw String(dataDetail.message)
       }
@@ -122,10 +122,16 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
 
   return (
     <div className="DetailRecords">
-      {loader && <ActivityIndicator size={48} />}
+      {loader && (
+        <div className="center-element">
+          <ActivityIndicator size={48} />
+        </div>
+      )}
 
       {!loader && id === -1 && (
-        <EmptyIndicator message="Sin usuario para mostrar" />
+        <div className="center-element">
+          <EmptyIndicator message="Sin usuario para mostrar" />
+        </div>
       )}
 
       {!loader && Object.keys(data).length > 0 && (
@@ -148,7 +154,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
               </div>
 
               <div>
-                <span className="label">Telefono</span>
+                <span className="label">Teléfono</span>
                 <span className="value">{data.phone}</span>
               </div>
 
@@ -157,7 +163,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                 <span>{data.email_sponsor || 'SIN SPONSOR'}</span>
               </div>
               <div>
-                <span className="label">Pais</span>
+                <span className="label">País</span>
                 <span className="value">{data.country}</span>
               </div>
             </div>
@@ -186,8 +192,8 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                       {data.amount_btc ? (
                         data.amount_btc + 'BTC'
                       ) : (
-                        <i>SIN MONTO</i>
-                      )}
+                          <i>SIN MONTO</i>
+                        )}
                     </span>
                   </div>
                 </div>
@@ -214,8 +220,8 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                       {data.amount_eth ? (
                         data.amount_eth + 'ETH'
                       ) : (
-                        <i>SIN MONTO</i>
-                      )}
+                          <i>SIN MONTO</i>
+                        )}
                     </span>
                   </div>
                 </div>
@@ -223,13 +229,15 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
             </div>
 
             <section className="buttons-container">
-              <button
-                type="button"
-                className="button large"
-                onClick={() => showKYC(data.type_users)}
-              >
-                Ver KYC
-              </button>
+              {data.type_users && (
+                <button
+                  type="button"
+                  className="button large"
+                  onClick={() => showKYC(data.type_users)}
+                >
+                  Ver KYC
+                </button>
+              )}
 
               <div>
                 <Link
@@ -241,9 +249,8 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                 </Link>
 
                 <button
-                  className={`button ${
-                    data.status ? 'desactivate-user' : 'activate-user'
-                  }`}
+                  className={`button ${data.status ? 'desactivate-user' : 'activate-user'
+                    }`}
                   type="button"
                   onClick={onChangeUserStatus}
                 >
