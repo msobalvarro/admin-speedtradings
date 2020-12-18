@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
+import isEqual from 'lodash/isEqual'
+import axios from 'axios'
 
 //Import icons
 import { ReactComponent as CloseIcon } from '../../static/images/close.svg'
@@ -27,8 +29,13 @@ import { useSesionStorage } from '../../utils/hooks/useSesionStorage'
 import './KYCStyles.scss'
 
 const KYCPerson = ({ id = -1, onClickChangePage }) => {
+  //Constantes para abortar las peticiones AXIOS
+  const CancelToken = axios.CancelToken
+  const source = CancelToken.source()
+
   const KEY = `kyc-person-${id}`
   const [loader, setLoader] = useState(false)
+  const [showActionsButtons, setShowActionsButtons] = useState(false)
   const [dataKYC, setDataKYC] = useSesionStorage(KEY, {})
   const [showModalDeleteKYC, setShowModalDeleteKYC] = useState(false)
 
@@ -50,12 +57,16 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
   const TUTOR_TYPE = 1
 
   // Obtiene el KYC del usuario seleccionado
-  const fetchDetail = async () => {
+  const fetchDetail = async updating => {
     try {
-      setLoader(true)
+      setShowActionsButtons(false)
 
-      const { data } = await Petition.get(`/admin/kyc/${id}`, credentials)
-      console.log(data)
+      //En el caso que este actulizando los datos no mostrar el loader
+      !updating && setLoader(true)
+
+      const { data } = await Petition.get(`/admin/kyc/${id}`, credentials, {
+        cancelToken: source.token,
+      })
 
       if (Object.keys(data).length > 0) {
         //Obtener fotos
@@ -63,9 +74,11 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
           data.identificationPictureId,
           credentials
         )
+
         const profilePhoto = await readFile(data.profilePictureId, credentials)
 
-        setDataKYC({
+        console.log('Id del usuario: ', id)
+        const newKYC = {
           ...data,
           nationality: getCountry(data.nationality),
           countryResidence: getCountry(data.residence),
@@ -75,7 +88,12 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
           profilePhoto: data.profilePictureId
             ? URL.createObjectURL(profilePhoto)
             : DefaultPhoto,
-        })
+        }
+
+        const kycUpdated = isEqual(newKYC, dataKYC)
+
+        //Si hay diferencias actualizar el estado
+        !kycUpdated && setDataKYC(newKYC)
       } else {
         // El usuario no tiene KYC
         console.error(
@@ -88,9 +106,15 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
         throw String(data.message)
       }
     } catch (error) {
-      console.error(error)
-      Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+      if (axios.isCancel(error)) {
+        console.log('Request canceled', error.message)
+      } else {
+        // handle error
+        console.error(error)
+        Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+      }
     } finally {
+      setShowActionsButtons(true)
       setLoader(false)
     }
   }
@@ -191,8 +215,16 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
   useEffect(
     _ => {
       if (id !== -1) {
-        //Si este KYC es visto por primera vez hara la petición, en el caso de que encuentre datos en el local storage simplemente los mostrara
-        Object.keys(dataKYC).length === 0 && fetchDetail()
+        /*Si este KYC es visto por primera vez hara la petición,
+         *en el caso de que encuentre datos en el local storage
+         * los mostrara y comprobara si hay actualizaciones*/
+        Object.keys(dataKYC).length === 0
+          ? fetchDetail(false)
+          : fetchDetail(true)
+      }
+      // Devolvemos una función para abortar la petición AXIOS
+      return () => {
+        source.cancel('Operation canceled by the user.')
       }
     },
     [id]
@@ -234,18 +266,21 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
         <h1 className="person-name">
           {dataKYC?.fullname || 'Nombre de la persona'}
         </h1>
-        {!dataKYC.reviewed && (
+
+        {!dataKYC.reviewed && showActionsButtons && (
           <button className="button verify-button" onClick={confirmAction}>
             Marcar como verificado
           </button>
         )}
 
-        <button
-          className="button delete-button"
-          onClick={() => setShowModalDeleteKYC(true)}
-        >
-          Eliminar KYC
-        </button>
+        {showActionsButtons && (
+          <button
+            className="button delete-button"
+            onClick={() => setShowModalDeleteKYC(true)}
+          >
+            Eliminar KYC
+          </button>
+        )}
       </div>
 
       <div className="card-container">
@@ -432,16 +467,18 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
                   {relationship[dataKYC.beneficiary?.relationship]}
                 </p>
               </div>
-              <div className="label-group">
-                <button
-                  className="button large secondary"
-                  onClick={() =>
-                    handleClickShowBeneficiary(dataKYC?.beneficiary)
-                  }
-                >
-                  Ver más
-                </button>
-              </div>
+              {showActionsButtons && (
+                <div className="label-group">
+                  <button
+                    className="button large secondary"
+                    onClick={() =>
+                      handleClickShowBeneficiary(dataKYC?.beneficiary)
+                    }
+                  >
+                    Ver más
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

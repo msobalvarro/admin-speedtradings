@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import axios from 'axios'
 import Swal from 'sweetalert2'
 import './DetailRecords.scss'
 import UserIcon from '../UserIcon/UserIcon'
@@ -23,8 +24,11 @@ const ENTERPRISE_TYPE = 2
  * @param {Function} showKYC - Especificar KYC  a mostrar
  */
 const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
-  const { token } = useSelector(storage => storage.globalStorage)
+  //Constantes para abortar las peticiones AXIOS
+  const CancelToken = axios.CancelToken
+  const source = CancelToken.source()
 
+  const { token } = useSelector(storage => storage.globalStorage)
   const credentials = {
     headers: {
       'x-auth-token': token,
@@ -42,7 +46,10 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
 
       const { data: dataDetail } = await Petition.get(
         `/admin/records/${id}`,
-        credentials
+        credentials,
+        {
+          cancelToken: source.token,
+        }
       )
 
       if (dataDetail.error) {
@@ -51,8 +58,13 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
 
       setData(dataDetail)
     } catch (error) {
-      console.error(error)
-      Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+      if (axios.isCancel(error)) {
+        console.log('Request canceled', error.message)
+      } else {
+        // handle error
+        console.error(error)
+        Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+      }
     } finally {
       setLoader(false)
     }
@@ -115,6 +127,11 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
     _ => {
       if (id !== -1) {
         fetchDetail()
+
+        // Devolvemos una función para abortar la petición AXIOS
+        return () => {
+          source.cancel('Operation canceled by the user.')
+        }
       }
     },
     [id]

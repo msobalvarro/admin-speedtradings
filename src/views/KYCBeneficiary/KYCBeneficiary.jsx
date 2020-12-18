@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import isEqual from 'lodash/isEqual'
+
 //Import icons
 import { ReactComponent as BackIcon } from '../../static/images/arrow.svg'
 import DefaultPhoto from '../../static/images/placeholder-profile.jpg'
@@ -42,8 +44,8 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
 
   const [beneficiary, setBeneficiary] = useSesionStorage(KEY, {})
 
-  const fetchDetail = async () => {
-    setLoader(true)
+  const fetchDetail = async updating => {
+    !updating && setLoader(true)
 
     //Obtener fotos
     const identificationPhoto = await readFile(
@@ -53,7 +55,7 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
 
     const profilePhoto = await readFile(data.profilePictureId, credentials)
 
-    setBeneficiary({
+    const newBeneficiary = {
       ...data,
       nationality: getCountry(data.nationality),
       countryResidence: getCountry(data.residence),
@@ -63,7 +65,12 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
       profilePhoto: data.profilePictureId
         ? URL.createObjectURL(profilePhoto)
         : DefaultPhoto,
-    })
+    }
+
+    const beneficiaryNotUpdated = isEqual(newBeneficiary, beneficiary)
+
+    //Si hay diferencias actualizar el estado
+    !beneficiaryNotUpdated && setBeneficiary(newBeneficiary)
 
     setLoader(false)
   }
@@ -71,7 +78,9 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
   useEffect(
     _ => {
       if (data) {
-        Object.keys(beneficiary).length === 0 && fetchDetail()
+        Object.keys(beneficiary).length === 0
+          ? fetchDetail(false)
+          : fetchDetail(true)
       }
     },
     [data]

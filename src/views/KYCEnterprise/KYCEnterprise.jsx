@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
+import axios from 'axios'
+import isEqual from 'lodash/isEqual'
+
 //Import icons
 import { ReactComponent as CloseIcon } from '../../static/images/close.svg'
 
@@ -23,9 +26,14 @@ import { useSesionStorage } from '../../utils/hooks/useSesionStorage'
 import '../KYCPerson/KYCStyles.scss'
 
 const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
+  //Constantes para abortar las peticiones AXIOS
+  const CancelToken = axios.CancelToken
+  const source = CancelToken.source()
+
   const KEY = `kyc-enterprise-${id}`
   const USER_LIST_PAGE = 1
   const [loader, setLoader] = useState(false)
+  const [showActionsButtons, setShowActionsButtons] = useState(false)
   const [dataKYC, setDataKYC] = useSesionStorage(KEY, {})
   const [showModalDeleteKYC, setShowModalDeleteKYC] = useState(false)
 
@@ -83,17 +91,20 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
   }
 
   // Obtiene el KYC de la empresa seleccionada
-  const fetchDetail = async _ => {
+  const fetchDetail = async updating => {
     try {
-      setLoader(true)
+      setShowActionsButtons(false)
 
-      const { data } = await Petition.get(`/admin/kyc/${id}`, credentials)
+      //En el caso que este actulizando los datos no mostrar el loader
+      !updating && setLoader(true)
 
-      console.log(data)
+      const { data } = await Petition.get(`/admin/kyc/${id}`, credentials, {
+        cancelToken: source.token,
+      })
 
       // SI la empresa tiene KYC actualizamos el estado
       if (Object.keys(data).length > 0) {
-        setDataKYC({
+        const newKYC = {
           ...data,
           commercialCategory: commercialCategories[data?.commerceType],
           representativeOriginCountry: getCountry(
@@ -104,7 +115,12 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
           ),
 
           permanentCountryName: getCountry(data?.permanentCountry),
-        })
+        }
+
+        const kycUpdated = isEqual(newKYC, dataKYC)
+
+        //Si hay diferencias actualizar el estado
+        !kycUpdated && setDataKYC(newKYC)
       } else {
         // LA EMPRESA no tiene KYC
         console.error(
@@ -117,9 +133,15 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
         throw String(data.message)
       }
     } catch (error) {
-      console.error(error)
-      Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+      if (axios.isCancel(error)) {
+        console.log('Request canceled', error.message)
+      } else {
+        // handle error
+        console.error(error)
+        Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+      }
     } finally {
+      setShowActionsButtons(true)
       setLoader(false)
     }
   }
@@ -215,8 +237,16 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
   useEffect(
     _ => {
       if (id !== -1) {
-        //Si este KYC es visto por primera vez hara la petición, en el caso de que encuentre datos en el local storage simplemente los mostrara
-        Object.keys(dataKYC).length === 0 && fetchDetail()
+        /*Si este KYC es visto por primera vez hara la petición,
+         *en el caso de que encuentre datos en el local storage
+         * los mostrara y comprobara si hay actualizaciones*/
+        Object.keys(dataKYC).length === 0
+          ? fetchDetail(false)
+          : fetchDetail(true)
+      }
+      // Devolvemos una función para abortar la petición AXIOS
+      return () => {
+        source.cancel('Operation canceled by the user.')
       }
     },
     [id]
@@ -264,18 +294,20 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
           </h2>
         </div>
         <div className="actions-buttons">
-          {!dataKYC.reviewed && (
+          {!dataKYC?.reviewed && showActionsButtons && (
             <button className="button verify-button" onClick={confirmAction}>
               Marcar como verificado
             </button>
           )}
 
-          <button
-            className="button delete-button "
-            onClick={() => setShowModalDeleteKYC(true)}
-          >
-            Eliminar KYC
-          </button>
+          {showActionsButtons && (
+            <button
+              className="button delete-button "
+              onClick={() => setShowModalDeleteKYC(true)}
+            >
+              Eliminar KYC
+            </button>
+          )}
         </div>
 
         <div>
@@ -283,12 +315,12 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
           <div className="results-container">
             <div className="result-card">
               <span className="dimention">Cantidad</span>
-              <p className="metric">{dataKYC.commerceEstimateTransactions}</p>
+              <p className="metric">{dataKYC?.commerceEstimateTransactions}</p>
             </div>
             <div className="result-card">
               <span className="dimention">Valor total</span>
               <p className="metric">
-                USD$ {dataKYC.commerceEstimateTransactionsAmount}
+                USD$ {dataKYC?.commerceEstimateTransactionsAmount}
               </p>
             </div>
           </div>
@@ -344,12 +376,12 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
               <div className="label-group">
                 <span className="card-label">Documentos</span>
 
-                {dataKYC.commerceIdentificationPicture ? (
+                {dataKYC?.commerceIdentificationPicture ? (
                   <p
                     className="card-link"
                     onClick={() =>
                       getFile({
-                        id: dataKYC.commerceIdentificationPicture,
+                        id: dataKYC?.commerceIdentificationPicture,
                         title: dataKYC?.commerceIdentificationNumber,
                       })
                     }
@@ -360,11 +392,11 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
                   <Chip text="Negocio sin identificación" />
                 )}
 
-                {dataKYC.commerceCertificate ? (
+                {dataKYC?.commerceCertificate ? (
                   <p
                     className="card-link"
                     onClick={() =>
-                      getFile({ id: dataKYC.commerceCertificate, pdf: true })
+                      getFile({ id: dataKYC?.commerceCertificate, pdf: true })
                     }
                   >
                     Certificado / incorporación
@@ -373,11 +405,11 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
                   <Chip text="Negocio sin Certificado" />
                 )}
 
-                {dataKYC.commerceDirectors ? (
+                {dataKYC?.commerceDirectors ? (
                   <p
                     className="card-link"
                     onClick={() =>
-                      getFile({ id: dataKYC.commerceDirectors, pdf: true })
+                      getFile({ id: dataKYC?.commerceDirectors, pdf: true })
                     }
                   >
                     Lista de directores y accionistas
@@ -386,11 +418,11 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
                   <Chip text="Negocio sin directores ni accionistas" />
                 )}
 
-                {dataKYC.commerceDirectorsInfo ? (
+                {dataKYC?.commerceDirectorsInfo ? (
                   <p
                     className="card-link"
                     onClick={() =>
-                      getFile({ id: dataKYC.commerceDirectorsInfo, pdf: true })
+                      getFile({ id: dataKYC?.commerceDirectorsInfo, pdf: true })
                     }
                   >
                     Directores autorizados a firmar
@@ -399,12 +431,12 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
                   <Chip text="Negocio sin directores autorizados a firmar" />
                 )}
 
-                {dataKYC.commerceLegalCertificate ? (
+                {dataKYC?.commerceLegalCertificate ? (
                   <p
                     className="card-link"
                     onClick={() =>
                       getFile({
-                        id: dataKYC.commerceLegalCertificate,
+                        id: dataKYC?.commerceLegalCertificate,
                         pdf: true,
                       })
                     }
@@ -577,9 +609,9 @@ const KYCEnterprise = ({ id = -1, onClickChangePage }) => {
           Propietarios beneficiarios y agentes de control
         </h3>
         <div className="card-body">
-          {dataKYC.beneficiaries ? (
+          {dataKYC?.beneficiaries ? (
             <CollapsibleTable
-              beneficiaries={dataKYC.beneficiaries}
+              beneficiaries={dataKYC?.beneficiaries}
               showPhoto={getFile}
             />
           ) : (

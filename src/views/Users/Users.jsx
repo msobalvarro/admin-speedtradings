@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
 import moment from 'moment'
+import axios from 'axios'
+
 import './Users.scss'
 
 // Import components
@@ -15,6 +17,10 @@ import KYCEnterprise from '../../views/KYCEnterprise/KYCEnterprise'
 import { Petition } from '../../utils/constanst'
 
 const Users = () => {
+  //Constantes para abortar las peticiones AXIOS
+  const CancelToken = axios.CancelToken
+  const source = CancelToken.source()
+
   const { token } = useSelector(storage => storage.globalStorage)
   const credentials = {
     headers: {
@@ -50,7 +56,9 @@ const Users = () => {
     try {
       setLoader(true)
 
-      const { data } = await Petition.get('/admin/records/', credentials)
+      const { data } = await Petition.get('/admin/records/', credentials, {
+        cancelToken: source.token,
+      })
 
       if (data.error) {
         throw String(data.message)
@@ -58,8 +66,13 @@ const Users = () => {
 
       setAllUsers(data)
     } catch (error) {
-      console.error(error)
-      Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+      if (axios.isCancel(error)) {
+        console.log('Request canceled', error.message)
+      } else {
+        // handle error
+        console.error(error)
+        Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+      }
     } finally {
       setLoader(false)
     }
@@ -67,6 +80,11 @@ const Users = () => {
 
   useEffect(_ => {
     fetchData()
+
+    // Devolvemos una función para abortar la petición AXIOS
+    return () => {
+      source.cancel('Operation canceled by the user.')
+    }
   }, [])
 
   /**
