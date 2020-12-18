@@ -267,7 +267,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                     <span className="label">Monto Actual</span>
                     <span className="value">
                       {data.amount_eth ? (
-                        data.amount_eth.toFixed(8) + 'BTC'
+                        data.amount_eth.toFixed(8) + 'ETC'
                       ) : (
                         <i>SIN MONTO</i>
                       )}
