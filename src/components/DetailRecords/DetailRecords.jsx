@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
 import './DetailRecords.scss'
 import UserIcon from '../UserIcon/UserIcon'
@@ -23,14 +22,6 @@ const ENTERPRISE_TYPE = 2
  * @param {Function} showKYC - Especificar KYC  a mostrar
  */
 const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
-  const { token } = useSelector(storage => storage.globalStorage)
-
-  const credentials = {
-    headers: {
-      'x-auth-token': token,
-    },
-  }
-
   const [data, setData] = useState({})
   const [loader, setLoader] = useState(false)
   const [loaderFullScreen, setLoaderFullScreen] = useState(false)
@@ -40,11 +31,8 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
     try {
       setLoader(true)
 
-      const { data: dataDetail } = await Petition.get(
-        `/admin/records/${id}`,
-        credentials
-      )
-      console.log(dataDetail)
+      const { data: dataDetail } = await Petition.get(`/admin/records/${id}`)
+
       if (dataDetail.error) {
         throw String(dataDetail.message)
       }
@@ -71,11 +59,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
         active: !data.status,
       }
 
-      const result = await Petition.post(
-        '/admin/utils/activate-account',
-        user,
-        credentials
-      )
+      const result = await Petition.post('/admin/utils/activate-account', user)
 
       if (result.error) {
         throw String(result.message)

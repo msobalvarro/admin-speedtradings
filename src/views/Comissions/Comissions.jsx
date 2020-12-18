@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
 import "./Comissions.scss"
 
 // Import components
@@ -17,14 +16,6 @@ import { floor } from "lodash"
 
 
 const Comissions = () => {
-    // Credenciales de acceso para realizar las peticiones
-    const { token } = useSelector((storage) => storage.globalStorage)
-    const header = {
-        headers: {
-            "x-auth-token": token
-        }
-    }
-
     // Estado para almacenar el valor del texto de filtro
     const [filter, setFilter] = useState('')
 
@@ -54,7 +45,7 @@ const Comissions = () => {
         try {
             setLoaderList(true)
 
-            const { data } = await Petition.get('/admin/comission', header)
+            const { data } = await Petition.get('/admin/comission')
 
             if (data.error) {
                 throw String(data.message)
@@ -80,7 +71,7 @@ const Comissions = () => {
         try {
             setLoaderDetail(true)
 
-            const { data } = await Petition.get(`/admin/comission/${id}`, header)
+            const { data } = await Petition.get(`/admin/comission/${id}`)
 
             if (data.error) {
                 throw String(data.message)
@@ -146,7 +137,7 @@ const Comissions = () => {
                 hash: transactionHash.length > 0 ? transactionHash : null
             }
 
-            const { data: result } = await Petition.post('/admin/comission/accept', dataSend, header)
+            const { data: result } = await Petition.post('/admin/comission/accept', dataSend)
 
             if (result.error) {
                 throw String(result.message)
@@ -189,7 +180,7 @@ const Comissions = () => {
                 id: activeDetail
             }
 
-            const { data: result } = await Petition.post('/admin/comission/decline', dataSend, header)
+            const { data: result } = await Petition.post('/admin/comission/decline', dataSend)
 
             if (result.error) {
                 throw String(result.message)
@@ -255,8 +246,7 @@ const Comissions = () => {
                 responseType: 'arraybuffer',
                 headers: {
                     'Content-Disposition': "attachment; filename=template.xlsx",
-                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    "x-auth-token": token
+                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 }
             })
 

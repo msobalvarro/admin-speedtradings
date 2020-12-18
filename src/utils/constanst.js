@@ -182,7 +182,7 @@ export const setTittleDOM = (title = 'Back Office') => {
 export const randomKey = _ => '_' + Math.random().toString(36).substr(2, 9)
 
 /**Config Axios for petition automatic */
-export const Petition = Axios.create({
+const Petition = Axios.create({
     baseURL: urlServer,
     headers: {
         'Content-Type': 'application/json',
@@ -196,6 +196,30 @@ export const Petition = Axios.create({
         return status >= 200 && status < 300
     },
 })
+
+Petition.interceptors.request.use(config => {
+    const whiteListUrl = [
+        '/admin/payments/apply',
+        '/admin/trading'
+    ]
+
+    if (whiteListUrl.indexOf(config.url)) {
+        // Sí se consume el endpoint del trading, se configura el tiempo de espera en 30 min
+        config.timeout = (1000 * 60 * 30)
+    }
+
+    // Se añade el token de acceso antes de cada petición
+    config.headers = {
+        ...config.headers,
+        'x-auth-token': getStorage().token
+    }
+
+    return config
+})
+
+export {
+    Petition
+}
 
 /**Opciones para grafica diaria de dashboard */
 export const optionsChartDashboard = {
@@ -252,26 +276,26 @@ export const reducer = (state, action) => {
  * @param {File} file - Archivo a leer y retornar en base64
  */
 export const readFile = (fileId, credentials) =>
-  new Promise(async (resolve, _) => {
-    Petition.get(`/file-admin/${fileId}`, {
-      responseType: 'arraybuffer',
-      ...credentials,
+    new Promise(async (resolve, _) => {
+        Petition.get(`/file-admin/${fileId}`, {
+            responseType: 'arraybuffer',
+            ...credentials,
+        })
+            .then(({ data, headers }) => {
+                const blob = new Blob([data], { type: headers['content-type'] })
+                resolve(blob)
+            })
+            .catch(error => resolve({ error: true, message: error }))
     })
-      .then(({ data, headers }) => {
-        const blob = new Blob([data], { type: headers['content-type'] })
-        resolve(blob)
-      })
-      .catch(error => resolve({ error: true, message: error }))
-  })
 
 /**
  * Función para obtener el nombre de un pais pasandole el phone code
  * @param {Number} code - Codigo telefonico del pais ej. +505
  */
 export const getCountry = (code = -1) => {
-  if (code === -1) return
-  //Obtener nombre de la nacionalidad
-  const country = countries.filter(country => country.phoneCode === code)
+    if (code === -1) return
+    //Obtener nombre de la nacionalidad
+    const country = countries.filter(country => country.phoneCode === code)
 
-  return country[0].name
+    return country[0].name
 }

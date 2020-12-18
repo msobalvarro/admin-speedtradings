@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import Swal from 'sweetalert2'
-import { useSelector } from 'react-redux'
 
 // Import components
 import ActivityIndicator from "../ActivityIndicator/Activityindicator"
@@ -16,13 +15,6 @@ import { copyData, Petition, Moment } from "../../utils/constanst"
  * @param {Callback} onRemove -función a ejecutar luego de aceptar/rechazar una solicitud 
  */
 const DetailExchangeRequest = ({ data = {}, onRemove = _ => { } }) => {
-    const { token } = useSelector(storage => storage.globalStorage)
-    const credentials = {
-        headers: {
-            'x-auth-token': token
-        }
-    }
-
     const [loader, setLoader] = useState(false)
     // Estado que muestra la ventana de confirmacion de rechazo
     const [declineConfirm, setDeclineConfirm] = useState(false)
@@ -51,7 +43,7 @@ const DetailExchangeRequest = ({ data = {}, onRemove = _ => { } }) => {
                 hash: _hashExchangeRequest,
             }
 
-            const { data: dataResult } = await Petition.post("/exchange/accept", previousData, credentials)
+            const { data: dataResult } = await Petition.post("/exchange/accept", previousData)
 
             if (dataResult.error) {
                 throw String(dataResult.message)
@@ -84,7 +76,7 @@ const DetailExchangeRequest = ({ data = {}, onRemove = _ => { } }) => {
                 reason: _reasonDecline,
             }
 
-            const { data: dataResult } = await Petition.post("/exchange/decline", previousData, credentials)
+            const { data: dataResult } = await Petition.post("/exchange/decline", previousData)
 
             if (dataResult.error) {
                 throw String(dataResult.message)

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react"
 import { useSelector, useDispatch } from 'react-redux'
 import { NavLink, useLocation } from "react-router-dom"
+import Lottie from "lottie-react-web"
 import { LogOut } from "../../utils/constanst"
 
 // Import Assets

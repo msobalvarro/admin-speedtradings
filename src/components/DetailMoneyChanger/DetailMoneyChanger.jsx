@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
 
 // Import utils
@@ -15,13 +14,6 @@ import EmptyIndicator from '../EmptyIndicator/EmptyIndicator'
  * @param {Callback} onRemove - función a ejecutar luego que una solicitud es aceptada/rechazada 
  */
 const DetailMoneyChanger = ({ data = {}, onRemove = _ => { } }) => {
-    const { token } = useSelector(storage => storage.globalStorage)
-    const credentials = {
-        headers: {
-            'x-auth-token': token
-        }
-    }
-
     const [loader, setLoader] = useState(false)
 
     const [declineConfirm, setDeclineConfirm] = useState(false)
@@ -69,7 +61,7 @@ const DetailMoneyChanger = ({ data = {}, onRemove = _ => { } }) => {
                 hash: _hashMoneyChangerRequest
             }
 
-            const { data: dataMoneyChanger } = await Petition.post("/money-changer/accept", { data: dataParams }, credentials)
+            const { data: dataMoneyChanger } = await Petition.post("/money-changer/accept", { data: dataParams })
 
             if (dataMoneyChanger.error) {
                 // Verificamos si el server retorna un error
@@ -108,7 +100,7 @@ const DetailMoneyChanger = ({ data = {}, onRemove = _ => { } }) => {
                 reason: reasonDecline,
             }
 
-            const { data: dataMoneyChanger } = await Petition.post("/money-changer/decline", dataParams, credentials)
+            const { data: dataMoneyChanger } = await Petition.post("/money-changer/decline", dataParams)
 
             if (dataMoneyChanger.error) {
                 // Verificamos si en la respuesta del servidor hay errores

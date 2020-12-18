@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import Swal from 'sweetalert2'
-import { useSelector } from "react-redux"
 
 // Import components
 import ActivityIndicator from "../ActivityIndicator/Activityindicator"
@@ -16,13 +15,6 @@ import { copyData, Petition } from "../../utils/constanst"
  * @param {Callback} onRemove - función a ejecutar luego de aceptar/rechazar una solicitud
  */
 const DetailUpgrade = ({ id = -1, onRemove = _ => { } }) => {
-    const { token } = useSelector((storage) => storage.globalStorage)
-    const credentials = {
-        headers: {
-            "x-auth-token": token
-        }
-    }
-
     const [data, setData] = useState({})
     const [loader, setLoader] = useState(false)
 
@@ -32,7 +24,7 @@ const DetailUpgrade = ({ id = -1, onRemove = _ => { } }) => {
             setLoader(true)
 
             // get data for petition
-            const { data } = await Petition.post('/admin/upgrades/id', { id }, credentials)
+            const { data } = await Petition.post('/admin/upgrades/id', { id })
 
             if (data.error) {
                 throw data.message
@@ -60,7 +52,7 @@ const DetailUpgrade = ({ id = -1, onRemove = _ => { } }) => {
     const onAccept = async _ => {
         try {
 
-            const { data: dataResult } = await Petition.post('/admin/upgrades/accept', { data }, credentials)
+            const { data: dataResult } = await Petition.post('/admin/upgrades/accept', { data })
 
             if (dataResult.error) {
                 throw String(dataResult.message)
@@ -101,7 +93,6 @@ const DetailUpgrade = ({ id = -1, onRemove = _ => { } }) => {
                     setLoader(true)
 
                     const { data } = await Petition.delete('/admin/upgrades/decline', {
-                        ...credentials,
                         data: { id },
                     })
 

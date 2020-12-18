@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import Swal from 'sweetalert2'
-import { useSelector } from "react-redux"
 import "./DetailRequest.scss"
 
 // Import components
@@ -15,13 +14,6 @@ import { copyData, Petition } from "../../utils/constanst"
  * @param {Callback} onRemove - función a ejecutar cuando se rechaza un registro
  */
 const DetailRequest = ({ id = -1, onRemove = _ => { } }) => {
-    const { token } = useSelector((storage) => storage.globalStorage)
-    const credentials = {
-        headers: {
-            "x-auth-token": token
-        }
-    }
-
     const [loader, setLoader] = useState(false)
     const [data, setData] = useState({})
 
@@ -32,7 +24,7 @@ const DetailRequest = ({ id = -1, onRemove = _ => { } }) => {
             setLoader(true)
 
             // get data for petition
-            const { data } = await Petition.get(`/admin/request/details/${id}`, credentials)
+            const { data } = await Petition.get(`/admin/request/details/${id}`)
 
             if (data.error) {
                 throw data.message
@@ -59,7 +51,7 @@ const DetailRequest = ({ id = -1, onRemove = _ => { } }) => {
         try {
             setLoader(true)
 
-            const { data: dataResult } = await Petition.post('/admin/request/accept', { data }, credentials)
+            const { data: dataResult } = await Petition.post('/admin/request/accept', { data })
 
             if (dataResult.error) {
                 throw String(dataResult.message)
@@ -97,7 +89,6 @@ const DetailRequest = ({ id = -1, onRemove = _ => { } }) => {
                     setLoader(true)
 
                     const { data } = await Petition.delete('/admin/request/decline', {
-                        ...credentials,
                         data: { id }
                     })
 

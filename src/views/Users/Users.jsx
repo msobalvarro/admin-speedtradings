@@ -5,6 +5,9 @@ import moment from 'moment'
 import './Users.scss'
 
 // Import components
+import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
+import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
+import ConfirmPassword from '../../components/ConfirmPassword/ConfirmPassword'
 import RecordsList from '../../components/RecordsList/RecordsList'
 import DetailRecords from '../../components/DetailRecords/DetailRecords'
 import KYCPerson from '../../views/KYCPerson/KYCPerson'
@@ -29,10 +32,12 @@ const Users = () => {
   // Estado que almacena la fecha con la que generarán los reportes
   const [dateReport, setDateReport] = useState(
     window.sessionStorage.getItem('date_report') ||
-      moment(new Date()).format('YYYY-MM')
+    moment(new Date()).format('YYYY-MM')
   )
   // Estado que almacena el status del indicador de carga
   const [loader, setLoader] = useState(false)
+  // Estado que indica sí se visualiza o no el modal de confirmar contraseña
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const USER_LIST_PAGE = 1
   const KYC_PERSON_PAGE = 2
@@ -64,6 +69,12 @@ const Users = () => {
       setLoader(false)
     }
   }
+
+  /**
+   * Invoca el controlador para enviar a los usuarios los reportes 
+   * @param {String} password - contraseña root admin 
+   */
+  const sendReportsUser = async password => { }
 
   useEffect(_ => {
     fetchData()
@@ -141,6 +152,8 @@ const Users = () => {
                   }
                 }}
               />
+
+              <button className='button'>Enviar estados de cuenta</button>
             </div>
           </header>
 
@@ -181,6 +194,11 @@ const Users = () => {
           onClickChangePage={onClickChangePage}
         />
       )}
+
+      {
+        showConfirmPassword &&
+        <ConfirmPassword />
+      }
     </div>
   )
 }
