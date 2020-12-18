@@ -7,6 +7,7 @@ import axios from 'axios'
 //Import icons
 import { ReactComponent as CloseIcon } from '../../static/images/close.svg'
 import DefaultPhoto from '../../static/images/placeholder-profile.jpg'
+import { ReactComponent as ReviewedIcon } from '../../static/images/checked.svg'
 
 //Import components
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
@@ -70,22 +71,23 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
 
       if (Object.keys(data).length > 0) {
         //Obtener fotos
-        const identificationPhoto = await readFile(
-          data.identificationPictureId,
-          credentials
-        )
+        const identificationPhoto =
+          data.identificationPictureId &&
+          (await readFile(data.identificationPictureId, credentials))
 
-        const profilePhoto = await readFile(data.profilePictureId, credentials)
+        const profilePhoto =
+          data.profilePictureId &&
+          (await readFile(data.profilePictureId, credentials))
 
         console.log('Id del usuario: ', id)
         const newKYC = {
           ...data,
           nationality: getCountry(data.nationality),
           countryResidence: getCountry(data.residence),
-          identificationPhoto: data.identificationPictureId
+          identificationPhoto: identificationPhoto
             ? URL.createObjectURL(identificationPhoto)
             : DefaultPhoto,
-          profilePhoto: data.profilePictureId
+          profilePhoto: profilePhoto
             ? URL.createObjectURL(profilePhoto)
             : DefaultPhoto,
         }
@@ -321,9 +323,16 @@ const KYCPerson = ({ id = -1, onClickChangePage }) => {
               </div>
               <div className="label-group">
                 <span className="card-label">Estado</span>
-                <p className="card-value">
-                  {dataKYC.reviewed < 1 ? 'Sin verificar' : 'Verificado'}
-                </p>
+                <div className="card-value">
+                  {Boolean(Number(dataKYC.reviewed)) ? (
+                    <div className="reviewed-container">
+                      <ReviewedIcon fill="#2e8b12" className="icon" />
+                      <span>Verificado</span>
+                    </div>
+                  ) : (
+                    'Pendiente'
+                  )}
+                </div>
               </div>
             </div>
 

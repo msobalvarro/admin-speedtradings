@@ -48,24 +48,27 @@ const KYCBeneficiary = ({ data, onClickChangePage }) => {
     !updating && setLoader(true)
 
     //Obtener fotos
-    const identificationPhoto = await readFile(
-      data.indentificationPictureId,
-      credentials
-    )
+    const identificationPhoto =
+      data.indentificationPictureId &&
+      (await readFile(data.indentificationPictureId, credentials))
 
-    const profilePhoto = await readFile(data.profilePictureId, credentials)
+    const profilePhoto =
+      data.profilePictureId &&
+      (await readFile(data.profilePictureId, credentials))
 
     const newBeneficiary = {
       ...data,
       nationality: getCountry(data.nationality),
       countryResidence: getCountry(data.residence),
-      identificationPhoto: data.indentificationPictureId
+      identificationPhoto: identificationPhoto
         ? URL.createObjectURL(identificationPhoto)
         : DefaultPhoto,
-      profilePhoto: data.profilePictureId
+      profilePhoto: profilePhoto
         ? URL.createObjectURL(profilePhoto)
         : DefaultPhoto,
     }
+
+    console.log(newBeneficiary)
 
     const beneficiaryNotUpdated = isEqual(newBeneficiary, beneficiary)
 
