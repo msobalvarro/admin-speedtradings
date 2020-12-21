@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
 import { Petition } from "../../utils/constanst"
 
 // Import styles and assets
 import "./Logs.scss"
 
 const Logs = () => {
-    const { token } = useSelector(store => store.globalStorage)
     const [dataLogs, setLogs] = useState([])
     const [filter, setFilter] = useState('')
 
     useEffect(() => {
-        Petition.get("/logs", {
-            headers: {
-                "x-auth-token": token
-            }
-        })
+        Petition.get("/logs")
             .then(({ data, status }) => {
                 if (status === 200) {
                     // Verificamos si hay logs

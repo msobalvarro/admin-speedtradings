@@ -3,8 +3,6 @@ import ReactQuill from "react-quill"
 import "../../static/react-quill-snow.css"
 import "./Mail.scss"
 
-// Constant and redux store
-import { useSelector } from "react-redux"
 import {
     Petition,
     randomKey,
@@ -88,7 +86,7 @@ const toolbarFormats = [
  * @param {Object} credentials - objeto con las credenciales de acceso al server 
  * @param {Callback} loaderState - callback para modificar el valor del estado de carga
  */
-const editorImageHandler = (editor, credentials, loaderState) => {
+const editorImageHandler = (editor, loaderState) => {
     const input = document.createElement('input')
 
     input.setAttribute('type', 'file')
@@ -103,8 +101,7 @@ const editorImageHandler = (editor, credentials, loaderState) => {
 
             datasender.append('image', file)
 
-            const { data } = await Petition.post('/file-admin/email', datasender, credentials)
-            console.log(data)
+            const { data } = await Petition.post('/file-admin/email', datasender)
 
             if (data.error) {
                 throw String(data.message)
@@ -126,14 +123,6 @@ const editorImageHandler = (editor, credentials, loaderState) => {
 
 const Mail = () => {
     const [state, dispatch] = useReducer(reducer, initialState)
-
-    // get token auth from redux
-    const { token } = useSelector(x => x.globalStorage)
-    const header = {
-        headers: {
-            "x-auth-token": token
-        }
-    }
 
     // Estado que almacena todos los correos
     const [allEmails, setEmails] = useState([])
@@ -157,7 +146,7 @@ const Mail = () => {
     /**Metodo que obtiene todos los datos del servidor (emails) */
     const getData = async () => {
         try {
-            const { data } = await Petition.get("/admin/email/all", header)
+            const { data } = await Petition.get("/admin/email/all")
 
             if (data.error) {
                 throw String(data.message)
@@ -170,7 +159,7 @@ const Mail = () => {
             editorRef.current
                 .getEditor()
                 .getModule('toolbar')
-                .addHandler('image', _ => editorImageHandler(editorRef.current, header, setUploading))
+                .addHandler('image', _ => editorImageHandler(editorRef.current, setUploading))
         }
     }
 
@@ -395,13 +384,7 @@ const Mail = () => {
                 emails
             }
 
-            const header = {
-                headers: {
-                    "x-auth-token": token
-                }
-            }
-
-            const { data } = await Petition.post("/admin/email/send", dataSend, header)
+            const { data } = await Petition.post("/admin/email/send", dataSend)
 
             // Revisamos si hay mensaje de error de parte del server
             if (data.error) {

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import axios from 'axios'
 import Swal from 'sweetalert2'
 import './DetailRecords.scss'
 import UserIcon from '../UserIcon/UserIcon'
 
 // import utils
-import { Petition, copyData } from '../../utils/constanst'
+import { Petition, copyData, Moment, floor } from '../../utils/constanst'
 
 // Import components
 import Modal from '../../components/Modal/Modal'
@@ -23,13 +23,9 @@ const ENTERPRISE_TYPE = 2
  * @param {Function} showKYC - Especificar KYC  a mostrar
  */
 const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
-  const { token } = useSelector(storage => storage.globalStorage)
-
-  const credentials = {
-    headers: {
-      'x-auth-token': token,
-    },
-  }
+  //Constantes para abortar las peticiones AXIOS
+  const CancelToken = axios.CancelToken
+  const source = CancelToken.source()
 
   const [data, setData] = useState({})
   const [loader, setLoader] = useState(false)
@@ -40,10 +36,9 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
     try {
       setLoader(true)
 
-      const { data: dataDetail } = await Petition.get(
-        `/admin/records/${id}`,
-        credentials
-      )
+      const { data: dataDetail } = await Petition.get(`/admin/records/${id}`, {
+        cancelToken: source.token,
+      })
 
       if (dataDetail.error) {
         throw String(dataDetail.message)
@@ -51,8 +46,13 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
 
       setData(dataDetail)
     } catch (error) {
-      console.error(error)
-      Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+      if (axios.isCancel(error)) {
+        console.log('Request canceled', error.message)
+      } else {
+        // handle error
+        console.error(error)
+        Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+      }
     } finally {
       setLoader(false)
     }
@@ -71,11 +71,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
         active: !data.status,
       }
 
-      const result = await Petition.post(
-        '/admin/utils/activate-account',
-        user,
-        credentials
-      )
+      const result = await Petition.post('/admin/utils/activate-account', user)
 
       if (result.error) {
         throw String(result.message)
@@ -115,6 +111,11 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
     _ => {
       if (id !== -1) {
         fetchDetail()
+
+        // Devolvemos una función para abortar la petición AXIOS
+        return () => {
+          source.cancel('Operation canceled by the user.')
+        }
       }
     },
     [id]
@@ -122,10 +123,16 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
 
   return (
     <div className="DetailRecords">
-      {loader && <ActivityIndicator size={48} />}
+      {loader && (
+        <div className="center-element">
+          <ActivityIndicator size={48} />
+        </div>
+      )}
 
       {!loader && id === -1 && (
-        <EmptyIndicator message="Sin usuario para mostrar" />
+        <div className="center-element">
+          <EmptyIndicator message="Sin usuario para mostrar" />
+        </div>
       )}
 
       {!loader && Object.keys(data).length > 0 && (
@@ -148,7 +155,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
               </div>
 
               <div>
-                <span className="label">Telefono</span>
+                <span className="label">Teléfono</span>
                 <span className="value">{data.phone}</span>
               </div>
 
@@ -157,7 +164,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                 <span>{data.email_sponsor || 'SIN SPONSOR'}</span>
               </div>
               <div>
-                <span className="label">Pais</span>
+                <span className="label">País</span>
                 <span className="value">{data.country}</span>
               </div>
             </div>
@@ -166,10 +173,56 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
 
             <div className="plan-container">
               <div className="plan-item">
-                <h4 className="plan-title">Plan bitcoin</h4>
+                <div className="name-and-date">
+                  <h4 className="plan-title">Plan bitcoin</h4>
+                  {data.date_plan_btc && (
+                    <h5 className="plan-title">
+                      <Moment date={data.date_plan_btc} format="DD-MM-YYYY" />
+                    </h5>
+                  )}
+                </div>
                 <hr className="divisor" />
 
+                <div className="results">
+                  <div className="result-card">
+                    <span className="label">Monto Actual</span>
+                    <span className="value">
+                      {
+                        data.amount_btc
+                          ? `${floor(data.amount_btc, 8)} BTC`
+                          : <i>SIN MONTO</i>
+                      }
+                    </span>
+                  </div>
+                  <div className="result-card">
+                    <span className="label">Monto a duplicar</span>
+                    <span className="value">
+                      {
+                        data.amount_duplicate_btc
+                          ? `${floor(data.amount_duplicate_btc, 8)} BTC`
+                          : <i>SIN MONTO</i>
+                      }
+                    </span>
+                  </div>
+                  <div className="result-card">
+                    <span className="label">Porcentaje</span>
+                    <span className="value">
+                      {
+                        data.percentage_btc
+                          ? `${data.percentage_btc} %`
+                          : <i>SIN DATOS</i>
+                      }
+                    </span>
+                  </div>
+                </div>
+
                 <div className="wallet-container">
+                  <div>
+                    <span className="label">Retiros</span>
+                    <span className="value">
+                      {data.withdrawals_btc || 'SIN DATOS'}
+                    </span>
+                  </div>
                   <div>
                     <span className="label">Wallet</span>
                     <span
@@ -179,25 +232,60 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                       {data.wallet_btc || 'SIN WALLET'}
                     </span>
                   </div>
-
-                  <div className="amount-card">
-                    <span className="label">Monto Actual</span>
-                    <span className="value">
-                      {data.amount_btc ? (
-                        data.amount_btc + 'BTC'
-                      ) : (
-                          <i>SIN MONTO</i>
-                        )}
-                    </span>
-                  </div>
                 </div>
               </div>
 
               <div className="plan-item">
-                <h4 className="plan-title">Plan ethereum</h4>
+                <div className="name-and-date">
+                  <h4 className="plan-title">Plan ethereum</h4>
+                  {data.date_plan_eth && (
+                    <h5 className="plan-title">
+                      <Moment date={data.date_plan_eth} format="DD-MM-YYYY" />
+                    </h5>
+                  )}
+                </div>
                 <hr className="divisor" />
 
+                <div className="results">
+                  <div className="result-card">
+                    <span className="label">Monto Actual</span>
+                    <span className="value">
+                      {
+                        data.amount_eth
+                          ? `${floor(data.amount_eth, 8)} ETC`
+                          : <i>SIN MONTO</i>
+                      }
+                    </span>
+                  </div>
+                  <div className="result-card">
+                    <span className="label">Monto a duplicar</span>
+                    <span className="value">
+                      {
+                        data.amount_duplicate_eth
+                          ? `${floor(data.amount_duplicate_eth, 8)} ETC`
+                          : <i>SIN MONTO</i>
+                      }
+                    </span>
+                  </div>
+                  <div className="result-card">
+                    <span className="label">Porcentaje</span>
+                    <span className="value">
+                      {
+                        data.percentage_eth
+                          ? `${data.percentage_eth} %`
+                          : <i>SIN DATOS</i>
+                      }
+                    </span>
+                  </div>
+                </div>
+
                 <div className="wallet-container">
+                  <div>
+                    <span className="label">Retiros</span>
+                    <span className="value">
+                      {data.withdrawals_eth || 'SIN DATOS'}
+                    </span>
+                  </div>
                   <div>
                     <span className="label">Wallet</span>
                     <span
@@ -211,11 +299,11 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                   <div className="amount-card">
                     <span className="label">Monto Actual</span>
                     <span className="value">
-                      {data.amount_eth ? (
-                        data.amount_eth + 'ETH'
-                      ) : (
-                          <i>SIN MONTO</i>
-                        )}
+                      {
+                        data.amount_eth
+                          ? `${floor(data.amount_eth, 8)} ETH`
+                          : <i>SIN MONTO</i>
+                      }
                     </span>
                   </div>
                 </div>
@@ -223,13 +311,15 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
             </div>
 
             <section className="buttons-container">
-              <button
-                type="button"
-                className="button large"
-                onClick={() => showKYC(data.type_users)}
-              >
-                Ver KYC
-              </button>
+              {data.type_users && (
+                <button
+                  type="button"
+                  className="button large"
+                  onClick={() => showKYC(data.type_users)}
+                >
+                  Ver KYC
+                </button>
+              )}
 
               <div>
                 <Link
@@ -252,14 +342,17 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
             </section>
           </div>
         </>
-      )}
+      )
+      }
 
-      {loaderFullScreen && (
-        <Modal persist={true} onlyChildren>
-          <ActivityIndicator size={64} />
-        </Modal>
-      )}
-    </div>
+      {
+        loaderFullScreen && (
+          <Modal persist={true} onlyChildren>
+            <ActivityIndicator size={64} />
+          </Modal>
+        )
+      }
+    </div >
   )
 }
 

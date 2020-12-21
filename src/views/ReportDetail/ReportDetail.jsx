@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 import moment from 'moment'
 import './ReportDetail.scss'
 
@@ -112,13 +111,6 @@ const summaryItem = (item) => (
 
 // vista de los reportes
 const ReportDetail = () => {
-    const { token } = useSelector(storage => storage.globalStorage)
-    const credentials = {
-        headers: {
-            'x-auth-token': token
-        }
-    }
-
     const { id } = useParams()
     const QueryParams = useQueryParams()
     const [loader, setLoader] = useState(false)
@@ -160,7 +152,7 @@ const ReportDetail = () => {
                 date: dateReport
             }
 
-            const { data } = await Petition.post('/admin/reports-users', dataSend, credentials)
+            const { data } = await Petition.post('/admin/reports-users', dataSend)
 
             if (data.error) {
                 throw String(data.message)

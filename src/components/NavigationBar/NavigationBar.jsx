@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react"
 import { useSelector, useDispatch } from 'react-redux'
-import { BrowserRouter, NavLink, useLocation } from "react-router-dom"
+import { NavLink, useLocation } from "react-router-dom"
 import Lottie from "lottie-react-web"
 import { LogOut } from "../../utils/constanst"
 

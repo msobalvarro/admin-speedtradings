@@ -38,12 +38,7 @@ import DetailMoneyChanger from "../../components/DetailMoneyChanger/DetailMoneyC
 
 
 const Records = () => {
-    const { token, socketEvents } = useSelector((storage) => storage.globalStorage)
-    const header = {
-        headers: {
-            "x-auth-token": token
-        }
-    }
+    const { socketEvents } = useSelector((storage) => storage.globalStorage)
 
     const socket = useSelector(storage => storage.socket)
 
@@ -124,7 +119,7 @@ const Records = () => {
 
     // Obtiene todas las solicitudes `allExchange` para obtener
     const getAllRequest = async () => {
-        const { data } = await Petition.get('/admin/request/', header)
+        const { data } = await Petition.get('/admin/request/')
 
         if (data.error) {
             Swal.fire('Ha ocurrido un error', data.message, 'error')
@@ -135,7 +130,7 @@ const Records = () => {
 
     // Obtiene todas las solicitudes de Upgrades
     const getAllUpgrades = async () => {
-        const { data } = await Petition.get('/admin/upgrades', header)
+        const { data } = await Petition.get('/admin/upgrades')
 
         if (data.error) {
             Swal.fire('Ha ocurrido un error', data.message, 'error')
@@ -146,7 +141,7 @@ const Records = () => {
 
     // Obtiene todas las solcitudes de intercambio exchange
     const getAllExchange = async () => {
-        const { data } = await Petition.get('/exchange', header)
+        const { data } = await Petition.get('/exchange')
 
         if (data.error) {
             Swal.fire('Ha ocurrido un error', data.message, 'error')
@@ -157,7 +152,7 @@ const Records = () => {
 
     // Obtiene todas las solcitudes de compra y venta en Money Changer
     const getAllMoneyChanger = async () => {
-        const { data } = await Petition.get('/money-changer', header)
+        const { data } = await Petition.get('/money-changer')
 
         if (data.error) {
             Swal.fire('Ha ocurrido un error', data.message, 'error')
@@ -309,13 +304,13 @@ const Records = () => {
                     password
                 }
                 console.log('petition apply trading')
-                const { data: result, status } = await Petition.post('/admin/trading', dataSend, header)
+                const { data: result, status } = await Petition.post('/admin/trading', dataSend)
 
                 if (result.error) {
                     throw String(result.message)
                 }
 
-                if (status === 200 && result.response === 'success') {
+                if (status === 200 && result.response === "success") {
                     // Copiamos el arreglo de las cryptos procesadas
                     const arr = dataTrading.crypto
                     arr.push(cryptoCurrency)
@@ -376,8 +371,7 @@ const Records = () => {
                 responseType: 'arraybuffer',
                 headers: {
                     'Content-Disposition': "attachment; filename=template.xlsx",
-                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    "x-auth-token": token
+                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 }
             })
 
@@ -387,7 +381,7 @@ const Records = () => {
 
             downloadReport(data, `${filename}-${reportFromDate}_${reportToDate}.xlsx`)
         } catch (error) {
-            Swal.fire("AlyExchange", error.toString(), "error")
+            Swal.fire("Obtener Reporte", error.toString(), "error")
         } finally {
             setLoaderReportDownload(false)
         }

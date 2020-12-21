@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './Configuration.scss'
 
-// Constant and redux store
-import { useSelector } from "react-redux"
-
 // Import components
 import UploadFile from '../../components/UploadFile/UploadFile'
 import Swal from "sweetalert2"
@@ -15,14 +12,6 @@ import { Petition, randomKey } from '../../utils/constanst'
 
 
 const Configuration = () => {
-    // get token auth from redux
-    const { token } = useSelector(x => x.globalStorage)
-    const credentials = {
-        headers: {
-            "x-auth-token": token
-        }
-    }
-
     const [termsList, setTermsList] = useState([])
     const [nameTerm, setNameTerm] = useState('')
     const [descriptionTerm, setDescriptionTerm] = useState('')
@@ -52,7 +41,7 @@ const Configuration = () => {
         try {
             setLoader(true)
 
-            const { data } = await Petition.get('/terms/list', credentials)
+            const { data } = await Petition.get('/terms/list')
 
             if (data.error) {
                 throw String(data.message)
@@ -78,7 +67,7 @@ const Configuration = () => {
             dataSend.append('description', descriptionTerm)
             //dataSend.append('file', file)
 
-            const { data } = await Petition.post('/terms/add', dataSend, credentials)
+            const { data } = await Petition.post('/terms/add', dataSend)
 
             if (data.error) {
                 throw String(data.message)
