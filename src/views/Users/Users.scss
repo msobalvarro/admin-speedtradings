@@ -33,8 +33,8 @@
       border-radius: 7px;
       min-height: 500px;
       height: calc(100vh - 5rem);
-      max-height: 800px;
-      min-height: 800px;
+      max-height: 950px;
+      min-height: 950px;
     }
 
     .content-list {
@@ -42,8 +42,11 @@
       overflow: hidden;
       .sub-header {
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
+        flex-direction: column;
+        & .title-and-caption {
+          display: flex;
+          justify-content: space-between;
+        }
         color: $colorYellow;
         padding: 1rem;
         padding-bottom: 0;
@@ -51,6 +54,29 @@
 
       .table {
         max-height: calc(100% - 4.5rem);
+      }
+    }
+
+    .filters-container {
+      & .filter-title {
+        color: #fff;
+      }
+
+      margin-top: 16px;
+      & .filters {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+
+        & input,
+        select {
+          width: 100%;
+        }
+        grid-gap: 16px;
+      }
+
+      & .filter-label {
+        display: block;
+        padding: 8px 0;
       }
     }
 
@@ -152,10 +178,8 @@
 }
 
 .caption-container {
-  width: 100%;
-  padding: 16px;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-end;
   & .icon {
     width: 18px;
@@ -189,4 +213,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.reviewed-container {
+  color: #2e8b12;
+  & .icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+  }
 }
