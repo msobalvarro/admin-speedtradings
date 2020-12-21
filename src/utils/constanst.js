@@ -201,7 +201,8 @@ const Petition = Axios.create({
 Petition.interceptors.request.use(config => {
     const whiteListUrl = [
         '/admin/payments/apply',
-        '/admin/trading'
+        '/admin/trading',
+        '/admin/reports-users/delivery'
     ]
 
     if (whiteListUrl.indexOf(config.url)) {

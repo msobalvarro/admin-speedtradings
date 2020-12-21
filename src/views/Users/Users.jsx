@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import Swal from 'sweetalert2'
 import moment from 'moment'
 import axios from 'axios'
@@ -7,8 +6,6 @@ import axios from 'axios'
 import './Users.scss'
 
 // Import components
-import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
-import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
 import ConfirmPassword from '../../components/ConfirmPassword/ConfirmPassword'
 import RecordsList from '../../components/RecordsList/RecordsList'
 import DetailRecords from '../../components/DetailRecords/DetailRecords'
@@ -23,13 +20,6 @@ const Users = () => {
   //Constantes para abortar las peticiones AXIOS
   const CancelToken = axios.CancelToken
   const source = CancelToken.source()
-
-  const { token } = useSelector(storage => storage.globalStorage)
-  const credentials = {
-    headers: {
-      'x-auth-token': token,
-    },
-  }
 
   // Estado que almacena la lista de los usuarios
   const [allUsers, setAllUsers] = useState([])
@@ -61,7 +51,7 @@ const Users = () => {
     try {
       setLoader(true)
 
-      const { data } = await Petition.get('/admin/records/', credentials, {
+      const { data } = await Petition.get('/admin/records/', {
         cancelToken: source.token,
       })
 
@@ -87,7 +77,31 @@ const Users = () => {
    * Invoca el controlador para enviar a los usuarios los reportes 
    * @param {String} password - contraseña root admin 
    */
-  const sendReportsUser = async password => { }
+  const sendReportsUser = async password => {
+    try {
+      const dataSend = {
+        password,
+        date: dateReport
+      }
+
+      const { data } = await Petition.post('/admin/reports-users/delivery', dataSend)
+
+      if (data.error) {
+        throw String(data.message)
+      }
+
+      Swal.fire(
+        'Trading procesado',
+        'Todos los reportes de estado de cuenta fueron envíados',
+        'success'
+      )
+    } catch (error) {
+      console.error(error)
+      Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+    } finally {
+      setShowConfirmPassword(false)
+    }
+  }
 
   useEffect(_ => {
     fetchData()
@@ -165,13 +179,20 @@ const Users = () => {
                   const { value } = e.target
 
                   if (value) {
-                    setDateReport(value)
+                    const _reportDate = moment(value).format('YYYY-MM-DD')
+
+                    setDateReport(_reportDate)
                     window.sessionStorage.setItem('date_report', value)
                   }
                 }}
               />
 
-              <button className='button'>Enviar estados de cuenta</button>
+              <button
+                onClick={_ => setShowConfirmPassword(true)}
+                style={{ marginLeft: '1rem', height: '2.35rem' }}
+                className='button'>
+                Enviar estados de cuenta
+              </button>
             </div>
           </header>
 
@@ -215,7 +236,9 @@ const Users = () => {
 
       {
         showConfirmPassword &&
-        <ConfirmPassword />
+        <ConfirmPassword
+          onSubmit={_password => sendReportsUser(_password)}
+          onCancel={_ => setShowConfirmPassword(false)} />
       }
     </div>
   )
