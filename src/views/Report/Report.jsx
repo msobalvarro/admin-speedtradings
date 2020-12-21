@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useReducer, useCallback } from "react"
 import moment from "moment"
-import { useSelector } from "react-redux"
 
 // import constants and functions
 import { Petition, copyData, reducer, downloadReport } from "../../utils/constanst"
@@ -53,20 +52,13 @@ const Report = () => {
     // Contendra todos los hash escritos
     const [hashs, setHashs] = useState({})
 
-    const { token } = useSelector(({ globalStorage }) => globalStorage)
-
-    /**Token para ejecutar la petition */
-    const headers = {
-        "x-auth-token": token
-    }
-
     /**Metodo para ejecutar consulta de registros */
     const getAllData = async (_currency = 1) => {
         try {
             dispatch({ type: "loader", payload: true })
 
             // obtenemos el reporte de pago
-            const { data } = await Petition.get(`/admin/payments/${_currency}`, { headers })
+            const { data } = await Petition.get(`/admin/payments/${_currency}`)
 
             // verificamos si hay un error
             if (data.error) {
@@ -92,7 +84,7 @@ const Report = () => {
             dispatch({ type: "total", payload: _.floor(total, 8) })
 
             // // obtenemos el saldo de alypay
-            const { data: dataCredit } = await Petition.get("/admin/payments/credit-alypay", { headers })
+            const { data: dataCredit } = await Petition.get("/admin/payments/credit-alypay")
 
             // verificamos si hay un error en la peticion
             if (dataCredit.error) {
@@ -211,7 +203,11 @@ const Report = () => {
             }
 
             // Ejecutamos la peticion para ejecutar reporte
-            const { data } = await Petition.post("/admin/payments/apply", { data: dataSend, id_currency: state.currency, password: _password }, { headers })
+            const { data } = await Petition.post("/admin/payments/apply", {
+                data: dataSend,
+                id_currency: state.currency,
+                password: _password
+            })
 
             if (data.error) {
                 throw String(data.message)
@@ -244,8 +240,7 @@ const Report = () => {
                 responseType: 'arraybuffer',
                 headers: {
                     'Content-Disposition': "attachment; filename=template.xlsx",
-                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    "x-auth-token": token
+                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 }
             })
 
@@ -271,8 +266,7 @@ const Report = () => {
                 responseType: 'arraybuffer',
                 headers: {
                     'Content-Disposition': "attachment; filename=template.xlsx",
-                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                    "x-auth-token": token
+                    'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                 }
             })
 

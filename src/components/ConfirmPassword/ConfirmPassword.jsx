@@ -17,7 +17,7 @@ const ConfirmPassword = ({ onSubmit = _ => { }, onCancel = _ => { } }) => {
         <Modal persist={true} onlyChildren>
             <div className="confirm-password">
                 <div className="row">
-                    <span>Escribe tu Contraseña para continuar</span>
+                    <span>Escribe tu contraseña para continuar</span>
 
                     <input
                         value={password}

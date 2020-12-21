@@ -1,5 +1,4 @@
-@import "./utils/constants.scss";
-
+@import './utils/constants.scss';
 
 * {
   box-sizing: border-box;
@@ -18,8 +17,8 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
   color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -27,7 +26,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
@@ -82,7 +81,7 @@ a {
       background-color: $colorSecondary;
 
       &:hover {
-        box-shadow: 0 0 0 3px rgba($colorSecondary, .4);
+        box-shadow: 0 0 0 3px rgba($colorSecondary, 0.4);
       }
     }
 
@@ -124,11 +123,11 @@ a {
     }
   }
 
-  &[type="radio"].check {
+  &[type='radio'].check {
     position: relative;
 
     &::after {
-      content: "";
+      content: '';
       background-color: #000;
       border: 1px solid $colorYellow;
       position: absolute;
@@ -155,7 +154,6 @@ a {
   height: 100vh;
   width: 100%;
 }
-
 
 .toast {
   opacity: 1 !important;

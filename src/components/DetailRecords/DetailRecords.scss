@@ -85,6 +85,11 @@
 }
 
 .plan-item {
+  margin-bottom: 32px;
+  & .name-and-date {
+    display: flex;
+    justify-content: space-between;
+  }
   & .plan-title {
     font-size: 22px;
     color: #fff;
@@ -106,7 +111,14 @@
   @include text-overflow;
 }
 
-.amount-card {
+.results {
+  display: grid;
+  grid-gap: 16px;
+  grid-template-columns: 150px 1fr 150px;
+  margin-bottom: 16px;
+}
+
+.result-card {
   background-color: $colorMain;
   border-radius: 8px;
   padding: 8px;
@@ -123,7 +135,7 @@
   }
 
   display: grid;
-  grid-template-rows: min-content min-content;
+  grid-template-rows: repeat(auto-fill, min-content);
   grid-gap: 16px;
   margin-top: 2rem;
 
