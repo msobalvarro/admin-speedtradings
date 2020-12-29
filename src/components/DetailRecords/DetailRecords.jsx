@@ -296,16 +296,6 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                     </span>
                   </div>
 
-                  <div className="amount-card">
-                    <span className="label">Monto Actual</span>
-                    <span className="value">
-                      {
-                        data.amount_eth
-                          ? `${floor(data.amount_eth, 8)} ETH`
-                          : <i>SIN MONTO</i>
-                      }
-                    </span>
-                  </div>
                 </div>
               </div>
             </div>
