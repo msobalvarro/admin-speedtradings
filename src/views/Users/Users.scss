@@ -38,7 +38,7 @@
     }
 
     .content-list {
-      width: calc(55% - 1rem);
+      width: calc(50% - 1rem);
       overflow: hidden;
       .sub-header {
         display: flex;
@@ -81,7 +81,7 @@
     }
 
     .content-detail {
-      width: calc(45% - 1rem);
+      width: calc(50% - 1rem);
       padding: 1rem;
 
       .content-col {
@@ -124,17 +124,46 @@
     .header,
     .row {
       padding: 10px 1rem;
-      display: grid;
-      grid-template-columns: 50px 2fr min-content min-content min-content;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 45px;
       span {
-        @include text-overflow;
         text-align: left;
+        width: calc(100% / 5);
+        flex-grow: 1;
+
         &:first-child {
-          text-align: left;
+          width: 32px;
+          margin-right: 10px;
+        }
+
+        &:nth-child(2) {
+          @include text-overflow;
+          max-width: 180px;
+        }
+
+        &:nth-child(3) {
+          width: 110px;
+        }
+
+        &:nth-child(4) {
+          @include text-overflow(140px);
+          min-width: 140px;
         }
 
         &:last-child {
           text-align: right;
+          width: 95px;
+        }
+
+        &:nth-child(3), &:nth-child(4) {
+          text-align: center;
+        }
+
+        &:first-child, &:nth-child(3), &:nth-child(4), &:last-child {
+          flex-grow: 0;
         }
       }
     }
@@ -173,7 +202,7 @@
 .icon-container {
   width: 24px;
   & .icon {
-    width: inherit;
+    width: 22px;
   }
 }
 
