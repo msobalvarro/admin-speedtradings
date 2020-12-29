@@ -91,7 +91,7 @@ const Users = () => {
       }
 
       Swal.fire(
-        'Trading procesado',
+        'Envío de reportes procesado',
         'Todos los reportes de estado de cuenta fueron envíados',
         'success'
       )
