@@ -12,6 +12,7 @@ import { Petition, copyData, Moment, floor } from '../../utils/constanst'
 import Modal from '../../components/Modal/Modal'
 import ActivityIndicator from '../../components/ActivityIndicator/Activityindicator'
 import EmptyIndicator from '../../components/EmptyIndicator/EmptyIndicator'
+import SecurityUserQuestion from '../../components/SecurityUserQuestion/SecurityUserQuestion'
 
 const PERSON_TYPE = 1
 const ENTERPRISE_TYPE = 2
@@ -28,8 +29,11 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
   const source = CancelToken.source()
 
   const [data, setData] = useState({})
+  const [questionsList, setQuestionsList] = useState([])
+
   const [loader, setLoader] = useState(false)
   const [loaderFullScreen, setLoaderFullScreen] = useState(false)
+  const [showQuestionSecurityForm, setShowQuestionSecurityForm] = useState(false)
 
   // Obtiene el detalle de un usuario
   const fetchDetail = async _ => {
@@ -86,6 +90,22 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
     }
   }
 
+  // Obtiene la lista de las preguntas de control disponibles
+  const fetchQuestionsList = async _ => {
+    try {
+      const { data: dataResult } = await Petition.get('/collection/control-questions')
+
+      if (dataResult.error) {
+        throw String(dataResult.message)
+      }
+
+      setQuestionsList(dataResult)
+    } catch (error) {
+      console.error(error)
+      Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+    }
+  }
+
   const onChangeUserStatus = () => {
     Swal.fire({
       title: 'Estas seguro?',
@@ -106,6 +126,34 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
       }
     })
   }
+
+  /**
+   * Registra una pregunta de control de usuario
+   * @param {Object} dataSend - datos con la información de la pregunta de control 
+   */
+  const submitSecurityQuestion = async (dataSend) => {
+    try {
+      setLoaderFullScreen(true)
+
+      const { data: dataResult } = await Petition.post(`/admin/records/${id}/security-question`, dataSend)
+
+      if (dataResult.error) {
+        throw String(dataResult.message)
+      }
+
+      Swal.fire('Finalizado', 'Se ha establecido correctamente la pregunta de control', 'success')
+    } catch (error) {
+      console.error(error)
+      Swal.fire('Ha ocurrido un error', error.toString(), 'error')
+    } finally {
+      setShowQuestionSecurityForm(false)
+      setLoaderFullScreen(false)
+    }
+  }
+
+  useEffect(_ => {
+    fetchQuestionsList()
+  }, [])
 
   useEffect(
     _ => {
@@ -169,136 +217,169 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
               </div>
             </div>
 
-            <h3 className="caption">Tipos de planes</h3>
+            <h3 className="caption">Planes activos</h3>
 
             <div className="plan-container">
-              <div className="plan-item">
-                <div className="name-and-date">
-                  <h4 className="plan-title">Plan bitcoin</h4>
-                  {data.date_plan_btc && (
-                    <h5 className="plan-title">
-                      <Moment date={data.date_plan_btc} format="DD-MM-YYYY" />
-                    </h5>
-                  )}
-                </div>
-                <hr className="divisor" />
+              {
+                data.amount_btc !== null &&
+                <div className="plan-item">
+                  <div className="name-and-date">
+                    <h4 className="plan-title">Plan bitcoin</h4>
+                    {data.date_plan_btc && (
+                      <h5 className="plan-title">
+                        <Moment date={data.date_plan_btc} format="DD-MM-YYYY" />
+                      </h5>
+                    )}
+                  </div>
+                  <hr className="divisor" />
 
-                <div className="results">
-                  <div className="result-card">
-                    <span className="label">Monto Actual</span>
-                    <span className="value">
-                      {
-                        data.amount_btc
-                          ? `${floor(data.amount_btc, 8)} BTC`
-                          : <i>SIN MONTO</i>
-                      }
-                    </span>
-                  </div>
-                  <div className="result-card">
-                    <span className="label">Monto a duplicar</span>
-                    <span className="value">
-                      {
-                        data.amount_duplicate_btc
-                          ? `${floor(data.amount_duplicate_btc, 8)} BTC`
-                          : <i>SIN MONTO</i>
-                      }
-                    </span>
-                  </div>
-                  <div className="result-card">
-                    <span className="label">Porcentaje</span>
-                    <span className="value">
-                      {
-                        data.percentage_btc
-                          ? `${data.percentage_btc} %`
-                          : <i>SIN DATOS</i>
-                      }
-                    </span>
-                  </div>
-                </div>
-
-                <div className="wallet-container">
-                  <div>
-                    <span className="label">Retiros</span>
-                    <span className="value">
-                      {data.withdrawals_btc || 'SIN DATOS'}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="label">Wallet</span>
-                    <span
-                      onClick={_ => copyData(data.wallet_btc)}
-                      className="value wallet"
-                    >
-                      {data.wallet_btc || 'SIN WALLET'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="plan-item">
-                <div className="name-and-date">
-                  <h4 className="plan-title">Plan ethereum</h4>
-                  {data.date_plan_eth && (
-                    <h5 className="plan-title">
-                      <Moment date={data.date_plan_eth} format="DD-MM-YYYY" />
-                    </h5>
-                  )}
-                </div>
-                <hr className="divisor" />
-
-                <div className="results">
-                  <div className="result-card">
-                    <span className="label">Monto Actual</span>
-                    <span className="value">
-                      {
-                        data.amount_eth
-                          ? `${floor(data.amount_eth, 8)} ETC`
-                          : <i>SIN MONTO</i>
-                      }
-                    </span>
-                  </div>
-                  <div className="result-card">
-                    <span className="label">Monto a duplicar</span>
-                    <span className="value">
-                      {
-                        data.amount_duplicate_eth
-                          ? `${floor(data.amount_duplicate_eth, 8)} ETC`
-                          : <i>SIN MONTO</i>
-                      }
-                    </span>
-                  </div>
-                  <div className="result-card">
-                    <span className="label">Porcentaje</span>
-                    <span className="value">
-                      {
-                        data.percentage_eth
-                          ? `${data.percentage_eth} %`
-                          : <i>SIN DATOS</i>
-                      }
-                    </span>
-                  </div>
-                </div>
-
-                <div className="wallet-container">
-                  <div>
-                    <span className="label">Retiros</span>
-                    <span className="value">
-                      {data.withdrawals_eth || 'SIN DATOS'}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="label">Wallet</span>
-                    <span
-                      onClick={_ => copyData(data.wallet_eth)}
-                      className="value wallet"
-                    >
-                      {data.wallet_eth || 'SIN WALLET'}
-                    </span>
+                  <div className="results">
+                    <div className="result-card">
+                      <span className="label">Monto Actual</span>
+                      <span className="value">
+                        {
+                          data.amount_btc
+                            ? `${floor(data.amount_btc, 8)} BTC`
+                            : <i>SIN MONTO</i>
+                        }
+                      </span>
+                    </div>
+                    <div className="result-card">
+                      <span className="label">Monto a duplicar</span>
+                      <span className="value">
+                        {
+                          data.amount_duplicate_btc
+                            ? `${floor(data.amount_duplicate_btc, 8)} BTC`
+                            : <i>SIN MONTO</i>
+                        }
+                      </span>
+                    </div>
+                    <div className="result-card">
+                      <span className="label">Porcentaje</span>
+                      <span className="value">
+                        {
+                          data.percentage_btc
+                            ? `${data.percentage_btc} %`
+                            : <i>SIN DATOS</i>
+                        }
+                      </span>
+                    </div>
                   </div>
 
+                  <div className="wallet-container">
+                    <div>
+                      <span className="label">Retiros</span>
+                      <span className="value">
+                        {data.withdrawals_btc || 'SIN DATOS'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="label">Wallet</span>
+                      <span
+                        onClick={_ => copyData(data.wallet_btc)}
+                        className="value wallet"
+                      >
+                        {data.wallet_btc || 'SIN WALLET'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              }
+
+              {
+                data.amount_eth !== null &&
+                <div className="plan-item">
+                  <div className="name-and-date">
+                    <h4 className="plan-title">Plan ethereum</h4>
+                    {data.date_plan_eth && (
+                      <h5 className="plan-title">
+                        <Moment date={data.date_plan_eth} format="DD-MM-YYYY" />
+                      </h5>
+                    )}
+                  </div>
+                  <hr className="divisor" />
+
+                  <div className="results">
+                    <div className="result-card">
+                      <span className="label">Monto Actual</span>
+                      <span className="value">
+                        {
+                          data.amount_eth
+                            ? `${floor(data.amount_eth, 8)} ETC`
+                            : <i>SIN MONTO</i>
+                        }
+                      </span>
+                    </div>
+                    <div className="result-card">
+                      <span className="label">Monto a duplicar</span>
+                      <span className="value">
+                        {
+                          data.amount_duplicate_eth
+                            ? `${floor(data.amount_duplicate_eth, 8)} ETC`
+                            : <i>SIN MONTO</i>
+                        }
+                      </span>
+                    </div>
+                    <div className="result-card">
+                      <span className="label">Porcentaje</span>
+                      <span className="value">
+                        {
+                          data.percentage_eth
+                            ? `${data.percentage_eth} %`
+                            : <i>SIN DATOS</i>
+                        }
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="wallet-container">
+                    <div>
+                      <span className="label">Retiros</span>
+                      <span className="value">
+                        {data.withdrawals_eth || 'SIN DATOS'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="label">Wallet</span>
+                      <span
+                        onClick={_ => copyData(data.wallet_eth)}
+                        className="value wallet"
+                      >
+                        {data.wallet_eth || 'SIN WALLET'}
+                      </span>
+                    </div>
+
+                  </div>
+                </div>
+              }
             </div>
+
+
+            <section className="security-question">
+              <h3 className="caption">Pregunta de seguridad</h3>
+              {
+                Object.keys(data.controlQuestion).length === 0 &&
+                <button
+                  style={{ display: '' }}
+                  onClick={_ => setShowQuestionSecurityForm(true)}
+                  className="button secondary">
+                  Añadir pregunta de seguridad
+                </button>
+              }
+
+              {
+                Object.keys(data.controlQuestion).length > 0 &&
+                <div className="result-card">
+                  <span className="label">
+                    {data.controlQuestion.question}
+                  </span>
+
+                  <span className="value">
+                    {data.controlQuestion.answer}
+                  </span>
+                </div>
+              }
+            </section>
 
             <section className="buttons-container">
               {data.type_users && (
@@ -333,6 +414,14 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
           </div>
         </>
       )
+      }
+
+      {
+        showQuestionSecurityForm &&
+        <SecurityUserQuestion
+          questions={questionsList}
+          onCancel={_ => setShowQuestionSecurityForm(false)}
+          onSubmit={dataSend => submitSecurityQuestion(dataSend)} />
       }
 
       {

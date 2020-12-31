@@ -126,6 +126,31 @@
   text-align: center;
 }
 
+.security-question {
+  .caption {
+    margin-top: 0;
+    margin-bottom: .75rem;
+  }
+
+  .result-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .label {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+  }
+
+  .value {
+    font-size: 1rem;
+    word-wrap: break-word;
+    max-width: 500px;
+  }
+}
+
 .buttons-container {
   align-self: end;
 
