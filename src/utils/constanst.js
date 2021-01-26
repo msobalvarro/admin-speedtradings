@@ -24,7 +24,7 @@ export const emailImageToken =
 //export const urlServer = "http://192.168.1.238:8084"
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
-export const urlServer = 'http://192.168.0.120:8084'
+export const urlServer = 'http://192.168.0.125:8084'
 //export const urlServer = "http://192.168.0.119:8084"
 
 export const urlServerSocket = urlServer
@@ -62,8 +62,8 @@ export const floor = (number, precision) => {
         precision == null
             ? 0
             : precision >= 0
-                ? Math.min(precision, 292)
-                : Math.max(precision, -292)
+            ? Math.min(precision, 292)
+            : Math.max(precision, -292)
 
     if (precision) {
         // Shift with exponential notation to avoid floating-point issues.
@@ -98,7 +98,8 @@ export const copyData = (str = '') => {
 
 export const downloadReport = (data, filename) => {
     const blob = new Blob([data], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        type:
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     })
 
     let downloadLink = document.createElement('a')
@@ -131,7 +132,7 @@ export const Moment = ({
     }
 
     return (
-        <time {...rest} locale="es">
+        <time {...rest} locale='es'>
             {checkHoursOffset()}
         </time>
     )
@@ -164,7 +165,7 @@ export const dispatchNotification = _ => {
 
     audioNotification.muted = false
     audioNotification.pause()
-    audioNotification.play().catch(_ => { })
+    audioNotification.play().catch(_ => {})
 }
 
 /**
@@ -195,33 +196,31 @@ const Petition = Axios.create({
 
         return status >= 200 && status < 300
     },
-    timeout: 0
+    timeout: 0,
 })
 
 Petition.interceptors.request.use(config => {
     const whiteListUrl = [
         '/admin/payments/apply',
         '/admin/trading',
-        '/admin/reports-users/delivery'
+        '/admin/reports-users/delivery',
     ]
 
     if (whiteListUrl.indexOf(config.url)) {
         // Sí se consume el endpoint del trading, se configura el tiempo de espera en 30 min
-        config.timeout = (1000 * 60 * 30)
+        config.timeout = 1000 * 60 * 30
     }
 
     // Se añade el token de acceso antes de cada petición
     config.headers = {
         ...config.headers,
-        'x-auth-token': getStorage().token
+        'x-auth-token': getStorage().token,
     }
 
     return config
 })
 
-export {
-    Petition
-}
+export { Petition }
 
 /**Opciones para grafica diaria de dashboard */
 export const optionsChartDashboard = {
