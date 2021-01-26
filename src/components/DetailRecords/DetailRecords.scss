@@ -156,8 +156,12 @@
 
   & div {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 16px;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 8px;
+
+    .button {
+      font-size: 15px !important;
+    }
   }
 
   display: grid;
