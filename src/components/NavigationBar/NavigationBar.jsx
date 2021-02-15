@@ -135,7 +135,7 @@ const NavigationBar = () => {
                     <ArrowIcon className="arrow" />
                 </button>
 
-                <div ref={showMoreContainerRef} className={`dropdown-content ${showMore ? 'active' : ''}`}>
+                <div className={`dropdown-content ${showMore ? 'active' : ''}`}>
                     <NavLink to="/configuration" activeClassName='active'>
                         <img src={settingsIcon} alt="settings" />
                         <span>Preferencias</span>
