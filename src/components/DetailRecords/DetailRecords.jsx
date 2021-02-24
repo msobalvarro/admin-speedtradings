@@ -55,6 +55,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                 throw String(dataDetail.message)
             }
 
+            console.log(dataDetail)
             setData(dataDetail)
         } catch (error) {
             if (axios.isCancel(error)) {
@@ -222,26 +223,26 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
     )
 
     return (
-        <div className='DetailRecords'>
+        <div className="DetailRecords">
             {loader && (
-                <div className='center-element'>
+                <div className="center-element">
                     <ActivityIndicator size={48} />
                 </div>
             )}
 
             {!loader && id === -1 && (
-                <div className='center-element'>
-                    <EmptyIndicator message='Sin usuario para mostrar' />
+                <div className="center-element">
+                    <EmptyIndicator message="Sin usuario para mostrar" />
                 </div>
             )}
 
             {!loader && Object.keys(data).length > 0 && (
                 <>
-                    <div className='container'>
-                        <div className='name-container'>
-                            <span className='name-label'>{data.name}</span>
+                    <div className="container">
+                        <div className="name-container">
+                            <span className="name-label">{data.name}</span>
 
-                            <span className='type-user label'>
+                            <span className="type-user label">
                                 <UserIcon type={data.type_users} />
                                 {data.type_users === PERSON_TYPE && 'Persona'}
                                 {data.type_users === ENTERPRISE_TYPE &&
@@ -249,55 +250,55 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                             </span>
                         </div>
 
-                        <div className='general-info'>
+                        <div className="general-info">
                             <div>
-                                <span className='label'>Correo</span>
-                                <span className='value'>{data.email}</span>
+                                <span className="label">Correo</span>
+                                <span className="value">{data.email}</span>
                             </div>
 
                             <div>
-                                <span className='label'>Teléfono</span>
-                                <span className='value'>{data.phone}</span>
+                                <span className="label">Teléfono</span>
+                                <span className="value">{data.phone}</span>
                             </div>
 
                             <div>
-                                <span className='label'>Sponsor</span>
+                                <span className="label">Sponsor</span>
                                 <span>
                                     {data.email_sponsor || 'SIN SPONSOR'}
                                 </span>
                             </div>
                             <div>
-                                <span className='label'>País</span>
-                                <span className='value'>{data.country}</span>
+                                <span className="label">País</span>
+                                <span className="value">{data.country}</span>
                             </div>
                         </div>
 
-                        <h3 className='caption'>Planes activos</h3>
+                        <h3 className="caption">Planes activos</h3>
 
-                        <div className='plan-container'>
+                        <div className="plan-container">
                             {data.amount_btc !== null && (
-                                <div className='plan-item'>
-                                    <div className='name-and-date'>
-                                        <h4 className='plan-title'>
+                                <div className="plan-item">
+                                    <div className="name-and-date">
+                                        <h4 className="plan-title">
                                             Plan bitcoin
                                         </h4>
                                         {data.date_plan_btc && (
-                                            <h5 className='plan-title'>
+                                            <h5 className="plan-title">
                                                 <Moment
                                                     date={data.date_plan_btc}
-                                                    format='DD-MM-YYYY'
+                                                    format="DD-MM-YYYY"
                                                 />
                                             </h5>
                                         )}
                                     </div>
-                                    <hr className='divisor' />
+                                    <hr className="divisor" />
 
-                                    <div className='results'>
-                                        <div className='result-card'>
-                                            <span className='label'>
+                                    <div className="results">
+                                        <div className="result-card">
+                                            <span className="label">
                                                 Monto Actual
                                             </span>
-                                            <span className='value'>
+                                            <span className="value">
                                                 {data.amount_btc ? (
                                                     `${floor(
                                                         data.amount_btc,
@@ -308,11 +309,11 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                                                 )}
                                             </span>
                                         </div>
-                                        <div className='result-card'>
-                                            <span className='label'>
+                                        <div className="result-card">
+                                            <span className="label">
                                                 Monto a duplicar
                                             </span>
-                                            <span className='value'>
+                                            <span className="value">
                                                 {data.amount_duplicate_btc ? (
                                                     `${floor(
                                                         data.amount_duplicate_btc,
@@ -323,11 +324,11 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                                                 )}
                                             </span>
                                         </div>
-                                        <div className='result-card'>
-                                            <span className='label'>
+                                        <div className="result-card">
+                                            <span className="label">
                                                 Porcentaje
                                             </span>
-                                            <span className='value'>
+                                            <span className="value">
                                                 {data.percentage_btc ? (
                                                     `${data.percentage_btc} %`
                                                 ) : (
@@ -337,25 +338,25 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                                         </div>
                                     </div>
 
-                                    <div className='wallet-container'>
+                                    <div className="wallet-container">
                                         <div>
-                                            <span className='label'>
+                                            <span className="label">
                                                 Retiros
                                             </span>
-                                            <span className='value'>
+                                            <span className="value">
                                                 {data.withdrawals_btc ||
                                                     'SIN DATOS'}
                                             </span>
                                         </div>
                                         <div>
-                                            <span className='label'>
+                                            <span className="label">
                                                 Wallet
                                             </span>
                                             <span
                                                 onClick={_ =>
                                                     copyData(data.wallet_btc)
                                                 }
-                                                className='value wallet'
+                                                className="value wallet"
                                             >
                                                 {data.wallet_btc ||
                                                     'SIN WALLET'}
@@ -366,28 +367,28 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                             )}
 
                             {data.amount_eth !== null && (
-                                <div className='plan-item'>
-                                    <div className='name-and-date'>
-                                        <h4 className='plan-title'>
+                                <div className="plan-item">
+                                    <div className="name-and-date">
+                                        <h4 className="plan-title">
                                             Plan ethereum
                                         </h4>
                                         {data.date_plan_eth && (
-                                            <h5 className='plan-title'>
+                                            <h5 className="plan-title">
                                                 <Moment
                                                     date={data.date_plan_eth}
-                                                    format='DD-MM-YYYY'
+                                                    format="DD-MM-YYYY"
                                                 />
                                             </h5>
                                         )}
                                     </div>
-                                    <hr className='divisor' />
+                                    <hr className="divisor" />
 
-                                    <div className='results'>
-                                        <div className='result-card'>
-                                            <span className='label'>
+                                    <div className="results">
+                                        <div className="result-card">
+                                            <span className="label">
                                                 Monto Actual
                                             </span>
-                                            <span className='value'>
+                                            <span className="value">
                                                 {data.amount_eth ? (
                                                     `${floor(
                                                         data.amount_eth,
@@ -398,11 +399,11 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                                                 )}
                                             </span>
                                         </div>
-                                        <div className='result-card'>
-                                            <span className='label'>
+                                        <div className="result-card">
+                                            <span className="label">
                                                 Monto a duplicar
                                             </span>
-                                            <span className='value'>
+                                            <span className="value">
                                                 {data.amount_duplicate_eth ? (
                                                     `${floor(
                                                         data.amount_duplicate_eth,
@@ -413,11 +414,11 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                                                 )}
                                             </span>
                                         </div>
-                                        <div className='result-card'>
-                                            <span className='label'>
+                                        <div className="result-card">
+                                            <span className="label">
                                                 Porcentaje
                                             </span>
-                                            <span className='value'>
+                                            <span className="value">
                                                 {data.percentage_eth ? (
                                                     `${data.percentage_eth} %`
                                                 ) : (
@@ -427,25 +428,25 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                                         </div>
                                     </div>
 
-                                    <div className='wallet-container'>
+                                    <div className="wallet-container">
                                         <div>
-                                            <span className='label'>
+                                            <span className="label">
                                                 Retiros
                                             </span>
-                                            <span className='value'>
+                                            <span className="value">
                                                 {data.withdrawals_eth ||
                                                     'SIN DATOS'}
                                             </span>
                                         </div>
                                         <div>
-                                            <span className='label'>
+                                            <span className="label">
                                                 Wallet
                                             </span>
                                             <span
                                                 onClick={_ =>
                                                     copyData(data.wallet_eth)
                                                 }
-                                                className='value wallet'
+                                                className="value wallet"
                                             >
                                                 {data.wallet_eth ||
                                                     'SIN WALLET'}
@@ -456,38 +457,42 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                             )}
                         </div>
 
-                        <section className='security-question'>
-                            <h3 className='caption'>Pregunta de seguridad</h3>
-                            {Object.keys(data.controlQuestion).length === 0 && (
-                                <button
-                                    style={{ display: '' }}
-                                    onClick={_ =>
-                                        setShowQuestionSecurityForm(true)
-                                    }
-                                    className='button secondary'
-                                >
-                                    Añadir pregunta de seguridad
-                                </button>
-                            )}
+                        <section className="security-question">
+                            <h3 className="caption">Pregunta de seguridad</h3>
+                            {data?.controlQuestion &&
+                                Object.keys(data?.controlQuestion).length ===
+                                    0 && (
+                                    <button
+                                        style={{ display: '' }}
+                                        onClick={_ =>
+                                            setShowQuestionSecurityForm(true)
+                                        }
+                                        className="button secondary"
+                                    >
+                                        Añadir pregunta de seguridad
+                                    </button>
+                                )}
 
-                            {Object.keys(data.controlQuestion).length > 0 && (
-                                <div className='result-card'>
-                                    <span className='label'>
-                                        {data.controlQuestion.question}
-                                    </span>
+                            {data?.controlQuestion &&
+                                Object.keys(data?.controlQuestion).length >
+                                    0 && (
+                                    <div className="result-card">
+                                        <span className="label">
+                                            {data.controlQuestion.question}
+                                        </span>
 
-                                    <span className='value'>
-                                        {data.controlQuestion.answer}
-                                    </span>
-                                </div>
-                            )}
+                                        <span className="value">
+                                            {data.controlQuestion.answer}
+                                        </span>
+                                    </div>
+                                )}
                         </section>
 
-                        <section className='buttons-container'>
+                        <section className="buttons-container">
                             {data.type_users && (
                                 <button
-                                    type='button'
-                                    className='button large'
+                                    type="button"
+                                    className="button large"
                                     onClick={() => showKYC(data.type_users)}
                                 >
                                     Ver KYC
@@ -498,14 +503,14 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                                 <Link
                                     to={`/reports/${data.id}?date=${dateReport}`}
                                     target={'_blank'}
-                                    className='button secondary'
+                                    className="button secondary"
                                 >
                                     Generar reporte
                                 </Link>
 
                                 <button
                                     onClick={_ => setShowConfirmPassword(true)}
-                                    className='button'
+                                    className="button"
                                 >
                                     Enviar Reporte
                                 </button>
@@ -516,7 +521,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                                             ? 'desactivate-user'
                                             : 'activate-user'
                                     }`}
-                                    type='button'
+                                    type="button"
                                     onClick={onChangeUserStatus}
                                 >
                                     {data.status ? 'Deshabilitar' : 'Habilitar'}
