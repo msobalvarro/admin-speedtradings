@@ -1,254 +1,257 @@
 @import '../../utils/constants.scss';
 
 .users-list {
-  width: 100%;
-  height: 100%;
-  .header {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    padding: 0 2rem;
-
-    .row {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-
-      .label {
-        margin-right: 1rem;
-      }
-    }
-  }
-
-  .content {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 1rem 2rem;
-    .content-list,
-    .content-detail {
-      position: relative;
-      box-sizing: border-box;
-      background-color: rgba(#000, 0.4);
-      border-radius: 7px;
-      min-height: 500px;
-      height: calc(100vh - 5rem);
-      max-height: 950px;
-      min-height: 950px;
-    }
-
-    .content-list {
-      width: calc(50% - 1rem);
-      overflow: hidden;
-      .sub-header {
-        display: flex;
-        flex-direction: column;
-        & .title-and-caption {
-          display: flex;
-          justify-content: space-between;
-        }
-        color: $colorYellow;
-        padding: 1rem;
-        padding-bottom: 0;
-      }
-
-      .table {
-        max-height: calc(100% - 4.5rem);
-      }
-    }
-
-    .filters-container {
-      & .filter-title {
-        color: #fff;
-      }
-
-      margin-top: 16px;
-      & .filters {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-
-        & input,
-        select {
-          width: 100%;
-        }
-        grid-gap: 16px;
-      }
-
-      & .filter-label {
-        display: block;
-        padding: 8px 0;
-      }
-    }
-
-    .content-detail {
-      width: calc(50% - 1rem);
-      padding: 1rem;
-
-      .content-col {
-        padding: 0;
-        margin-top: 1rem;
-
-        h2 {
-          color: $colorSecondary !important;
-        }
-      }
-
-      .DetailRecords {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-
-        h2 {
-          color: $colorYellow;
-          font-size: 1.1rem;
-        }
-
-        .button {
-          font-size: 1rem;
-        }
-      }
-    }
-  }
-
-  .table {
-    animation: fadeEffect 1s;
-    display: flex;
-    flex-direction: column;
     width: 100%;
-    margin-top: 1rem;
-    user-select: none;
     height: 100%;
-    overflow-y: auto;
-
-    .header,
-    .row {
-      padding: 10px 1rem;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      min-height: 45px;
-      span {
-        text-align: left;
-        width: calc(100% / 5);
-        flex-grow: 1;
-
-        &:first-child {
-          width: 32px;
-          margin-right: 10px;
-        }
-
-        &:nth-child(2) {
-          @include text-overflow;
-          max-width: 180px;
-        }
-
-        &:nth-child(3) {
-          width: 110px;
-        }
-
-        &:nth-child(4) {
-          @include text-overflow(140px);
-          min-width: 140px;
-        }
-
-        &:last-child {
-          text-align: right;
-          width: 95px;
-        }
-
-        &:nth-child(3), &:nth-child(4) {
-          text-align: center;
-        }
-
-        &:first-child, &:nth-child(3), &:nth-child(4), &:last-child {
-          flex-grow: 0;
-        }
-      }
-    }
-
     .header {
-      border-bottom: 2px solid $colorYellow;
-      color: $colorYellow;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        padding: 0 2rem;
+
+        .row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            .label {
+                margin-right: 1rem;
+            }
+        }
     }
 
-    .row {
-      border-bottom: 1px solid #fff;
-      transition: $transition;
-
-      span {
-        &.name {
-          text-transform: capitalize;
+    .content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 1rem 2rem;
+        .content-list,
+        .content-detail {
+            position: relative;
+            box-sizing: border-box;
+            background-color: rgba(#000, 0.4);
+            border-radius: 7px;
+            min-height: 500px;
+            height: calc(100vh - 5rem);
+            max-height: 1000px;
+            min-height: 1000px;
         }
 
-        i {
-          opacity: 0.5;
+        .content-list {
+            width: calc(50% - 1rem);
+            overflow: hidden;
+            .sub-header {
+                display: flex;
+                flex-direction: column;
+                & .title-and-caption {
+                    display: flex;
+                    justify-content: space-between;
+                }
+                color: $colorYellow;
+                padding: 1rem;
+                padding-bottom: 0;
+            }
+
+            .table {
+                max-height: calc(100% - 4.5rem);
+            }
         }
-      }
 
-      &:hover {
-        background-color: rgba($color: #fff, $alpha: 0.1);
-        cursor: pointer;
-      }
+        .filters-container {
+            & .filter-title {
+                color: #fff;
+            }
 
-      &.active {
-        background-color: rgba($color: #fff, $alpha: 0.2);
-      }
+            margin-top: 16px;
+            & .filters {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+
+                & input,
+                select {
+                    width: 100%;
+                }
+                grid-gap: 16px;
+            }
+
+            & .filter-label {
+                display: block;
+                padding: 8px 0;
+            }
+        }
+
+        .content-detail {
+            width: calc(50% - 1rem);
+            padding: 1rem;
+
+            .content-col {
+                padding: 0;
+                margin-top: 1rem;
+
+                h2 {
+                    color: $colorSecondary !important;
+                }
+            }
+
+            .DetailRecords {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                height: 100%;
+
+                h2 {
+                    color: $colorYellow;
+                    font-size: 1.1rem;
+                }
+
+                .button {
+                    font-size: 1rem;
+                }
+            }
+        }
     }
-  }
+
+    .table {
+        animation: fadeEffect 1s;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 1rem;
+        user-select: none;
+        height: 100%;
+        overflow-y: auto;
+
+        .header,
+        .row {
+            padding: 10px 1rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 45px;
+            span {
+                text-align: left;
+                width: calc(100% / 5);
+                flex-grow: 1;
+
+                &:first-child {
+                    width: 32px;
+                    margin-right: 10px;
+                }
+
+                &:nth-child(2) {
+                    @include text-overflow;
+                    max-width: 180px;
+                }
+
+                &:nth-child(3) {
+                    width: 110px;
+                }
+
+                &:nth-child(4) {
+                    @include text-overflow(140px);
+                    min-width: 140px;
+                }
+
+                &:last-child {
+                    text-align: right;
+                    width: 95px;
+                }
+
+                &:nth-child(3),
+                &:nth-child(4) {
+                    text-align: center;
+                }
+
+                &:first-child,
+                &:nth-child(3),
+                &:nth-child(4),
+                &:last-child {
+                    flex-grow: 0;
+                }
+            }
+        }
+
+        .header {
+            border-bottom: 2px solid $colorYellow;
+            color: $colorYellow;
+        }
+
+        .row {
+            border-bottom: 1px solid #fff;
+            transition: $transition;
+
+            span {
+                &.name {
+                    text-transform: capitalize;
+                }
+
+                i {
+                    opacity: 0.5;
+                }
+            }
+
+            &:hover {
+                background-color: rgba($color: #fff, $alpha: 0.1);
+                cursor: pointer;
+            }
+
+            &.active {
+                background-color: rgba($color: #fff, $alpha: 0.2);
+            }
+        }
+    }
 }
 
 .icon-container {
-  width: 24px;
-  & .icon {
-    width: 22px;
-  }
+    width: 24px;
+    & .icon {
+        width: 22px;
+    }
 }
 
 .caption-container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  & .icon {
-    width: 18px;
-    margin-right: 5px;
-  }
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    & .icon {
+        width: 18px;
+        margin-right: 5px;
+    }
 
-  & .separator {
-    height: 18px;
-    width: 2px;
-    background: $colorMain;
-    margin: 0 5px;
-  }
+    & .separator {
+        height: 18px;
+        width: 2px;
+        background: $colorMain;
+        margin: 0 5px;
+    }
 }
 
 .kyc-person {
-  width: 100%;
-  height: 100%;
-  border: 2px dashed tomato;
+    width: 100%;
+    height: 100%;
 }
 
 .kyc-enterprise {
-  display: block;
+    display: block;
 
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .center-element {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .reviewed-container {
-  color: #2e8b12;
-  & .icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 5px;
-  }
+    color: #2e8b12;
+    & .icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+    }
 }

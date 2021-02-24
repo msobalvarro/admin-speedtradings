@@ -55,6 +55,7 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
                 throw String(dataDetail.message)
             }
 
+            console.log(dataDetail)
             setData(dataDetail)
         } catch (error) {
             if (axios.isCancel(error)) {
@@ -203,9 +204,9 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
         }
     }
 
-    useEffect(_ => {
+    /* useEffect(_ => {
         fetchQuestionsList()
-    }, [])
+    }, []) */
 
     useEffect(
         _ => {
@@ -458,29 +459,33 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
 
                         <section className='security-question'>
                             <h3 className='caption'>Pregunta de seguridad</h3>
-                            {Object.keys(data.controlQuestion).length === 0 && (
-                                <button
-                                    style={{ display: '' }}
-                                    onClick={_ =>
-                                        setShowQuestionSecurityForm(true)
-                                    }
-                                    className='button secondary'
-                                >
-                                    Añadir pregunta de seguridad
-                                </button>
-                            )}
+                            {data?.controlQuestion &&
+                                Object.keys(data?.controlQuestion).length ===
+                                    0 && (
+                                    <button
+                                        style={{ display: '' }}
+                                        onClick={_ =>
+                                            setShowQuestionSecurityForm(true)
+                                        }
+                                        className='button secondary'
+                                    >
+                                        Añadir pregunta de seguridad
+                                    </button>
+                                )}
 
-                            {Object.keys(data.controlQuestion).length > 0 && (
-                                <div className='result-card'>
-                                    <span className='label'>
-                                        {data.controlQuestion.question}
-                                    </span>
+                            {data?.controlQuestion &&
+                                Object.keys(data?.controlQuestion).length >
+                                    0 && (
+                                    <div className='result-card'>
+                                        <span className='label'>
+                                            {data.controlQuestion.question}
+                                        </span>
 
-                                    <span className='value'>
-                                        {data.controlQuestion.answer}
-                                    </span>
-                                </div>
-                            )}
+                                        <span className='value'>
+                                            {data.controlQuestion.answer}
+                                        </span>
+                                    </div>
+                                )}
                         </section>
 
                         <section className='buttons-container'>
