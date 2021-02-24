@@ -258,7 +258,9 @@ const DetailRecords = ({ id = -1, dateReport = '', showKYC }) => {
 
                             <div>
                                 <span className='label'>Teléfono</span>
-                                <span className='value'>{data.phone}</span>
+                                <span className='value'>
+                                    <a href={`https://api.whatsapp.com/send/?phone=${data.phone}`} target="_blank" style={{ color: "#FFF" }}>{data.phone}</a>
+                                </span>
                             </div>
 
                             <div>
