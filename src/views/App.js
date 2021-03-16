@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { HashRouter, Route, Switch } from "react-router-dom"
-import { useDispatch } from "react-redux"
-import socketIoClient from "socket.io-client"
+import { HashRouter, Route, Switch } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import socketIoClient from 'socket.io-client'
 // Import Assets
 
 // Redux configurations
@@ -11,7 +11,7 @@ import {
     SETSTORAGE,
     DELETSOCKET,
     SETSOCKET,
-    SETSOCKETEVENTS
+    SETSOCKETEVENTS,
 } from '../store/ActionTypes'
 
 // import components
@@ -41,25 +41,25 @@ const App = () => {
     const [percentageData, setPercentageData] = useState('')
 
     // Configura y esta a la esucha del servidor con soket
-    const ConfigurateSoket = async (token = "") => {
+    const ConfigurateSoket = async (token = '') => {
         try {
             const { data } = await Petition.get('/admin/utils', {
                 headers: {
-                    'x-auth-token': token
-                }
+                    'x-auth-token': token,
+                },
             })
 
             const socket = socketIoClient(urlServerSocket, {
                 query: {
-                    token: token
+                    token: token,
                 },
                 forceNew: true,
-                transports: ['websocket']
+                transports: ['websocket'],
             })
 
             const {
                 onTogglePercentage,
-                setPercentageCharge
+                setPercentageCharge,
             } = data.eventSocketNames
 
             socket.on('connect', _ => {
@@ -67,7 +67,7 @@ const App = () => {
             })
 
             /**
-             * Se configuran los eventos del socket para mostrar el modal a la hora de 
+             * Se configuran los eventos del socket para mostrar el modal a la hora de
              * aplicar le trading
              */
             if (!socket._callbacks[`$${onTogglePercentage}`]) {
@@ -81,7 +81,7 @@ const App = () => {
                     const {
                         currentPercentageValue,
                         name: person,
-                        title
+                        title,
                     } = response
 
                     setPercentageValue(currentPercentageValue)
@@ -102,11 +102,10 @@ const App = () => {
 
         // Comprueba si hay datos retornados en el payload
         if (Object.keys(payload).length > 0) {
-
             // Creamos el dispatch para el storage de redux
             dispatch({
                 type: SETSTORAGE,
-                payload
+                payload,
             })
 
             ConfigurateSoket(payload.token)
@@ -126,39 +125,45 @@ const App = () => {
 
     return (
         <HashRouter>
-            {
-                !loged &&
+            {!loged && (
                 <Switch>
-                    <Route component={Login} path="/" exact />
-                    <Route path="*" component={NotFound} />
+                    <Route component={Login} path='/' exact />
+                    <Route path='*' component={NotFound} />
                 </Switch>
-            }
+            )}
 
-            {
-                loged &&
+            {loged && (
                 <>
                     <NavigationBar />
                     <Switch>
-                        <Route path="/" exact component={Records} />
-                        <Route path="/users" exact component={Users} />
-                        <Route path="/comissions" component={Comissions} />
-                        <Route path="/reports" exact component={Report} />
-                        <Route path="/reports/:id" exact component={ReportDetail} />
-                        <Route path="/logs" exact component={Logs} />
-                        <Route path="/mailing" exact component={Mailing} />
-                        <Route path="/configuration" exact component={Configuration} />
-                        <Route path="*" component={NotFound} />
+                        <Route path='/' exact component={Records} />
+                        <Route path='/users' exact component={Users} />
+                        <Route path='/comissions' component={Comissions} />
+                        <Route path='/reports' exact component={Report} />
+                        <Route
+                            path='/reports/:id'
+                            exact
+                            component={ReportDetail}
+                        />
+                        <Route path='/logs' exact component={Logs} />
+                        <Route path='/mailing' exact component={Mailing} />
+                        <Route
+                            path='/configuration'
+                            exact
+                            component={Configuration}
+                        />
+                        <Route path='*' component={NotFound} />
                     </Switch>
 
-                    {
-                        showPercentageLoader &&
+                    {showPercentageLoader && (
                         <PercentageLoader
                             percentage={percentageValue}
                             data={percentageData}
-                            title={percentageTitle} />
-                    }
+                            title={percentageTitle}
+                        />
+                    )}
                 </>
-            }
+            )}
         </HashRouter>
     )
 }

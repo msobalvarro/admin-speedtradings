@@ -21,7 +21,7 @@ export const emailImageToken =
     'jRVFgyxiXKHxAWQL47jVzoMwj2m9DfG6-fLv8j9zBtLDMjpBd4QeLpXdTHM2Mnlyg-zZEfQrPoCn9yPUVaUQEvTl3B904h3xcY'
 
 export const urlServer = 'https://ardent-medley-272823.appspot.com'
-// export const urlServer = "http://localhost:8084"
+//export const urlServer = 'http://localhost:8084'
 //export const urlServer = "http://192.168.11.224:8084"
 //export const urlServer = "http://192.168.1.224:8084"
 //export const urlServer = 'http://192.168.0.125:8084'
