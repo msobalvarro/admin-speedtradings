@@ -1,0 +1,34 @@
+@import "../../utils/constants.scss";
+
+.panel-report-menu {
+	background-color: rgba(0, 0, 0, 0.45);
+	border-radius: 5px;
+	border: 2px solid $colorMain;
+	height: 80vh;
+	padding: 10px;
+	width: 300px;
+	// flex: 1;
+
+	h2 {
+		font-weight: 500;
+		margin: 10px;
+	}
+
+	.content-links {
+		display: flex;
+		flex-direction: column;
+		border-radius: 5;
+		margin-top: 10px;
+
+		.item-list {
+			color: $colorYellow;
+			padding: 10px;
+			text-decoration: none;
+			transition: $transition;
+
+			&:hover, &.active {
+				background-color: rgba($colorYellow, 0.1);
+			}
+		}
+	}
+}

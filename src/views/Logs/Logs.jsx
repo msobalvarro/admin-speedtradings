@@ -6,49 +6,62 @@ import "./Logs.scss"
 
 const Logs = () => {
     const [dataLogs, setLogs] = useState([])
+    const [dataHistory, setHistory] = useState([])
     const [filter, setFilter] = useState('')
 
+    const getAllPetition = async () => {
+        const { data } = await Petition.get("/logs")
+
+        // verificamos si hay un error
+        if (data.error) {
+            console.log(data.message)
+        }
+
+        // verificamo si hay logs
+        if (data.logs.length) setLogs(data.logs)
+
+        // verifcamos si hay datos de historico de acciones
+        if (data.actions.length) setHistory(data.actions)
+    }
+
     useEffect(() => {
-        Petition.get("/logs")
-            .then(({ data, status }) => {
-                if (status === 200) {
-                    // Verificamos si hay logs
-                    if (data.length) {
-                        setLogs(data.reverse())
-                    } else {
-                        setLogs([])
-                    }
-                }
-            })
+        getAllPetition()
     }, [])
 
     return (
         <div className="container-logs">
             <div className="console">
                 <div className="header">
-                    <span>Logs for development - Backend</span>
-
-                    <input
-                        value={filter}
-                        onChange={e => setFilter(e.target.value)}
-                        type="text"
-                        placeholder="filtrar"
-                        className="text-input" />
+                    <span>Acciones de usuario</span>
                 </div>
 
                 {
-                    dataLogs.map((log, index) => {
-                        if (log.length > 0 && log.toLowerCase().search(filter.toLocaleLowerCase()) > -1) {
-                            return (
-                                <div className="row" key={index}>
-                                    <div className="line-number">{index + 1}</div>
-                                    <span className="text-log">{log}</span>
-                                </div>
-                            )
-                        } else {
-                            return null
-                        }
-                    })
+                    dataHistory.map((log, index) => (
+                        <div className="row" key={index}>
+                            <div className="line-number">{index + 1}</div>
+                            <span className="text-log">{log}</span>
+                        </div>
+                    ))
+                }
+
+                {
+                    dataHistory.length === 0 &&
+                    <h2 className="empty">No se encontraron LOGS</h2>
+                }
+            </div>
+
+            <div className="console">
+                <div className="header">
+                    <span>Logs for development - Backend</span>
+                </div>
+
+                {
+                    dataLogs.map((log, index) => (
+                        <div className="row" key={index}>
+                            <div className="line-number">{index + 1}</div>
+                            <span className="text-log">{log}</span>
+                        </div>
+                    ))
                 }
 
                 {

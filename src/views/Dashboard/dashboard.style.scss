@@ -1,0 +1,14 @@
+@import "../../utils/constants.scss";
+
+.container-root-report {
+	display: flex;
+	flex-direction: row;
+	padding: 25px;
+
+	.container-view {
+		animation: fadeEffect 1s;
+		flex: 1;
+		padding: 25px;
+		margin-left: 25px;
+	}
+}

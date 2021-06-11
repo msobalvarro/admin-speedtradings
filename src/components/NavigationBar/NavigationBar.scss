@@ -169,9 +169,8 @@ nav.navigation-bar {
             }
         }
 
-
-        &.admin-connect {
-            span:after {
+        .option-select {
+            &:after {
                 content: '';
                 display: block;
                 width: .5rem;

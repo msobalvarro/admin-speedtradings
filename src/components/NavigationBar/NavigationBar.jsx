@@ -7,6 +7,8 @@ import { LogOut } from "../../utils/constanst"
 // Import Assets
 import Logo from "../../static/images/logo.png"
 
+// import redux configuration
+import store from "../../store/store"
 import { SETADMINCONNECTED, SETADMINCONNECTEDEMAILS } from '../../store/ActionTypes'
 import _ from "lodash"
 
@@ -26,6 +28,8 @@ const NavigationBar = () => {
         socketEvents
     } = useSelector(storage => storage.globalStorage)
     const dispatch = useDispatch()
+
+    const { root: isRoot } = store.getState().globalStorage
 
     const [showMore, setShowMore] = useState(false)
     const [showConnected, setShowConnected] = useState(false)
@@ -92,6 +96,12 @@ const NavigationBar = () => {
                     activeClassName='active'>
                     Registros
                 </NavLink>
+                {/* {isRoot && <NavLink
+                    to="/dashboard"
+                    exact
+                    activeClassName='active'>
+                    Reportes
+                </NavLink>} */}
                 <NavLink
                     to="/users"
                     activeClassName='active'>

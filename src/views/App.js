@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { HashRouter, Route, Switch } from 'react-router-dom'
+import { HashRouter, Route, Switch, useRouteMatch } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import socketIoClient from 'socket.io-client'
 // Import Assets
@@ -13,6 +13,7 @@ import {
     SETSOCKET,
     SETSOCKETEVENTS,
 } from '../store/ActionTypes'
+import store from "../store/store"
 
 // import components
 import NavigationBar from '../components/NavigationBar/NavigationBar'
@@ -29,10 +30,14 @@ import Logs from './Logs/Logs'
 import Mailing from './Mail/Mail'
 import Configuration from './Configuration/Configuration'
 import NotFound from './404/404'
+import Dashboard from './Dashboard/dashboard.view'
 
 const App = () => {
     const dispatch = useDispatch()
     const [loged, setLogin] = useState(false)
+    const { root: isRoot } = store.getState().globalStorage
+
+    // const { url } = useRouteMatch()
 
     // Estados para controlar el modal de aplicar trading
     const [showPercentageLoader, setShowPercentageLoader] = useState(false)
@@ -145,6 +150,9 @@ const App = () => {
                             exact
                             component={ReportDetail}
                         />
+                        {
+                            isRoot && <Route path='/dashboard' component={Dashboard} />
+                        }
                         <Route path='/logs' exact component={Logs} />
                         <Route path='/mailing' exact component={Mailing} />
                         <Route

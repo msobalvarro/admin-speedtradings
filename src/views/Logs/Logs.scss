@@ -1,10 +1,16 @@
 @import "../../utils/constants.scss";
 
 .container-logs {
+  margin: 25px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
   .console {
     background-color: #000;
-    // padding: 25px;
-    margin: 25px;
+    margin: 10px;
+    overflow: auto;
+    flex: 1;
 
     .header {
       align-items: center;
