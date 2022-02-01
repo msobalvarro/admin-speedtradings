@@ -12,10 +12,18 @@ import * as serviceWorker from './serviceWorker'
 
 // Redux storage / storage from localstorage
 import store from './store/store'
-
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { AlytradeRouter, MainView } from './Alytrade'
 ReactDOM.render(
     <Provider store={store}>
-        <App />
+        <Router>
+            <Route path='/at'>
+                <MainView />
+            </Route>
+            <Route exact path='/'>
+                <App />
+            </Route>
+        </Router>
     </Provider>,
     document.getElementById('root')
 )
